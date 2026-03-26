@@ -1,0 +1,5 @@
+# https://roadtovostok.net — Road to Vostok Field Manual (unofficial)
+User-agent: *
+Allow: /
+
+Sitemap: https://roadtovostok.net/sitemap.xml
