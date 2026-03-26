@@ -562,13 +562,13 @@ onUnmounted(() => window.removeEventListener('keydown', onEscape))
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 520px) {
+@media (min-width: 768px) and (max-width: 1023px) {
   .map-index {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .map-index {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -613,5 +613,48 @@ onUnmounted(() => window.removeEventListener('keydown', onEscape))
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--color-text-muted);
+}
+
+@media (max-width: 1023px) {
+  .map-frame {
+    padding: 0.5rem;
+    border-radius: 5px;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-border-bright) 22%, transparent),
+      0 22px 56px color-mix(in srgb, #000 48%, transparent);
+  }
+
+  .map-detail {
+    padding: 1rem 1.05rem;
+  }
+
+  .map-pin__dot {
+    width: 16px;
+    height: 16px;
+  }
+
+  .map-pin--zone .map-pin__dot {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 767px) {
+  .map-title {
+    font-size: clamp(1.45rem, 6vw, 2rem);
+  }
+
+  .map-lead {
+    font-size: 0.9rem;
+  }
+
+  .map-pin__label {
+    font-size: 0.58rem;
+    max-width: 5.5rem;
+  }
+
+  .map-index__btn {
+    padding: 0.5rem 0.65rem;
+  }
 }
 </style>

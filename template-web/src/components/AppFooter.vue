@@ -145,7 +145,7 @@ const external = [
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .app-footer__grid {
     grid-template-columns: 1.4fr 1fr;
   }
@@ -336,5 +336,44 @@ const external = [
 .app-footer__hint {
   opacity: 0.85;
   letter-spacing: 0.04em;
+}
+
+@media (max-width: 1023px) {
+  .app-footer {
+    padding-block: 2.5rem 1.5rem;
+  }
+
+  .app-footer__grid {
+    gap: 1.85rem;
+  }
+
+  .app-footer__logo {
+    height: 2.4rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-footer {
+    padding-block: 2rem 1.35rem;
+  }
+
+  .app-footer__grid {
+    gap: 1.5rem;
+  }
+
+  .app-footer__brand {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .app-footer__name {
+    font-size: 0.98rem;
+  }
+
+  .app-footer__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 </style>

@@ -580,7 +580,7 @@ const pillars = [
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .wiki-link-list {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -677,7 +677,7 @@ const pillars = [
   border-bottom: 1px solid var(--color-border);
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1024px) {
   .pillar-head {
     grid-template-columns: 1fr 220px;
     align-items: start;
@@ -747,7 +747,7 @@ const pillars = [
   gap: 1.5rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .pillar-split {
     grid-template-columns: 1.35fr 1fr;
     align-items: start;
@@ -868,5 +868,61 @@ const pillars = [
 
 .closing-inline:hover {
   color: var(--color-text);
+}
+
+@media (max-width: 1023px) {
+  .jump-bar {
+    gap: 0.45rem 0.7rem;
+    padding: 0.55rem 0.85rem;
+  }
+
+  .jump-bar__link {
+    font-size: 0.78rem;
+  }
+
+  .pillar-head {
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+  }
+
+  .pillar-meta {
+    padding: 0.9rem;
+  }
+
+  .wiki-link-card__a {
+    padding: 0.9rem 1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .jump-bar {
+    padding: 0.5rem 0.75rem;
+    gap: 0.4rem 0.55rem;
+  }
+
+  .jump-bar__link {
+    font-size: 0.74rem;
+  }
+
+  .jump-bar__link--wiki {
+    font-size: 0.68rem;
+  }
+
+  .page-title {
+    letter-spacing: 0.045em;
+  }
+
+  .page-dek {
+    font-size: 0.9rem;
+  }
+
+  .wiki-cat-title {
+    font-size: clamp(1.05rem, 4vw, 1.3rem);
+  }
+
+  .article-card {
+    padding: 0.75rem 0.85rem;
+  }
 }
 </style>

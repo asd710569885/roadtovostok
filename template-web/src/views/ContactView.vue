@@ -221,4 +221,30 @@ const mailto = `mailto:${email}`
 .legal-section + .legal-section {
   border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
 }
+
+@media (max-width: 1023px) {
+  .page-title {
+    letter-spacing: 0.045em;
+  }
+
+  .legal-prose {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .page-title {
+    font-size: clamp(1.45rem, 5.5vw, 2.1rem);
+    letter-spacing: 0.035em;
+  }
+
+  .page-dek,
+  .legal-prose {
+    font-size: 0.875rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.05rem, 4vw, 1.25rem);
+  }
+}
 </style>

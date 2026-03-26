@@ -404,7 +404,7 @@ import { RouterLink } from 'vue-router'
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .spec-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -451,7 +451,7 @@ import { RouterLink } from 'vue-router'
   gap: 1.25rem;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
   .two-col {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -542,5 +542,60 @@ import { RouterLink } from 'vue-router'
   font-size: 0.875rem;
   color: var(--color-text-muted);
   line-height: 1.55;
+}
+
+@media (max-width: 1023px) {
+  .page-title {
+    letter-spacing: 0.045em;
+  }
+
+  .timeline__item {
+    grid-template-columns: 4.75rem 1fr;
+    gap: 0.85rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .page-title {
+    font-size: clamp(1.45rem, 5.2vw, 2.1rem);
+    letter-spacing: 0.035em;
+  }
+
+  .page-dek,
+  .checklist {
+    font-size: 0.9rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.05rem, 4vw, 1.35rem);
+  }
+
+  .data-table {
+    font-size: 0.8125rem;
+    min-width: 100%;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 0.65rem 0.75rem;
+  }
+
+  .data-table tbody th[scope='row'] {
+    width: auto;
+    min-width: 5.5rem;
+  }
+
+  .timeline__item {
+    grid-template-columns: 1fr;
+    padding-left: 0.25rem;
+  }
+
+  .timeline__badge {
+    margin-left: 0;
+  }
+
+  .timeline::before {
+    left: 0.65rem;
+  }
 }
 </style>

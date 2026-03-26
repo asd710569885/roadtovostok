@@ -628,7 +628,7 @@ const faqItems = [
   align-items: start;
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1024px) {
   .hero-layout {
     grid-template-columns: 1.15fr 0.85fr;
   }
@@ -656,7 +656,7 @@ const faqItems = [
   box-shadow: 0 0 18px color-mix(in srgb, var(--color-accent) 35%, transparent);
 }
 
-@media (min-width: 960px) {
+@media (min-width: 1024px) {
   .hero-layout__copy--rail {
     padding-left: 1.35rem;
   }
@@ -1044,7 +1044,7 @@ const faqItems = [
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 720px) {
+@media (min-width: 768px) {
   .bento {
     grid-template-columns: repeat(6, 1fr);
     grid-auto-rows: minmax(120px, auto);
@@ -1061,6 +1061,27 @@ const faqItems = [
 
   .bento__cell--quote {
     grid-column: span 3;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .bento {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: auto;
+  }
+
+  .bento__cell--large {
+    grid-column: span 2;
+    grid-row: span 1;
+    min-height: 200px;
+  }
+
+  .bento__cell--stat {
+    grid-column: span 1;
+  }
+
+  .bento__cell--quote {
+    grid-column: span 2;
   }
 }
 
@@ -1171,7 +1192,13 @@ const faqItems = [
   gap: 1rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 768px) and (max-width: 1023px) {
+  .zone-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
   .zone-track {
     grid-template-columns: repeat(3, 1fr);
   }
@@ -1254,7 +1281,7 @@ const faqItems = [
   box-shadow: 0 20px 55px color-mix(in srgb, #000 48%, transparent);
 }
 
-@media (min-width: 900px) {
+@media (min-width: 1024px) {
   .map-spotlight {
     grid-template-columns: 1fr minmax(260px, 42%);
     padding: 1.75rem 1.65rem;
@@ -1408,7 +1435,7 @@ const faqItems = [
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .topic-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1664,7 +1691,94 @@ const faqItems = [
   gap: 0.65rem;
 }
 
-@media (max-width: 640px) {
+@media (max-width: 1023px) {
+  .hero-section__bg {
+    height: min(62vh, 440px);
+    opacity: 0.85;
+  }
+
+  .hero-layout {
+    gap: 1.5rem 1.75rem;
+  }
+
+  .hero-panel {
+    padding: 1.1rem 1.2rem;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--color-border-bright) 30%, transparent),
+      0 20px 52px color-mix(in srgb, #000 50%, transparent);
+  }
+
+  .map-spotlight {
+    padding: 1.35rem 1.15rem;
+    gap: 1.35rem;
+  }
+
+  .cta-card {
+    padding: 1.5rem 1.25rem;
+    gap: 1.25rem;
+  }
+
+  .zone-card {
+    padding: 1.2rem 1.1rem 1.1rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero-section__bg {
+    height: min(50vh, 320px);
+    inset: -6% -8% auto -8%;
+    opacity: 0.78;
+  }
+
+  .hero-layout__copy--rail {
+    padding-left: 0.9rem;
+  }
+
+  .hero-title {
+    font-size: clamp(1.65rem, 6.5vw, 2.4rem);
+  }
+
+  .hero-btn {
+    padding: 0.62rem 1.05rem;
+    font-size: 0.86rem;
+    letter-spacing: 0.08em;
+  }
+
+  .hero-actions {
+    gap: 0.55rem;
+  }
+
+  .hero-panel {
+    padding: 1rem 1.05rem;
+  }
+
+  .signal-scroll {
+    gap: 0.4rem;
+    padding: 0.65rem 0;
+  }
+
+  .signal-chip {
+    padding: 0.32rem 0.55rem;
+    font-size: 0.7rem;
+  }
+
+  .bento__cell {
+    padding: 1.05rem 1.1rem;
+  }
+
+  .topic-card__link {
+    padding: 1.15rem 1.15rem;
+  }
+
+  .faq-item {
+    padding: 0.25rem 0.65rem 0.7rem;
+  }
+
+  .map-spotlight__btn {
+    padding: 0.58rem 1rem;
+    font-size: 0.82rem;
+  }
+
   .outline-table th:nth-child(3),
   .outline-table td:nth-child(3) {
     display: none;

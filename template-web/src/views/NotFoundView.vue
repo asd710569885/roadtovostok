@@ -98,4 +98,30 @@ import { RouterLink } from 'vue-router'
   border-color: var(--color-frost);
   color: var(--color-frost);
 }
+
+@media (max-width: 1023px) {
+  .not-found-title {
+    letter-spacing: 0.045em;
+  }
+}
+
+@media (max-width: 767px) {
+  .not-found-title {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+  }
+
+  .not-found-text {
+    font-size: 0.9rem;
+  }
+
+  .not-found-btn {
+    padding: 0.58rem 1.05rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+  }
+
+  .not-found-actions {
+    gap: 0.55rem;
+  }
+}
 </style>
