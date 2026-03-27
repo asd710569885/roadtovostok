@@ -74,7 +74,7 @@ const router = createRouter({
       meta: {
         title: 'Road to Vostok Updates & Official News | Steam, Site, Roadmap',
         description:
-          'Where to read Road to Vostok patch notes and announcements: official site, Steam, roadmap, FAQ, YouTube devlogs—plus a homepage snapshot to verify against roadtovostok.com.',
+          'Where to read Road to Vostok patch notes and announcements: official site, Steam, YouTube devlogs, and the /game roadmap section—plus a snapshot to verify against roadtovostok.com (standalone /faq and /roadmap URLs may 404).',
         keywords:
           'road to vostok updates, patch notes, steam news, roadmap, early access date, roadtovostok.com',
       },
