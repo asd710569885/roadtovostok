@@ -53,7 +53,7 @@ const mailto = `mailto:${email}`
           </p>
           <p class="legal-prose">
             Many topics already have a natural home before you mail us: the
-            <RouterLink class="text-link" to="/guides">guides hub</RouterLink>
+            <RouterLink class="text-link" to="/wiki">wiki hub</RouterLink>
             for weapons, survival, traders, and crossings; the
             <RouterLink class="text-link" to="/map">world map</RouterLink>
             for spatial references; the

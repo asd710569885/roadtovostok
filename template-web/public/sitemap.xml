@@ -6,9 +6,14 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://roadtovostok.net/guides</loc>
+    <loc>https://roadtovostok.net/wiki</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://roadtovostok.net/updates</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
     <loc>https://roadtovostok.net/start</loc>
@@ -19,6 +24,16 @@
     <loc>https://roadtovostok.net/map</loc>
     <changefreq>weekly</changefreq>
     <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://roadtovostok.net/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.72</priority>
+  </url>
+  <url>
+    <loc>https://roadtovostok.net/blog/road-to-vostok-beginner-guide</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.65</priority>
   </url>
   <url>
     <loc>https://roadtovostok.net/about</loc>

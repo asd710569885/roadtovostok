@@ -9,7 +9,7 @@ const external = [
   { href: 'https://www.roadtovostok.com/', label: 'Official website' },
   { href: 'https://store.steampowered.com/app/1963610/Road_to_Vostok/', label: 'Steam store' },
   { href: 'https://steamcommunity.com/app/1963610', label: 'Community hub' },
-  { href: 'https://discord.com/invite/roadtovostok', label: 'Discord' },
+  { href: 'https://discord.gg/roadtovostok', label: 'Discord' },
   { href: 'https://www.youtube.com/roadtovostok', label: 'YouTube' },
   { href: 'https://x.com/roadtovostok', label: 'X / Twitter' },
 ]
@@ -39,11 +39,15 @@ const external = [
             Independent, <strong>systems-first</strong> guides: weapons and reloading, survival and medical, traders and tasks, map
             crossings, demo vs Early Access. Not affiliated with the developer; game content and marks belong to Road to Vostok Ltd.
             and respective rights holders. Core routes:
-            <RouterLink to="/guides">Guides</RouterLink>
+            <RouterLink to="/wiki">Wiki</RouterLink>
+            ·
+            <RouterLink to="/start" title="Onboarding · Demo / EA / PC specs">Start</RouterLink>
             ·
             <RouterLink to="/map">Map</RouterLink>
             ·
-            <RouterLink to="/start">Start</RouterLink>
+            <RouterLink to="/updates">Updates</RouterLink>
+            ·
+            <RouterLink to="/blog">Blog</RouterLink>
             ·
             <RouterLink to="/">Home</RouterLink>
           </p>
@@ -55,9 +59,11 @@ const external = [
           <p class="app-footer__label">On this site</p>
           <ul class="app-footer__list">
             <li><RouterLink to="/">Home overview</RouterLink></li>
-            <li><RouterLink to="/guides">Guides &amp; wiki index</RouterLink></li>
+            <li><RouterLink to="/wiki">Wiki index</RouterLink></li>
+            <li><RouterLink to="/start" title="Onboarding · Demo / EA / PC specs">Start</RouterLink></li>
             <li><RouterLink to="/map">World map</RouterLink></li>
-            <li><RouterLink to="/start">Demo, EA &amp; specs</RouterLink></li>
+            <li><RouterLink to="/updates">Official-style updates</RouterLink></li>
+            <li><RouterLink to="/blog">Blog</RouterLink></li>
           </ul>
         </div>
         <div class="app-footer__block">
@@ -78,12 +84,12 @@ const external = [
           </ul>
         </div>
       </div>
-      <nav class="app-footer__legal" aria-label="About and legal (关于我们、联系我们、隐私政策)">
-        <RouterLink class="app-footer__legal-link" to="/about" title="关于我们">About</RouterLink>
+      <nav class="app-footer__legal" aria-label="About and legal">
+        <RouterLink class="app-footer__legal-link" to="/about" title="About this fan site">About</RouterLink>
         <span class="app-footer__legal-sep" aria-hidden="true">·</span>
-        <RouterLink class="app-footer__legal-link" to="/contact" title="联系我们">Contact</RouterLink>
+        <RouterLink class="app-footer__legal-link" to="/contact" title="Contact the maintainer">Contact</RouterLink>
         <span class="app-footer__legal-sep" aria-hidden="true">·</span>
-        <RouterLink class="app-footer__legal-link" to="/privacy" title="隐私政策">Privacy Policy</RouterLink>
+        <RouterLink class="app-footer__legal-link" to="/privacy" title="Privacy policy">Privacy Policy</RouterLink>
       </nav>
       <div class="app-footer__bottom">
         <span class="app-footer__mono">© {{ year }} · Unofficial fan guide</span>

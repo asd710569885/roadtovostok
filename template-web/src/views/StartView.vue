@@ -7,30 +7,112 @@ import { RouterLink } from 'vue-router'
     <section class="page-head-section section section--tight" aria-labelledby="start-heading">
       <div class="container">
         <div class="wrap wrap--wide">
-          <p class="page-kicker">Onboarding · Versions</p>
-          <h1 id="start-heading" class="page-title">Start here: demo, Early Access, and PC specs</h1>
+          <p class="page-kicker">Onboarding · New players · Versions</p>
+          <h1 id="start-heading" class="page-title">Start: demo, Early Access &amp; PC specs</h1>
           <p class="page-dek">
-            This page bundles the queries players hammer into search—<strong>Steam downloads</strong>, <strong>release timing</strong>,
-            <strong>multiplayer rumors</strong>, and <strong>hardware floors</strong>—then gives a practical boot order for your first
-            sessions. Dates and feature lists remain authoritative on the
+            One landing page for people who just bought or wishlisted: <strong>what the game is</strong>, <strong>EA timing and
+            price</strong>, <strong>solo vs co-op rumors</strong>, <strong>mods and localization</strong>, then a
+            <strong>first-session checklist</strong>, <strong>Demo vs EA expectations</strong>, and <strong>Steam-style PC
+            requirements</strong>. Dates and feature lists always defer to
             <a
               class="text-link"
               href="https://store.steampowered.com/app/1963610/Road_to_Vostok/"
               target="_blank"
               rel="noopener noreferrer"
             >
-              Steam store page
+              Steam
             </a>
             and the
-            <a class="text-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">
-              official site
-            </a>
-            ; we revise summaries after major beats. For mechanics and loot, pair this with the
-            <RouterLink class="text-link" to="/guides">guides hub</RouterLink>
-            and the
-            <RouterLink class="text-link" to="/map">world map</RouterLink>
-            when you’re planning routes.
+            <a class="text-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">official site</a>
+            —we refresh summaries after major beats. For mechanics and loot, pair this with the
+            <RouterLink class="text-link" to="/wiki">wiki hub</RouterLink>, the
+            <RouterLink class="text-link" to="/map">world map</RouterLink>, and
+            <RouterLink class="text-link" to="/updates">Updates</RouterLink>
+            (curated first-party links). Unofficial fan manual, not the developer’s site.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="start-section section" aria-labelledby="what-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="what-heading" class="section-heading">What it is (official pitch, summarized)</h2>
+          <p class="legal-prose">
+            <strong>Road to Vostok</strong> is a <strong>hardcore single-player survival</strong> FPS set on a post-collapse
+            <strong>Finland–Russia</strong> border: loot, plan, gear up, and eventually push east into
+            <strong>Vostok</strong>—described in marketing as a <strong>high-stakes, permadeath-heavy</strong> band where mistakes
+            cost you badly. Pacing leans on <strong>realistic gun handling</strong> and resource discipline, not a fast BR or co-op
+            looter MMO.
+          </p>
+          <p class="legal-prose">
+            The project runs on the open-source <strong>Godot</strong> engine. Developer <strong>Antti</strong> (former army
+            lieutenant, ~12+ years in games) has been full-time since <strong>June 2022</strong>, mostly solo with occasional
+            contract help—see the
+            <a class="text-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">official home page</a>
+            and
+            <a class="text-link" href="https://www.roadtovostok.com/game" target="_blank" rel="noopener noreferrer">/game</a>
+            page for the public bio and feature list.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="start-section section" aria-labelledby="ea-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="ea-heading" class="section-heading">Early Access, price &amp; platforms (verify before you buy)</h2>
+          <p class="legal-prose">
+            Per the official home and <strong>/game</strong> pages at our last manual check: Steam
+            <strong>Early Access</strong> is announced for <strong>April 7, 2026</strong>, at
+            <strong>18:00 EEST / 08:00 PDT</strong>. Launch price <strong>$14.99</strong> including roughly
+            <strong>two weeks</strong> of <strong>25% launch discount</strong>, then <strong>$19.99</strong> until 1.0; regional
+            prices follow Steam’s tiers.
+          </p>
+          <p class="legal-prose">
+            <strong>Windows</strong> is the day-one focus; <strong>native Linux</strong> is planned a few months after launch.
+            <strong>Consoles</strong> (PlayStation / Xbox) are only evaluated after PC hits 1.0 and planned content ships.
+          </p>
+          <div class="notice notice--muted start-note" role="note">
+            <span class="notice__label">Note</span>
+            <div class="notice__body">
+              Dates and prices change with announcements. Re-check the
+              <a class="text-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">official site</a>
+              and
+              <a
+                class="text-link"
+                href="https://store.steampowered.com/app/1963610/Road_to_Vostok/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Steam
+              </a>
+              store page before you purchase.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="start-section section" aria-labelledby="expect-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="expect-heading" class="section-heading">Multiplayer? Mods? Languages?</h2>
+          <ul class="legal-list">
+            <li>
+              <strong>Multiplayer / co-op:</strong> Public messaging positions RTV as a <strong>replayable single-player</strong>
+              sandbox; co-op might be considered only after a <strong>successful, feature-complete solo</strong> version (per
+              official talking points).
+            </li>
+            <li>
+              <strong>Mods:</strong> Many systems are described as mod-friendly; full mod support and tools are slated before
+              <strong>full commercial release</strong>. Discussion lives on the official Discord (linked from the developer site).
+            </li>
+            <li>
+              <strong>Localization:</strong> Don’t expect full multilingual coverage early; more languages are planned before
+              leaving EA and reaching <strong>1.0</strong> (per public site copy).
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -96,7 +178,7 @@ import { RouterLink } from 'vue-router'
                   <td>Closer to commercial skeletons, still subject to rebalance passes</td>
                 </tr>
                 <tr>
-                  <th scope="row">Guides</th>
+                  <th scope="row">Wiki</th>
                   <td>Great for keybind walkthroughs and mechanic primers</td>
                   <td>Requires explicit build stamps; loot/tasks drift patch to patch</td>
                 </tr>
@@ -216,15 +298,56 @@ import { RouterLink } from 'vue-router'
       </div>
     </section>
 
+    <section class="start-section section" aria-labelledby="flow-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="flow-heading" class="section-heading">Suggested reading order (this site)</h2>
+          <ol class="checklist checklist--site-flow">
+            <li>
+              <RouterLink class="text-link" to="/updates">Updates</RouterLink>
+              — curated official and Steam entry points; build the habit of reading first-party posts first.
+            </li>
+            <li>
+              <strong>Continue down this page:</strong> first-session flow, Demo vs EA matrix, PC specs, and timeline context.
+            </li>
+            <li>
+              <RouterLink class="text-link" to="/map">World map</RouterLink>
+              — geography and risk intuition (fan UI on official art, not coordinate-grade routing).
+            </li>
+            <li>
+              <RouterLink class="text-link" to="/wiki">Wiki hub</RouterLink>
+              — weapons, survival, traders, maps pillars, and on-page search structure.
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="start-section section" aria-labelledby="feedback-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="feedback-heading" class="section-heading">Feedback &amp; bugs (official channels)</h2>
+          <p class="legal-prose">
+            Use the site contact form, Discord, or email <strong>antti@roadtovostok.com</strong>; the developer may not reply to
+            every message but does read them. Social: <strong>@roadtovostok</strong> and <strong>#roadtovostok</strong>. For
+            corrections to <em>this</em> fan manual, use
+            <RouterLink class="text-link" to="/contact">Contact</RouterLink>.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section class="start-section section section--tight" aria-labelledby="related-heading">
       <div class="container">
         <div class="wrap wrap--wide">
           <h2 id="related-heading" class="section-heading">Also on this site</h2>
           <p class="section-lead">
-            <RouterLink class="text-link" to="/guides">Guides hub</RouterLink>
-            for gunplay, survival, traders, and the quick finder;
+            <RouterLink class="text-link" to="/wiki">Wiki hub</RouterLink>
+            for gunplay, survival, traders, and the on-page directory;
             <RouterLink class="text-link" to="/map">world map</RouterLink>
             when you’re sketching a route;
+            <RouterLink class="text-link" to="/updates">Updates</RouterLink>
+            for roadmap context and official links;
             <RouterLink class="text-link" to="/">home</RouterLink>
             for zones, FAQs, and what’s in the queue.
           </p>
@@ -294,6 +417,49 @@ import { RouterLink } from 'vue-router'
   font-weight: 600;
 }
 
+.legal-prose {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  max-width: 46rem;
+}
+
+.legal-prose:last-child {
+  margin-bottom: 0;
+}
+
+.legal-prose strong {
+  color: color-mix(in srgb, var(--color-text) 86%, var(--color-text-muted));
+  font-weight: 600;
+}
+
+.legal-list {
+  margin: 0;
+  padding-left: 1.2rem;
+  max-width: 46rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.legal-list li + li {
+  margin-top: 0.55rem;
+}
+
+.legal-list strong {
+  color: color-mix(in srgb, var(--color-text) 86%, var(--color-text-muted));
+}
+
+.start-note {
+  margin-top: 1rem;
+  max-width: 46rem;
+}
+
+.checklist--site-flow .text-link {
+  font-weight: 600;
+}
+
 .section-heading {
   margin: 0 0 0.65rem;
   font-family: 'Barlow Condensed', system-ui, sans-serif;
@@ -332,6 +498,10 @@ import { RouterLink } from 'vue-router'
 
 .checklist strong {
   color: color-mix(in srgb, var(--color-text) 88%, var(--color-text-muted));
+}
+
+.start-section + .start-section {
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
 }
 
 .text-link {
@@ -549,6 +719,13 @@ import { RouterLink } from 'vue-router'
     letter-spacing: 0.045em;
   }
 
+  .page-dek,
+  .checklist,
+  .legal-prose,
+  .legal-list {
+    font-size: 0.9rem;
+  }
+
   .timeline__item {
     grid-template-columns: 4.75rem 1fr;
     gap: 0.85rem;
@@ -562,8 +739,10 @@ import { RouterLink } from 'vue-router'
   }
 
   .page-dek,
-  .checklist {
-    font-size: 0.9rem;
+  .checklist,
+  .legal-prose,
+  .legal-list {
+    font-size: 0.875rem;
   }
 
   .section-heading {

@@ -1,9 +1,17 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { applyRouteSeo } from '../utils/seo.js'
+import { applyRouteSeo, applyBlogPostSeo } from '../utils/seo.js'
+import blogPosts from '../data/blog.js'
+
+function blogPostByAddressBar(addressBar) {
+  return blogPosts.find((p) => p.addressBar === addressBar)
+}
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   scrollBehavior(to, _from, saved) {
+    if (to.path === '/wiki' && to.query.section) {
+      return { top: 0 }
+    }
     if (to.hash) {
       return { el: to.hash, behavior: 'smooth', top: 80 }
     }
@@ -24,15 +32,51 @@ const router = createRouter({
       },
     },
     {
-      path: '/guides',
-      name: 'guides',
+      path: '/wiki',
+      name: 'wiki',
       component: () => import('../views/GuidesView.vue'),
       meta: {
-        title: 'Road to Vostok Guides & Wiki Index | Weapons, Survival, Traders, Maps & Quick Finder',
+        title: 'Road to Vostok Wiki Index | Weapons, Survival, Traders, Maps & Quick Finder',
         description:
-          'Single hub for Road to Vostok: wiki-style quick finder (weapons, armor, items, maps, traders, demo/EA) plus editorial pillars with planned articles—combat, survival, tasks, maps. Links to world map, start guide, and optional Fandom community wiki.',
+          'Wiki-style hub for Road to Vostok: quick finder with official roadtovostok.com/game + Steam News links, weapons/armor/items/maps/traders clusters, editorial pillars (combat, survival, tasks, maps), and community pointers (Fandom, Discord, Reddit, YouTube). Cross-links to /map, /start, /updates.',
         keywords:
-          'road to vostok wiki, road to vostok guide, road to vostok tasks, road to vostok guns, weapons reloading, armor, items, map, traders, fishing, crafting, survival mechanics, demo, early access',
+          'road to vostok wiki, road to vostok steam, roadtovostok.com, Area 05, Border Zone, Vostok, Bandits Guards Military, road to vostok tasks, road to vostok guns, weapons reloading, traders, map, demo, early access, discord, fandom',
+      },
+    },
+    {
+      path: '/guides',
+      redirect: (to) => {
+        const legacy = {
+          '#weapons': 'pillar-weapons',
+          '#survival': 'pillar-survival',
+          '#tasks': 'pillar-tasks',
+          '#maps': 'pillar-maps',
+          '#wiki-index': 'quick-finder',
+          '#guides-community-wiki': 'community-wiki',
+        }
+        let section = legacy[to.hash || '']
+        if (!section && to.hash?.startsWith('#wiki-')) {
+          section = `finder-${to.hash.slice(6)}`
+        }
+        const q = { ...to.query }
+        if (section) q.section = section
+        return { path: '/wiki', query: Object.keys(q).length ? q : undefined }
+      },
+    },
+    {
+      path: '/primer',
+      redirect: '/start',
+    },
+    {
+      path: '/updates',
+      name: 'updates',
+      component: () => import('../views/UpdatesView.vue'),
+      meta: {
+        title: 'Road to Vostok Updates & Official News | Steam, Site, Roadmap',
+        description:
+          'Where to read Road to Vostok patch notes and announcements: official site, Steam, roadmap, FAQ, YouTube devlogs—plus a homepage snapshot to verify against roadtovostok.com.',
+        keywords:
+          'road to vostok updates, patch notes, steam news, roadmap, early access date, roadtovostok.com',
       },
     },
     {
@@ -40,12 +84,36 @@ const router = createRouter({
       name: 'start',
       component: () => import('../views/StartView.vue'),
       meta: {
-        title: 'Road to Vostok Demo & Early Access | Steam, PC Specs & Start Guide',
+        title: 'Road to Vostok Start | Demo, Early Access, Steam & PC Specs',
         description:
-          'Start here for Road to Vostok: Steam demo and Early Access expectations, solo vs multiplayer clarity, PC minimum and recommended specs, save hygiene, and first-session checklist.',
+          'New-player Start hub for Road to Vostok: what the game is, EA date and pricing, platforms, solo vs multiplayer, mods and localization, first-session checklist, Demo vs EA expectations, and Steam-style PC requirements. Unofficial fan site.',
         keywords:
-          'road to vostok steam, road to vostok demo, road to vostok release date, early access, download, road to vostok online, save backup, system requirements, PC',
+          'road to vostok steam, road to vostok demo, road to vostok release date, early access, download, road to vostok online, save backup, system requirements, PC, new player guide, roadtovostok, start guide',
       },
+    },
+    {
+      path: '/blog',
+      name: 'blog',
+      component: () => import('../views/BlogListView.vue'),
+      meta: {
+        title: 'Blog | Road to Vostok Field Manual — Player Guides & Commentary',
+        description:
+          'Editorial posts for Road to Vostok players: beginner orientation, zone progression, systems explainers, and links to our wiki, Start hub, and official sources.',
+        keywords:
+          'road to vostok blog, road to vostok beginner guide, road to vostok tips, field manual, Area 05, Vostok, survival fps',
+      },
+    },
+    {
+      path: '/blog/:addressBar',
+      name: 'blog-detail',
+      component: () => import('../views/BlogDetailView.vue'),
+      props: true,
+      beforeEnter: (to) => {
+        const post = blogPostByAddressBar(to.params.addressBar)
+        if (!post) return { name: 'not-found', replace: true }
+        return true
+      },
+      meta: {},
     },
     {
       path: '/map',
@@ -58,10 +126,6 @@ const router = createRouter({
         keywords:
           'road to vostok map, Area 05, Border Zone, Vostok, minefield, highway, village, world map, demo map, crossing',
       },
-    },
-    {
-      path: '/wiki',
-      redirect: { path: '/guides', hash: '#wiki-index' },
     },
     {
       path: '/about',
@@ -114,6 +178,13 @@ const router = createRouter({
 })
 
 router.afterEach((to) => {
+  if (to.name === 'blog-detail') {
+    const post = blogPostByAddressBar(to.params.addressBar)
+    if (post) {
+      applyBlogPostSeo(post, to.path)
+      return
+    }
+  }
   applyRouteSeo(to)
 })
 

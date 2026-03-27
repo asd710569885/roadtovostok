@@ -72,7 +72,7 @@ function removeMetaByName(name) {
 }
 
 /** Absolute URL for a path served from site root (e.g. public/). Respects Vite `base`. */
-function absoluteUrlFromRootPath(rootPath) {
+export function absoluteUrlFromRootPath(rootPath) {
   const origin = canonicalOrigin()
   const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
   const path = rootPath.startsWith('/') ? rootPath : `/${rootPath}`
@@ -90,14 +90,19 @@ function defaultOgImageUrl() {
   return absoluteUrlFromRootPath(p)
 }
 
-function canonicalUrlForRoute(to) {
+/** @param {string} path e.g. /blog/slug */
+export function canonicalUrlForPath(path) {
   const origin = canonicalOrigin()
   const base = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
-  const path = to.path.startsWith('/') ? to.path : `/${to.path}`
+  const p = path.startsWith('/') ? path : `/${path}`
   if (!base) {
-    return `${origin}${path}` || `${origin}/`
+    return `${origin}${p}` || `${origin}/`
   }
-  return `${origin}${base}${path}`
+  return `${origin}${base}${p}`
+}
+
+function canonicalUrlForRoute(to) {
+  return canonicalUrlForPath(to.path)
 }
 
 /**
@@ -157,7 +162,7 @@ export function applyRouteSeo(to) {
     const ogImageAlt =
       typeof meta.ogImageAlt === 'string' && meta.ogImageAlt.trim()
         ? meta.ogImageAlt.trim()
-        : `${SITE_NAME} logo`
+        : `${SITE_NAME} · preview`
     setOrCreateMetaByProperty('og:image', ogImage)
     setOrCreateMetaByProperty('og:image:alt', ogImageAlt)
 
@@ -169,4 +174,38 @@ export function applyRouteSeo(to) {
       setOrCreateMetaByName('twitter:image:alt', ogImageAlt)
     }
   }
+}
+
+/**
+ * Apply title/description/keywords/OG for a blog post (detail routes).
+ * Call from BlogDetailView when the active post changes; router afterEach will overwrite on the next navigation.
+ *
+ * @param {{ seo?: { title: string; description: string; keywords: string }; title: string; imageUrl?: string; imageAlt?: string; publishDate?: string } | null | undefined} post
+ * @param {string} path Route path (e.g. /blog/slug)
+ */
+export function applyBlogPostSeo(post, path) {
+  if (!post?.seo) return
+
+  const p = path.startsWith('/') ? path : `/${path}`
+  const meta = {
+    title: post.seo.title.trim(),
+    description: post.seo.description,
+    keywords: post.seo.keywords,
+    ogTitle: post.seo.title.trim(),
+    ogDescription: post.seo.description,
+    ogType: 'article',
+    robots: 'index, follow',
+  }
+
+  if (post.imageUrl) {
+    meta.ogImage = absoluteUrlFromRootPath(post.imageUrl)
+    meta.ogImageAlt = (post.imageAlt && post.imageAlt.trim()) || post.title
+    meta.twitterCard = 'summary_large_image'
+  }
+
+  applyRouteSeo({
+    path: p,
+    matched: [{ meta }],
+    meta: {},
+  })
 }

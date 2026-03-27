@@ -177,7 +177,7 @@ const mailto = `mailto:${email}`
             ·
             <RouterLink class="text-link" to="/contact">Contact</RouterLink>
             ·
-            <RouterLink class="text-link" to="/guides">Guides hub</RouterLink>
+            <RouterLink class="text-link" to="/wiki">Wiki hub</RouterLink>
           </p>
         </div>
       </div>

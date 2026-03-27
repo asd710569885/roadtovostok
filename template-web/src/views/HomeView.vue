@@ -92,21 +92,21 @@ const outlineRows = [
     article: 'Shotgun loading & ammo identification',
     status: 'In progress',
     focus: 'How-to',
-    to: { path: '/guides', hash: '#weapons' },
+    to: { path: '/wiki', query: { section: 'pillar-weapons' } },
   },
   {
     topic: 'Survival',
     article: 'Injury chain: bleeding → fracture → triage order',
     status: 'Queued',
     focus: 'Deep dive',
-    to: { path: '/guides', hash: '#survival' },
+    to: { path: '/wiki', query: { section: 'pillar-survival' } },
   },
   {
     topic: 'Tasks',
     article: 'Trader tiers & payout matrix (EA tracked)',
     status: 'Queued',
     focus: 'Reference',
-    to: { path: '/guides', hash: '#tasks' },
+    to: { path: '/wiki', query: { section: 'pillar-tasks' } },
   },
   {
     topic: 'Maps',
@@ -120,7 +120,7 @@ const outlineRows = [
     article: 'Border crossings: mines, rivers, OPFOR sightlines',
     status: 'In progress',
     focus: 'Traversal',
-    to: { path: '/guides', hash: '#maps' },
+    to: { path: '/wiki', query: { section: 'pillar-maps' } },
   },
   {
     topic: 'Versions',
@@ -143,12 +143,12 @@ const faqItems = [
     ],
   },
   {
-    q: 'Why split Demo vs Early Access in guides?',
+    q: 'Why split Demo vs Early Access on the wiki?',
     segments: [
       { text: 'Because one loot pass or task rebalance can brick a write-up overnight. Labels save you from “the guide lied” when your build is ahead or behind the author’s. The split is spelled out on the ' },
       { text: 'Start page', to: '/start' },
       { text: ' and in each ' },
-      { text: 'guides pillar', to: '/guides' },
+      { text: 'wiki pillar', to: '/wiki' },
       { text: '.' },
     ],
   },
@@ -166,7 +166,7 @@ const faqItems = [
     q: 'How often do you update?',
     segments: [
       { text: 'After fat patches we hit the ' },
-      { text: 'guides hub', to: '/guides' },
+      { text: 'wiki hub', to: '/wiki' },
       { text: ', ' },
       { text: 'map', to: '/map' },
       { text: ', and ' },
@@ -218,7 +218,7 @@ const faqItems = [
               </p>
               <p class="hero-lead hero-lead--secondary">
                 Deep dives live in the
-                <RouterLink class="hero-inline" to="/guides">guides hub</RouterLink>
+                <RouterLink class="hero-inline" to="/wiki">wiki hub</RouterLink>
                 (quick finder + pillars), the
                 <RouterLink class="hero-inline" to="/map">interactive map</RouterLink>
                 for spatial context, and
@@ -226,7 +226,7 @@ const faqItems = [
                 for demo vs EA and PC specs. Same layout everywhere so you’re not hunting for the actual article.
               </p>
               <div class="hero-actions">
-                <RouterLink to="/guides" class="hero-btn hero-btn--primary">Open guides hub</RouterLink>
+                <RouterLink to="/wiki" class="hero-btn hero-btn--primary">Open wiki hub</RouterLink>
                 <RouterLink to="/map" class="hero-btn hero-btn--ghost">World map</RouterLink>
                 <RouterLink to="/start" class="hero-btn hero-btn--ghost">Demo / Early Access</RouterLink>
               </div>
@@ -287,7 +287,7 @@ const faqItems = [
               <span class="notice__label">Structure</span>
               <div class="notice__body">
                 Big topics get their own routes over time; the home page and
-                <RouterLink class="notice-inline" to="/guides">guides hub</RouterLink>
+                <RouterLink class="notice-inline" to="/wiki">wiki hub</RouterLink>
                 stay the front door so weapons, survival, tasks, and maps never live in a dead-end corner.
               </div>
             </div>
@@ -358,7 +358,7 @@ const faqItems = [
               farm.” Cross-check labels on the
               <RouterLink class="section-dek__link" to="/map">world map</RouterLink>
               and the
-              <RouterLink class="section-dek__link" to="/guides#maps">maps pillar</RouterLink>
+              <RouterLink class="section-dek__link" :to="{ path: '/wiki', query: { section: 'pillar-maps' } }">maps pillar</RouterLink>
               before you commit meds to a crossing.
             </p>
           </div>
@@ -404,14 +404,14 @@ const faqItems = [
               <p class="map-spotlight__text">
                 Explore the same <strong>official world-map artwork</strong> used on the developer site, with clickable pins for
                 Area 05, the Border Zone, Vostok, Highway, Minefield, and coastal labels. It pairs with the
-                <RouterLink to="/guides#maps">maps &amp; crossings</RouterLink> pillar for written guides once each route is
+                <RouterLink :to="{ path: '/wiki', query: { section: 'pillar-maps' } }">maps &amp; crossings</RouterLink> pillar for written articles once each route is
                 verified in your build.
               </p>
               <div class="map-spotlight__actions">
                 <RouterLink to="/map" class="map-spotlight__btn map-spotlight__btn--primary">
                   Open the Road to Vostok world map
                 </RouterLink>
-                <RouterLink to="/guides#maps" class="map-spotlight__btn map-spotlight__btn--ghost">
+                <RouterLink :to="{ path: '/wiki', query: { section: 'pillar-maps' } }" class="map-spotlight__btn map-spotlight__btn--ghost">
                   Maps pillar index
                 </RouterLink>
               </div>
@@ -443,12 +443,12 @@ const faqItems = [
             <p class="section-dek">
               Four columns cover how most of us play: guns, staying alive, economy, and not stepping on mines. Each card jumps
               straight into the matching section of the
-              <RouterLink class="section-dek__link" to="/guides">guides hub</RouterLink>.
+              <RouterLink class="section-dek__link" to="/wiki">wiki hub</RouterLink>.
             </p>
           </div>
           <ul class="topic-grid">
             <li v-for="item in topics" :key="item.slug" class="topic-card">
-              <RouterLink :to="{ path: '/guides', hash: `#${item.slug}` }" class="topic-card__link">
+              <RouterLink :to="{ path: '/wiki', query: { section: `pillar-${item.slug}` } }" class="topic-card__link">
                 <div class="topic-card__top">
                   <span class="topic-card__tag">{{ item.tag }}</span>
                   <svg class="topic-card__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -466,7 +466,7 @@ const faqItems = [
                 <ul class="topic-card__bullets">
                   <li v-for="(b, j) in item.bullets" :key="j">{{ b }}</li>
                 </ul>
-                <span class="topic-card__cta">Open in guides hub</span>
+                <span class="topic-card__cta">Open in wiki hub</span>
               </RouterLink>
             </li>
           </ul>
@@ -481,7 +481,7 @@ const faqItems = [
             <h2 id="outline-heading" class="section-title">Coverage table</h2>
             <p class="section-dek">
               What’s live, what’s being written, and where it will live. Click a row when the link is there—everything eventually
-              resolves to the guides hub or a dedicated route like the map.
+              resolves to the wiki hub or a dedicated route like the map.
             </p>
           </div>
           <div class="outline-table-wrap">
@@ -531,7 +531,7 @@ const faqItems = [
         <div class="wrap wrap--wide">
           <h2 id="faq-heading" class="section-title">FAQ</h2>
           <p class="section-dek section-dek--tight">
-            Straight answers—open one if you’re wondering whether we’re official, how often we touch the guides, or why Demo vs EA
+            Straight answers—open one if you’re wondering whether we’re official, how often we touch the wiki, or why Demo vs EA
             matters.
           </p>
           <div class="faq-list">
@@ -570,15 +570,15 @@ const faqItems = [
               <h2 id="cta-heading" class="cta-title">What to read next</h2>
               <p class="cta-text">
                 Boot order that works: <RouterLink class="cta-inline" to="/start">Start</RouterLink> for build and specs, then
-                <RouterLink class="cta-inline" to="/guides">guides</RouterLink>
+                <RouterLink class="cta-inline" to="/wiki">wiki</RouterLink>
                 for mechanics, then
                 <RouterLink class="cta-inline" to="/map">map</RouterLink>
                 when you’re planning a push. That trio covers ninety percent of “where do I click next?”
               </p>
             </div>
             <div class="cta-card__actions">
-              <RouterLink to="/guides" class="hero-btn hero-btn--primary">Guides &amp; wiki hub</RouterLink>
-              <RouterLink :to="{ path: '/guides', hash: '#wiki-index' }" class="hero-btn hero-btn--ghost">Quick finder</RouterLink>
+              <RouterLink to="/wiki" class="hero-btn hero-btn--primary">Wiki hub</RouterLink>
+              <RouterLink :to="{ path: '/wiki', query: { section: 'quick-finder' } }" class="hero-btn hero-btn--ghost">Quick finder</RouterLink>
               <RouterLink to="/start" class="hero-btn hero-btn--ghost">Demo / EA &amp; specs</RouterLink>
               <RouterLink to="/map" class="hero-btn hero-btn--ghost">World map</RouterLink>
             </div>

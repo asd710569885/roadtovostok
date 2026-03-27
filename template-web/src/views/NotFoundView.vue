@@ -14,7 +14,7 @@ import { RouterLink } from 'vue-router'
           </p>
           <div class="not-found-actions">
             <RouterLink to="/" class="not-found-btn not-found-btn--primary">Back to home</RouterLink>
-            <RouterLink to="/guides" class="not-found-btn not-found-btn--ghost">Guides hub</RouterLink>
+            <RouterLink to="/wiki" class="not-found-btn not-found-btn--ghost">Wiki hub</RouterLink>
             <RouterLink to="/map" class="not-found-btn not-found-btn--ghost">World map</RouterLink>
             <RouterLink to="/start" class="not-found-btn not-found-btn--ghost">Start &amp; specs</RouterLink>
           </div>

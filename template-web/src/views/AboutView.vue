@@ -35,7 +35,7 @@ import { RouterLink } from 'vue-router'
             The manual is structured around the problems players actually search for: realistic <strong>weapons and reloading</strong>,
             <strong>survival and medical</strong>, <strong>traders and tasks</strong>, <strong>map crossings and mine risk</strong>, and
             the difference between the <strong>Steam demo</strong> and <strong>Early Access</strong> builds. The
-            <RouterLink class="text-link" to="/guides">guides &amp; wiki index</RouterLink>
+            <RouterLink class="text-link" to="/wiki">wiki index</RouterLink>
             combines a keyword “quick finder” with deeper pillar notes; the
             <RouterLink class="text-link" to="/map">interactive world map</RouterLink>
             overlays pins on the developer’s published world artwork (with accuracy caveats on-page); the
@@ -75,14 +75,14 @@ import { RouterLink } from 'vue-router'
             </li>
             <li>
               <strong>Community wikis</strong> (for example Fandom) can be useful but may lag behind your build; we link one from the
-              <RouterLink class="text-link" :to="{ path: '/guides', hash: '#guides-community-wiki' }">guides hub</RouterLink>
+              <RouterLink class="text-link" :to="{ path: '/wiki', query: { section: 'community-wiki' } }">wiki hub</RouterLink>
               for exploration, not as a copy source.
             </li>
             <li>
               <strong>If your installed build disagrees</strong> with a guide, trust the client first, then compare with the
               <RouterLink class="text-link" to="/start">Start</RouterLink>
               page and the relevant pillar in the
-              <RouterLink class="text-link" to="/guides">guides hub</RouterLink>.
+              <RouterLink class="text-link" to="/wiki">wiki hub</RouterLink>.
             </li>
           </ul>
         </div>
@@ -122,7 +122,7 @@ import { RouterLink } from 'vue-router'
             Back to gameplay:
             <RouterLink class="text-link" to="/">Home overview</RouterLink>
             ·
-            <RouterLink class="text-link" to="/guides">Guides hub</RouterLink>
+            <RouterLink class="text-link" to="/wiki">Wiki hub</RouterLink>
             ·
             <RouterLink class="text-link" to="/map">World map</RouterLink>
             ·

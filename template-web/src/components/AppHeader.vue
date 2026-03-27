@@ -7,9 +7,11 @@ const menuOpen = ref(false)
 
 const nav = [
   { to: '/', label: 'Home' },
-  { to: '/guides', label: 'Guides' },
+  { to: '/start', label: 'Start', title: 'Onboarding · Demo / EA / PC specs' },
+  { to: '/wiki', label: 'Wiki' },
   { to: '/map', label: 'Map' },
-  { to: '/start', label: 'Start' },
+  { to: '/updates', label: 'Updates' },
+  { to: '/blog', label: 'Blog' },
 ]
 
 const externals = [
@@ -125,6 +127,7 @@ onUnmounted(() => {
               :to="item.to"
               class="app-header__link"
               :class="{ 'app-header__link--active': isActive(item.to) }"
+              :title="item.title"
               @click="closeMenu"
             >
               {{ item.label }}
