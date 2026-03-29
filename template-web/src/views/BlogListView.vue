@@ -35,7 +35,7 @@ function formatDate(iso) {
             <span class="blog-crumb__sep" aria-hidden="true">/</span>
             <span class="blog-crumb__here">Blog</span>
           </nav>
-          <h1 id="blog-heading" class="page-title">Blog</h1>
+          <h1 id="blog-heading" class="page-title">Road to Vostok Blog</h1>
           <p class="page-dek">
             Longer reads and orientation pieces for players—always cross-check dates and mechanics on the official site and Steam.
             For structured lookups, use the

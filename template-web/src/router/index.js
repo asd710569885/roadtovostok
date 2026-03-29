@@ -36,7 +36,7 @@ const router = createRouter({
       name: 'wiki',
       component: () => import('../views/GuidesView.vue'),
       meta: {
-        title: 'Road to Vostok Wiki Index | Weapons, Survival, Traders, Maps & Quick Finder',
+        title: 'Road to Vostok Wiki | Weapons, Survival, Traders, Maps & Quick Finder',
         description:
           'Wiki-style hub for Road to Vostok: quick finder with official roadtovostok.com/game + Steam News links, weapons/armor/items/maps/traders clusters, editorial pillars (combat, survival, tasks, maps), and community pointers (Fandom, Discord, Reddit, YouTube). Cross-links to /map, /start, /updates.',
         keywords:
@@ -120,7 +120,7 @@ const router = createRouter({
       name: 'map',
       component: () => import('../views/MapView.vue'),
       meta: {
-        title: 'Road to Vostok World Map | Area 05, Border Zone & Vostok',
+        title: 'Road to Vostok Map | Area 05, Border Zone & Vostok',
         description:
           'Interactive fan map of Road to Vostok: Area 05, Border Zone, Vostok, Highway, Minefield, and coastal POIs with guide notes. Uses official world artwork for reference.',
         keywords:

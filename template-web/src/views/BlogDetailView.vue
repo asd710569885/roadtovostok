@@ -14,6 +14,16 @@ const props = defineProps({
 const route = useRoute()
 const post = computed(() => blogPosts.find((p) => p.addressBar === props.addressBar))
 
+/** H1 for SEO: prefix unless the title already starts with "Road to Vostok". */
+function articleH1Title(p) {
+  if (!p?.title) return ''
+  const t = p.title.trim()
+  if (/^road\s+to\s+vostok\b/i.test(t)) return p.title
+  return `Road to Vostok — ${p.title}`
+}
+
+const articleH1 = computed(() => articleH1Title(post.value))
+
 function publicAssetUrl(path) {
   const base = (import.meta.env.BASE_URL || '/').replace(/\/?$/, '/')
   const p = path.replace(/^\//, '')
@@ -48,7 +58,7 @@ function syncJsonLd() {
   const data = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
-    headline: p.title,
+    headline: articleH1Title(p),
     datePublished: p.publishDate,
     dateModified: p.publishDate,
     author: {
@@ -89,7 +99,7 @@ onUnmounted(removeJsonLd)
 <template>
   <div v-if="post" class="page-blog-detail">
     <article itemscope itemtype="https://schema.org/BlogPosting">
-      <meta itemprop="headline" :content="post.title">
+      <meta itemprop="headline" :content="articleH1">
       <meta itemprop="datePublished" :content="post.publishDate">
       <meta itemprop="description" :content="post.seo.description">
 
@@ -104,7 +114,7 @@ onUnmounted(removeJsonLd)
               <span class="blog-crumb__sep" aria-hidden="true">/</span>
               <span class="blog-crumb__here">{{ post.title }}</span>
             </nav>
-            <h1 :id="'article-heading-' + post.id" class="page-title" itemprop="name">{{ post.title }}</h1>
+            <h1 :id="'article-heading-' + post.id" class="page-title" itemprop="name">{{ articleH1 }}</h1>
             <p class="article-meta">
               <time itemprop="datePublished" :datetime="post.publishDate">{{ formatDate(post.publishDate) }}</time>
               <span v-if="post.readingTime" class="article-meta__sep" aria-hidden="true">·</span>

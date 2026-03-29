@@ -13,7 +13,7 @@ import { RouterLink } from 'vue-router'
             <span class="legal-crumb__sep" aria-hidden="true">/</span>
             <span class="legal-crumb__here">About</span>
           </nav>
-          <h1 id="about-heading" class="page-title">About this manual</h1>
+          <h1 id="about-heading" class="page-title">Road to Vostok — About this manual</h1>
           <p class="page-dek">
             <strong>Road to Vostok Field Manual</strong> (roadtovostok.net) is an independent player-run reference for
             <strong>Road to Vostok</strong>—the hardcore single-player survival FPS set on a post-collapse Finland–Russia border. We

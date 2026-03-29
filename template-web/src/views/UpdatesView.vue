@@ -32,7 +32,7 @@ const officialPages = [
       <div class="container">
         <div class="wrap wrap--wide">
           <p class="page-kicker">Official sources · Changelog hub</p>
-          <h1 id="updates-heading" class="page-title">Updates &amp; official news</h1>
+          <h1 id="updates-heading" class="page-title">Road to Vostok Updates &amp; Official News</h1>
           <p class="page-dek">
             This page does <strong>not</strong> scrape the developer site in real time (browser CORS and maintenance). Instead it lists
             <strong>where to read first-hand news</strong> and keeps a short <strong>verbatim-style snapshot</strong> from the public

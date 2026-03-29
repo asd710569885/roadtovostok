@@ -1,6 +1,12 @@
 /**
- * World map pins & plain-text blurbs. Three official layers: Area 05, Border Zone, Vostok
- * (see https://www.roadtovostok.com/game). `pin` is fan % on the promo JPG, not GIS.
+ * World map pins on the promo JPG (`pin` x/y are fan %, not in-game coordinates).
+ * Main blurbs follow the official three-band model from Road to Vostok Ltd.:
+ *   https://www.roadtovostok.com/game
+ *   https://store.steampowered.com/app/1963610/Road_to_Vostok/
+ * Village / School / Highway / Sea / Island / North are labels on that artwork; copy ties them
+ * to real game systems where it makes sense, without inventing per-POI spawn data.
+ *
+ * Optional `intel`: { npcs?, supplies?, tasks? } — each value is a string[]. Empty arrays omit UI rows.
  */
 export default [
   {
@@ -9,7 +15,7 @@ export default [
     type: 'area05',
     pin: { x: 14, y: 12 },
     content:
-      'Regional label on the developer’s world-map artwork. It situates the Finnish landmass above Area 05—not an in-game coordinate. Use your HUD build string and patch notes for anything that affects loot or AI.',
+      'This text sits on the published world-map image and reads as “north” on the Finnish landmass. The game’s described starting ground is Area 05 in southeastern Finland—see the official game page—not this compass-style label. Pin position here is only a fan placement on the JPG.',
   },
   {
     id: 'area-05',
@@ -17,7 +23,21 @@ export default [
     type: 'area05',
     pin: { x: 44, y: 44 },
     content:
-      'Evacuated southeastern Finland where runs begin: shelters, traders, tasks, starter loot, and hostile Bandits (official game page). Death here is described as less punishing than Vostok—you mainly lose what you carry; confirm in your build. Long-term plans have cited 10 maps and 10 shelters in this band—verify on Steam when content drops.',
+      'Area 05 is an evacuated zone in southeastern Finland where your road begins. The developer describes shelters, traders, tasks, and starting loot for early survival, interrupted by hostile Bandits—an anarchist faction exploiting weak authority. If you die here you lose the equipment and loot you are carrying (not full permadeath like Vostok). When you are ready, progression continues east toward the Border Zone.',
+    intel: {
+      npcs: [
+        'Bandits — hostile anarchist group in official Area 05 fiction.',
+        'Traders — in-game characters; Steam describes specialization (tools, medical, weapons, furniture) and barter-only trade.',
+      ],
+      supplies: [
+        'Physics-based loot and containers; Steam states loot does not spawn in the same places each run.',
+        'Consumables, clothing, meds, tools, electronics, weapons and attachments are cited as example item types.',
+      ],
+      tasks: [
+        'Tasks and trader services (e.g. medical care, weapon maintenance) are described on Steam.',
+        'Task progress ties to trader levels; tasks can yield rare items, shelter keys, and lore clues (Steam).',
+      ],
+    },
   },
   {
     id: 'village',
@@ -25,7 +45,18 @@ export default [
     type: 'area05',
     pin: { x: 22, y: 38 },
     content:
-      'Named on the promotional map image. Community chatter may tie it to trading or routing; this site does not publish loot tables or quest steps. Validate spawns, traders, and stash rules only in your installed client.',
+      'Named on the promotional map. It reads as a settlement-scale landmark on the art, not a guarantee of one fixed layout in every build. Area 05 as a whole is where shelters, traders, tasks, and early survival loot are officially placed; verify any village-sized location only in your installed game.',
+    intel: {
+      npcs: [
+        'Traders use bartering (no money); item values reflect post-apocalyptic usefulness (Steam).',
+      ],
+      supplies: [
+        'Loot is tied to logical containers and physical placement—not a static list per map label.',
+      ],
+      tasks: [
+        'Tasks flow through traders; some shelters unlock via keys earned through trader tasks (Steam).',
+      ],
+    },
   },
   {
     id: 'school',
@@ -33,7 +64,15 @@ export default [
     type: 'area05',
     pin: { x: 26, y: 48 },
     content:
-      'Cartography label on the public artwork—reading aid only, not a verified waypoint. If another guide promises a static spawn, demand their build string before you risk a run.',
+      'A building-style label on the poster map for orientation. The game advertises hundreds of loot items per map and interactable storage wherever it logically fits—nothing on this fan site pins exact rooms or tables to this artwork text.',
+    intel: {
+      npcs: [],
+      supplies: [
+        'Steam: “anything that logically looks like storage for loot is an interactable loot container.”',
+        'Scavenge, trade, and craft across many item types; placement is physics-based in shelters.',
+      ],
+      tasks: [],
+    },
   },
   {
     id: 'highway',
@@ -41,7 +80,18 @@ export default [
     type: 'area05',
     pin: { x: 38, y: 52 },
     content:
-      'Major route printed on the poster map. Useful for orientation next to long-form crossing notes on the wiki hub. Patrol timing and ambush density are versioned—expect Demo vs Early Access drift.',
+      'Major road printed on the world image. Official features include map-to-map travel from Area 05 toward the Border Zone and beyond, day/night, weather, and dynamic events—use those systems in-game rather than this overlay for routing.',
+    intel: {
+      npcs: [
+        'Faction pressure and patrol logic are part of the survival FPS pitch; specifics are build-dependent.',
+      ],
+      supplies: [
+        'Road-adjacent loot still follows procedural / physical loot rules, not this static graphic.',
+      ],
+      tasks: [
+        'Travel east is framed as gathering loot and gear before facing the Border Zone (roadtovostok.com/game).',
+      ],
+    },
   },
   {
     id: 'sea',
@@ -49,7 +99,18 @@ export default [
     type: 'area05',
     pin: { x: 48, y: 82 },
     content:
-      'Coastal water on the artwork. Official copy references boats and water crossings as part of border challenges elsewhere; fishing and shoreline gameplay depend on your patch. Re-read notes whenever maritime systems change.',
+      'Open water on the artwork. The Border Zone is officially described as sometimes requiring waterways and boats to cross. A future roadmap build (public site) also outlines a fuller sea system with patrol boats and scuba—treat coastlines on the poster as thematic, and boats as a documented crossing tool where the game implements them.',
+    intel: {
+      npcs: [
+        'Border Zone: foreign Guards are armed, corrupt, and may call air support (roadtovostok.com/game).',
+      ],
+      supplies: [
+        'Boats are called out for certain border crossings in official copy.',
+      ],
+      tasks: [
+        'Crossing the border is a core progression beat; each Border map is said to have its own crossing challenge.',
+      ],
+    },
   },
   {
     id: 'island',
@@ -57,7 +118,14 @@ export default [
     type: 'area05',
     pin: { x: 55, y: 88 },
     content:
-      'Littoral label for orientation on the promo file—not a promise of interactable landings in every demo slice. Check the live game after major updates.',
+      'Island label on the coast of the promo map. The Steam page uses a remote island fisherman as a sandbox example—you are not forced into combat or the permadeath zone. Whether this exact ink corresponds to a playable landmass in your build is something only the client can confirm.',
+    intel: {
+      npcs: [],
+      supplies: [
+        'Fishing-forward playstyles are mentioned as a valid sandbox path on Steam.',
+      ],
+      tasks: [],
+    },
   },
   {
     id: 'outpost',
@@ -65,7 +133,18 @@ export default [
     type: 'borderZone',
     pin: { x: 58, y: 46 },
     content:
-      'Sits on the approach to the Finland–Russia border band where crossings mix mines, obstacles, or boat routes (official overview). Expect the Guards faction and occasional air support in marketing copy—actual pacing is build-specific.',
+      'Sits on the approach to the Finland–Russia border band in the artwork. Officially, each Border Zone map includes a crossing with different hazards—mines, physical obstacles, or boat routes—and the Guards faction blocking passage, sometimes with air support.',
+    intel: {
+      npcs: [
+        'Guards — foreign border guards, armed and corrupt, per roadtovostok.com/game.',
+      ],
+      supplies: [
+        'Prepare meds, repair gear, and boat resources when the crossing demands it (official crossing descriptions).',
+      ],
+      tasks: [
+        'Crossing the border is the gate between Finland-side bands and Vostok.',
+      ],
+    },
   },
   {
     id: 'border-zone',
@@ -73,7 +152,19 @@ export default [
     type: 'borderZone',
     pin: { x: 68, y: 44 },
     content:
-      'Guarded frontier between Finland and Russia. Each border map is pitched with different crossing problems—mine belts, physical blocks, or boat lines—before you burn meds and time. Guards are armed, corrupt in tone, and can call air assets in public materials. FAQ-era text referenced ten crossing-style maps long-term; confirm current numbers on the live site.',
+      'The guarded border between Finland and Russia. Official text stresses varied crossings per map: minefields, blocked routes, or water segments needing boats, layered under corrupt Guards who may call air assets. Death in the Border Zone still only strips what you carry—unlike Vostok’s permadeath maps.',
+    intel: {
+      npcs: [
+        'Guards are the primary border antagonists in marketing copy.',
+        'Air support is explicitly mentioned as something they can rely on.',
+      ],
+      supplies: [
+        'High consumption of meds and repair supplies is implied when crossings go wrong.',
+      ],
+      tasks: [
+        'Successful runs are framed as prepping enough loot and equipment before pushing east (official game page).',
+      ],
+    },
   },
   {
     id: 'minefield',
@@ -81,7 +172,18 @@ export default [
     type: 'borderZone',
     pin: { x: 74, y: 40 },
     content:
-      'Hazard label on the world image in the border belt. Mine UX and boundaries can change patch to patch. Do not use this fan overlay as a safe routing tool—observe in-game and follow guides that cite a build string.',
+      'Hazard wording on the world image aligned with official Border Zone examples that include minefields at crossing points. Treat any fan-drawn pin as non-authoritative: mine placement and UX can change patch to patch.',
+    intel: {
+      npcs: [
+        'Guards remain the human obstacle class at the border in official descriptions.',
+      ],
+      supplies: [
+        'Steam highlights consumables, medical gear, and tools among hundreds of lootable items—plan for recovery and traversal.',
+      ],
+      tasks: [
+        'Crossing challenges differ per Border map; mines are one cited hazard type.',
+      ],
+    },
   },
   {
     id: 'vostok',
@@ -89,6 +191,18 @@ export default [
     type: 'vostok',
     pin: { x: 88, y: 46 },
     content:
-      'Russian interior beyond the border: highest loot stakes in official messaging. Vostok maps are described as permadeath—losses can exceed “drop your backpack” rules from Area 05 or the Border Zone (verify per build). Military faction fields heavy weapons and vehicles. Roadmap/FAQ language once cited ten Vostok maps as a target—treat counts as directional. Re-read Steam “About this game” after every major patch.',
+      'Vostok lies in Russia beyond the border: officially billed as the highest-risk, highest-reward band with the most valuable loot. Every Vostok map is a permadeath map—dying there costs everything, whereas Area 05 and Border Zone deaths only cost carried gear and loot. The Military faction controls Vostok with heavy weapons and armored vehicles, and is described as the most dangerous faction, focused on pushing you back.',
+    intel: {
+      npcs: [
+        'Military — heavy armament and vehicles; top threat tier in official copy.',
+      ],
+      supplies: [
+        'Best loot stakes in the game per developer description; inventory Tetris and barter economy still apply elsewhere.',
+      ],
+      tasks: [
+        'Steam states you are never forced into the permadeath zone—sandbox choice.',
+        'Shelters remain save points; multi-shelter use matters when pushing east (Steam “Shelters & Customization”).',
+      ],
+    },
   },
 ]

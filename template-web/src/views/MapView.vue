@@ -3,6 +3,26 @@ import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 import mapLocations from '../data/maps.js'
 
+const INTEL_KEYS = ['npcs', 'supplies', 'tasks']
+const intelBlockMeta = {
+  npcs: { title: 'Factions & people' },
+  supplies: { title: 'Loot & trading' },
+  tasks: { title: 'Tasks & shelters' },
+}
+
+function intelBlocksFor(m) {
+  if (!m?.intel || typeof m.intel !== 'object') return []
+  const out = []
+  for (const key of INTEL_KEYS) {
+    const lines = m.intel[key]
+    if (!Array.isArray(lines) || lines.length === 0) continue
+    const meta = intelBlockMeta[key]
+    if (!meta) continue
+    out.push({ key, title: meta.title, lines })
+  }
+  return out
+}
+
 const mapSrc = `${import.meta.env.BASE_URL}images/road-to-vostok-map.jpg`
 
 /** Official three-layer model: https://www.roadtovostok.com/game */
@@ -32,6 +52,7 @@ const selectedId = ref(null)
 const easeTransform = ref(false)
 const markers = computed(() => mapLocations.filter((m) => m.pin))
 const selected = computed(() => mapLocations.find((m) => m.id === selectedId.value) ?? null)
+const selectedIntel = computed(() => intelBlocksFor(selected.value))
 const zoomPercent = computed(() => Math.round(mapScale.value * 100))
 
 let panStart = { x: 0, y: 0, tx: 0, ty: 0 }
@@ -230,7 +251,7 @@ const innerTransform = computed(
             <span class="map-crumb__sep" aria-hidden="true">/</span>
             <span class="map-crumb__here">World map</span>
           </nav>
-          <h1 id="map-heading" class="map-title">World map</h1>
+          <h1 id="map-heading" class="map-title">Road to Vostok Map</h1>
           <p class="map-lead">
             This page is a <strong>fan-made UI</strong> on top of the developer’s published world-map image. <strong>Pin
             coordinates are not official data</strong>—they were placed by hand for readability and will drift if the art file
@@ -281,13 +302,9 @@ const innerTransform = computed(
     <section class="map-board-section section" aria-labelledby="map-board-label">
       <div class="container">
         <div class="wrap wrap--full">
-          <h2 id="map-board-label" class="visually-hidden">Interactive map with location markers</h2>
+          <h2 id="map-board-label" class="map-board-title">Road to Vostok World Map</h2>
 
-          <div
-            ref="boardRef"
-            class="map-board"
-            :class="{ 'map-board--has-focus': selectedId !== null }"
-          >
+          <div ref="boardRef" class="map-board" :class="{ 'map-board--has-focus': selectedId !== null }">
             <div class="map-frame">
               <figure class="map-figure">
                 <div class="map-viewport">
@@ -312,7 +329,7 @@ const innerTransform = computed(
                     class="map-stage map-stage--pannable"
                     :class="{ 'map-stage--grabbing': isPanning }"
                     role="application"
-                    aria-label="Road to Vostok map; scroll to zoom, drag to pan, select pins for details"
+                    aria-label="Road to Vostok map; scroll to zoom, drag to pan, select pins for on-map details"
                     @wheel.prevent="onWheelStage"
                     @pointerdown="onPointerDownStage"
                   >
@@ -322,66 +339,88 @@ const innerTransform = computed(
                       :class="{ 'map-stage__inner--eased': easeTransform }"
                       :style="{ transform: innerTransform }"
                     >
-                    <img
-                      ref="imgRef"
-                      class="map-image"
-                      :src="mapSrc"
-                      alt="Road to Vostok stylized satellite map showing Area 05, Border Zone, Vostok, and coastal terrain"
-                      decoding="async"
-                      fetchpriority="high"
-                      draggable="false"
-                      @load="onImgLoad"
-                    />
-                    <div class="map-pins">
-                      <button
-                        v-for="m in markers"
-                        :key="m.id"
-                        type="button"
-                        class="map-pin"
-                        :class="[`map-pin--${m.type}`, { 'map-pin--active': selectedId === m.id }]"
-                        :style="{ left: m.pin.x + '%', top: m.pin.y + '%' }"
-                        :aria-pressed="selectedId === m.id"
-                        :aria-label="pinAriaLabel(m)"
-                        @click.stop="selectMarker(m.id)"
-                      >
-                        <span class="map-pin__dot" aria-hidden="true" />
-                        <span class="map-pin__label">{{ m.name }}</span>
-                      </button>
-                    </div>
+                      <img
+                        ref="imgRef"
+                        class="map-image"
+                        :src="mapSrc"
+                        alt="Road to Vostok stylized satellite map showing Area 05, Border Zone, Vostok, and coastal terrain"
+                        decoding="async"
+                        fetchpriority="high"
+                        draggable="false"
+                        @load="onImgLoad"
+                      />
+                      <div class="map-pins">
+                        <button
+                          v-for="m in markers"
+                          :key="m.id"
+                          type="button"
+                          class="map-pin"
+                          :class="[`map-pin--${m.type}`, { 'map-pin--active': selectedId === m.id }]"
+                          :style="{ left: m.pin.x + '%', top: m.pin.y + '%' }"
+                          :aria-pressed="selectedId === m.id"
+                          :aria-expanded="selectedId === m.id"
+                          :aria-label="pinAriaLabel(m)"
+                          @click.stop="selectMarker(m.id)"
+                        >
+                          <span class="map-pin__dot" aria-hidden="true" />
+                          <span class="map-pin__label">{{ m.name }}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
+
+                  <Transition name="map-popup-fade">
+                    <div v-if="selected" class="map-popup-layer">
+                      <button
+                        type="button"
+                        class="map-popup-layer__scrim"
+                        aria-label="Close location details"
+                        @click="selectedId = null"
+                      />
+                      <div
+                        class="map-popup"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="map-popup-title"
+                        @click.stop
+                      >
+                        <button type="button" class="map-popup__dismiss" aria-label="Close" @click="selectedId = null">
+                          <span aria-hidden="true">×</span>
+                        </button>
+                        <span class="map-popup__pill" :class="`map-popup__pill--${selected.type}`">{{
+                          typeMeta[selected.type]?.label ?? selected.type
+                        }}</span>
+                        <h3 id="map-popup-title" class="map-popup__title">{{ selected.name }}</h3>
+                        <p class="map-popup__text">{{ selected.content }}</p>
+                        <div
+                          v-if="selectedIntel.length"
+                          class="map-popup__intel"
+                          role="region"
+                          aria-label="Game facts for this label (official sources summarized)"
+                        >
+                          <h4 class="map-popup__intel-heading">From the game</h4>
+                          <dl class="map-intel-dl">
+                            <template v-for="block in selectedIntel" :key="block.key">
+                              <dt class="map-intel-dl__dt">{{ block.title }}</dt>
+                              <dd class="map-intel-dl__dd">
+                                <ul class="map-intel-dl__list">
+                                  <li v-for="(line, idx) in block.lines" :key="block.key + '-' + idx">{{ line }}</li>
+                                </ul>
+                              </dd>
+                            </template>
+                          </dl>
+                        </div>
+                        <button type="button" class="map-popup__close" @click="selectedId = null">Close</button>
+                      </div>
+                    </div>
+                  </Transition>
                 </div>
                 <figcaption class="map-caption">
-                  Explore freely—wheel zooms toward the cursor. The index below recenters the map on each place. Esc clears the
-                  card.
+                  Full-width atlas—click a pin or a chip below to focus the map; details open in a card over the image. Esc or the
+                  dimmed backdrop closes it.
                 </figcaption>
               </figure>
             </div>
-
-            <Transition name="map-detail-fade" mode="out-in">
-              <aside
-                :key="selected ? selected.id : 'empty'"
-                class="map-detail"
-                aria-live="polite"
-              >
-                <template v-if="selected">
-                  <span class="map-detail__pill" :class="`map-detail__pill--${selected.type}`">{{
-                    typeMeta[selected.type]?.label ?? selected.type
-                  }}</span>
-                  <h3 class="map-detail__title">{{ selected.name }}</h3>
-                  <p class="map-detail__text">{{ selected.content }}</p>
-                  <button type="button" class="map-detail__close" @click="selectedId = null">Close</button>
-                </template>
-                <template v-else>
-                  <div class="map-detail__pill map-detail__pill--muted">Choose a place</div>
-                  <h3 class="map-detail__title">No pin selected</h3>
-                  <p class="map-detail__text">
-                    Tap a marker on the map or pick a row in the index. Pins are fan estimates on the promo art—not in-game
-                    coordinates.
-                  </p>
-                </template>
-              </aside>
-            </Transition>
           </div>
         </div>
       </div>
@@ -389,27 +428,34 @@ const innerTransform = computed(
 
     <section class="map-list-section section section--tight" aria-labelledby="map-list-heading">
       <div class="container">
-        <div class="wrap wrap--wide">
-          <h2 id="map-list-heading" class="map-list-title">Location index</h2>
-          <p class="map-list-dek">Grouped by the same three layers as <a href="https://www.roadtovostok.com/game" class="map-list-dek__a" target="_blank" rel="noopener noreferrer">roadtovostok.com/game</a>—pin positions remain fan estimates on the JPG.</p>
-          <div v-for="layerKey in typeOrder" :key="layerKey" class="map-index-group">
-            <h3 class="map-index-group__title">
-              <span class="map-legend-dot map-legend-dot--sm" :class="`map-legend-dot--${layerKey}`" aria-hidden="true" />
-              {{ typeMeta[layerKey].label }}
-            </h3>
-            <ul class="map-index">
-              <li v-for="m in mapsForType(layerKey)" :key="'idx-' + m.id">
+        <div class="wrap wrap--full">
+          <h2 id="map-list-heading" class="map-list-title">Quick jump</h2>
+          <p class="map-list-dek">
+            Same three bands as
+            <a href="https://www.roadtovostok.com/game" class="map-list-dek__a" target="_blank" rel="noopener noreferrer"
+              >roadtovostok.com/game</a
+            >. Chips mirror the map pins (fan placement on the promo art).
+          </p>
+          <div class="map-jump">
+            <div v-for="layerKey in typeOrder" :key="layerKey" class="map-jump__band">
+              <div class="map-jump__head">
+                <span class="map-legend-dot map-legend-dot--sm" :class="`map-legend-dot--${layerKey}`" aria-hidden="true" />
+                <span class="map-jump__label">{{ typeMeta[layerKey].label }}</span>
+              </div>
+              <div class="map-jump__chips" role="group" :aria-label="typeMeta[layerKey].label + ' locations'">
                 <button
+                  v-for="m in mapsForType(layerKey)"
+                  :key="'jmp-' + m.id"
                   type="button"
-                  class="map-index__btn"
-                  :class="{ 'map-index__btn--on': selectedId === m.id }"
+                  class="map-jump-chip"
+                  :class="[`map-jump-chip--${m.type}`, { 'map-jump-chip--on': selectedId === m.id }]"
+                  :aria-pressed="selectedId === m.id"
                   @click="selectMarker(m.id)"
                 >
-                  <span class="map-index__name">{{ m.name }}</span>
-                  <span class="map-index__type">{{ typeMeta[m.type].label }}</span>
+                  {{ m.name }}
                 </button>
-              </li>
-            </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -482,6 +528,16 @@ const innerTransform = computed(
   color: var(--color-text);
 }
 
+.map-board-title {
+  margin: 0 0 1rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.8vw, 1.45rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
 .map-lead {
   margin: 0 0 0.75rem;
   max-width: 46rem;
@@ -533,9 +589,7 @@ const innerTransform = computed(
 }
 
 .map-board {
-  display: flex;
-  flex-direction: column;
-  gap: 1.35rem;
+  position: relative;
 }
 
 .map-frame {
@@ -564,7 +618,7 @@ const innerTransform = computed(
 
 .map-float {
   position: absolute;
-  z-index: 3;
+  z-index: 6;
   top: 0.65rem;
   right: 0.65rem;
   display: flex;
@@ -912,57 +966,130 @@ const innerTransform = computed(
   line-height: 1.5;
 }
 
-.map-detail-fade-enter-active,
-.map-detail-fade-leave-active {
+.map-popup-fade-enter-active,
+.map-popup-fade-leave-active {
   transition:
-    opacity 0.38s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.38s ease;
+    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.map-detail-fade-enter-from,
-.map-detail-fade-leave-to {
+.map-popup-fade-enter-active .map-popup,
+.map-popup-fade-leave-active .map-popup {
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.map-popup-fade-enter-from,
+.map-popup-fade-leave-to {
   opacity: 0;
-  transform: translateY(10px);
-  filter: blur(4px);
+}
+
+.map-popup-fade-enter-from .map-popup,
+.map-popup-fade-leave-to .map-popup {
+  transform: translateY(8px) scale(0.98);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .map-detail-fade-enter-active,
-  .map-detail-fade-leave-active {
-    transition: opacity 0.15s ease;
+  .map-popup-fade-enter-active,
+  .map-popup-fade-leave-active {
+    transition: opacity 0.12s ease;
   }
 
-  .map-detail-fade-enter-from,
-  .map-detail-fade-leave-to {
+  .map-popup-fade-enter-active .map-popup,
+  .map-popup-fade-leave-active .map-popup {
+    transition: none;
+  }
+
+  .map-popup-fade-enter-from .map-popup,
+  .map-popup-fade-leave-to .map-popup {
     transform: none;
-    filter: none;
   }
 
-  .map-detail__close:hover,
-  .map-detail__close:focus-visible {
+  .map-popup__close:hover,
+  .map-popup__close:focus-visible,
+  .map-popup__dismiss:hover,
+  .map-popup__dismiss:focus-visible {
     transform: none;
   }
 }
 
-.map-detail {
-  padding: 1.15rem 1.25rem 1.2rem;
-  border: 1px solid color-mix(in srgb, var(--color-frost) 22%, var(--color-border));
+.map-popup-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  pointer-events: none;
+}
+
+.map-popup-layer__scrim {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: inherit;
+  background: color-mix(in srgb, #050608 58%, transparent);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.map-popup {
+  position: relative;
+  z-index: 1;
+  width: min(22.5rem, calc(100% - 0.75rem));
+  max-height: min(74vh, 540px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  margin: 0;
+  padding: 1rem 1.1rem 1.05rem;
+  padding-top: 2.35rem;
   border-radius: 12px;
-  background:
-    linear-gradient(165deg, color-mix(in srgb, var(--color-bg-panel) 94%, transparent), var(--color-bg-deep)),
-    radial-gradient(80% 60% at 100% 0%, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-frost) 10%);
+  background: color-mix(in srgb, var(--color-bg-panel) 97%, var(--color-bg-deep));
   box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 5%, transparent),
-    0 16px 40px color-mix(in srgb, #000 38%, transparent);
+    0 0 0 1px color-mix(in srgb, #fff 4%, transparent),
+    0 20px 50px color-mix(in srgb, #000 45%, transparent);
+  pointer-events: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-.map-detail__pill {
+.map-popup__dismiss {
+  position: absolute;
+  top: 0.4rem;
+  right: 0.4rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.map-popup__dismiss:hover,
+.map-popup__dismiss:focus-visible {
+  color: var(--color-text);
+  background: color-mix(in srgb, var(--color-border) 40%, transparent);
+}
+
+.map-popup__pill {
   display: inline-block;
-  margin-bottom: 0.65rem;
-  padding: 0.25rem 0.65rem;
+  margin-bottom: 0.55rem;
+  padding: 0.22rem 0.6rem;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.58rem;
+  font-size: 0.55rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -971,53 +1098,101 @@ const innerTransform = computed(
   color: var(--color-text-muted);
 }
 
-.map-detail__pill--muted {
-  opacity: 0.9;
-}
-
-.map-detail__pill--area05 {
+.map-popup__pill--area05 {
   border-color: color-mix(in srgb, var(--color-frost) 40%, var(--color-border));
   color: var(--color-frost);
 }
 
-.map-detail__pill--borderZone {
+.map-popup__pill--borderZone {
   border-color: color-mix(in srgb, #c9a227 55%, var(--color-border));
   color: #e8d089;
 }
 
-.map-detail__pill--vostok {
+.map-popup__pill--vostok {
   border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
   color: color-mix(in srgb, var(--color-accent) 90%, #fff);
 }
 
-.map-detail__title {
-  margin: 0 0 0.75rem;
+.map-popup__title {
+  margin: 0 0 0.65rem;
+  padding-right: 1.5rem;
   font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  line-height: 1.2;
+  line-height: 1.15;
   color: var(--color-text);
 }
 
-.map-detail__text {
+.map-popup__text {
   margin: 0;
   color: var(--color-text-muted);
   font-size: 0.875rem;
-  line-height: 1.65;
+  line-height: 1.62;
   white-space: pre-line;
 }
 
-.map-detail__close {
-  margin-top: 1.05rem;
+.map-popup__intel {
+  margin-top: 0.95rem;
+  padding-top: 0.95rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
+}
+
+.map-popup__intel-heading {
+  margin: 0 0 0.65rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text-muted) 72%, var(--color-text));
+}
+
+.map-intel-dl {
+  margin: 0;
+}
+
+.map-intel-dl__dt {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: 0.02em;
+}
+
+.map-intel-dl__dt:not(:first-of-type) {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
+}
+
+.map-intel-dl__dd {
+  margin: 0;
+}
+
+.map-intel-dl__list {
+  margin: 0;
+  padding-left: 1.1rem;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.58;
+}
+
+.map-intel-dl__list li + li {
+  margin-top: 0.3rem;
+}
+
+.map-popup__close {
+  margin-top: 0.95rem;
+  width: 100%;
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.65rem;
+  font-size: 0.62rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 0.45rem 0.85rem;
+  padding: 0.5rem 0.85rem;
   border-radius: 8px;
-  border: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-bg-deep) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--color-border) 85%, var(--color-frost) 12%);
+  background: color-mix(in srgb, var(--color-bg-deep) 75%, transparent);
   color: var(--color-frost);
   cursor: pointer;
   transition:
@@ -1025,8 +1200,8 @@ const innerTransform = computed(
     transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.map-detail__close:hover,
-.map-detail__close:focus-visible {
+.map-popup__close:hover,
+.map-popup__close:focus-visible {
   border-color: var(--color-frost);
   transform: translateY(-1px);
 }
@@ -1085,96 +1260,86 @@ const innerTransform = computed(
   color: var(--color-text);
 }
 
-.map-index-group {
-  margin-bottom: 1.75rem;
+.map-jump {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
 }
 
-.map-index-group:last-child {
-  margin-bottom: 0;
+.map-jump__band {
+  padding: 0.85rem 1rem 1rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+  background: color-mix(in srgb, var(--color-bg-panel) 92%, var(--color-bg-deep));
 }
 
-.map-index-group__title {
+.map-jump__head {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin: 0 0 0.65rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-
-.map-index {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 0.45rem;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .map-index {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 1024px) {
-  .map-index {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.map-index__btn {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
-  padding: 0.6rem 0.85rem;
-  text-align: left;
-  border: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--color-bg-panel) 88%, transparent);
-  cursor: pointer;
-  color: var(--color-text);
-  transition:
-    border-color 0.22s ease,
-    background 0.22s ease,
-    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
-    box-shadow 0.22s ease;
+  margin-bottom: 0.65rem;
 }
 
-.map-index__btn:hover,
-.map-index__btn:focus-visible {
-  border-color: color-mix(in srgb, var(--color-frost) 40%, var(--color-border));
-  background: color-mix(in srgb, var(--color-bg-panel) 82%, var(--color-frost) 6%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px color-mix(in srgb, #000 28%, transparent);
-}
-
-.map-index__btn--on {
-  border-color: color-mix(in srgb, var(--color-accent) 45%, var(--color-frost));
-  background: color-mix(in srgb, var(--color-bg-panel) 72%, var(--color-accent) 18%);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--color-accent) 22%, transparent),
-    0 10px 28px color-mix(in srgb, #000 32%, transparent);
-}
-
-.map-index__name {
-  font-weight: 600;
-  font-size: 0.875rem;
-}
-
-.map-index__type {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.58rem;
-  letter-spacing: 0.08em;
+.map-jump__label {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-  flex-shrink: 0;
+  color: var(--color-text);
+}
+
+.map-jump__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.map-jump-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.38rem 0.72rem;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--color-text);
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 80%, transparent);
+  background: color-mix(in srgb, var(--color-bg-deep) 35%, transparent);
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.map-jump-chip:hover,
+.map-jump-chip:focus-visible {
+  border-color: color-mix(in srgb, var(--color-frost) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-bg-panel) 70%, var(--color-frost) 8%);
+}
+
+.map-jump-chip--on {
+  border-color: color-mix(in srgb, var(--color-accent) 40%, var(--color-frost));
+  background: color-mix(in srgb, var(--color-bg-panel) 65%, var(--color-accent) 14%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 18%, transparent);
+}
+
+.map-jump-chip--area05.map-jump-chip--on {
+  border-color: color-mix(in srgb, var(--color-frost) 50%, var(--color-border));
+  background: color-mix(in srgb, var(--color-bg-panel) 78%, var(--color-frost) 10%);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-frost) 22%, transparent);
+}
+
+.map-jump-chip--borderZone.map-jump-chip--on {
+  border-color: color-mix(in srgb, #c9a227 45%, var(--color-border));
+  background: color-mix(in srgb, var(--color-bg-panel) 82%, #c9a227 8%);
+}
+
+.map-jump-chip--vostok.map-jump-chip--on {
+  border-color: color-mix(in srgb, var(--color-accent) 48%, var(--color-border));
+  background: color-mix(in srgb, var(--color-bg-panel) 72%, var(--color-accent) 16%);
 }
 
 @media (max-width: 1023px) {
@@ -1196,8 +1361,10 @@ const innerTransform = computed(
     border-radius: 10px;
   }
 
-  .map-detail {
-    padding: 1rem 1.05rem;
+  .map-popup {
+    padding: 0.9rem 1rem 1rem;
+    padding-top: 2.2rem;
+    max-height: min(70vh, 480px);
   }
 
   .map-pin__dot {
@@ -1225,8 +1392,9 @@ const innerTransform = computed(
     max-width: 5.5rem;
   }
 
-  .map-index__btn {
-    padding: 0.5rem 0.65rem;
+  .map-jump-chip {
+    padding: 0.34rem 0.62rem;
+    font-size: 0.78rem;
   }
 }
 </style>

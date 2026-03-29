@@ -8,7 +8,7 @@ import { RouterLink } from 'vue-router'
       <div class="container">
         <div class="wrap wrap--wide">
           <p class="not-found-kicker">HTTP 404</p>
-          <h1 id="not-found-heading" class="not-found-title">Page not found</h1>
+          <h1 id="not-found-heading" class="not-found-title">Road to Vostok — Page not found</h1>
           <p class="not-found-text">
             The URL may be mistyped, or the page was moved. Use the navigation above or return to the field manual home.
           </p>

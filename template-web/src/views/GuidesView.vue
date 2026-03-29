@@ -407,7 +407,7 @@ const tocItems = computed(() => {
             <span class="guides-crumb__sep" aria-hidden="true">/</span>
             <span class="guides-crumb__here">Wiki</span>
           </nav>
-          <h1 id="wiki-heading" class="page-title">Wiki index</h1>
+          <h1 id="wiki-heading" class="page-title">Road to Vostok Wiki</h1>
           <p class="page-dek">
             One page, two layers: the <strong>quick finder</strong> up top matches how people actually search—primary sources
             (official game page + Steam), guns, armor, loot, map POIs, traders, factions, demo vs Early Access—and scrolls to the

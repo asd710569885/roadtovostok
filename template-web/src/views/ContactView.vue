@@ -16,7 +16,7 @@ const mailto = `mailto:${email}`
             <span class="legal-crumb__sep" aria-hidden="true">/</span>
             <span class="legal-crumb__here">Contact</span>
           </nav>
-          <h1 id="contact-heading" class="page-title">Contact</h1>
+          <h1 id="contact-heading" class="page-title">Road to Vostok — Contact</h1>
           <p class="page-dek">
             This site does not use a contact form. For anything specific to <strong>roadtovostok.net</strong>—guide corrections,
             licensing or takedown questions, or privacy requests—use the address below. You can write in English or Chinese; either is

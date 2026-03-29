@@ -8,7 +8,7 @@ import { RouterLink } from 'vue-router'
       <div class="container">
         <div class="wrap wrap--wide">
           <p class="page-kicker">Onboarding · New players · Versions</p>
-          <h1 id="start-heading" class="page-title">Start: demo, Early Access &amp; PC specs</h1>
+          <h1 id="start-heading" class="page-title">Road to Vostok Start — demo, Early Access &amp; PC specs</h1>
           <p class="page-dek">
             One landing page for people who just bought or wishlisted: <strong>what the game is</strong>, <strong>EA timing and
             price</strong>, <strong>solo vs co-op rumors</strong>, <strong>mods and localization</strong>, then a

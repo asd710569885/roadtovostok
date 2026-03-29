@@ -16,7 +16,7 @@ const mailto = `mailto:${email}`
             <span class="legal-crumb__sep" aria-hidden="true">/</span>
             <span class="legal-crumb__here">Privacy policy</span>
           </nav>
-          <h1 id="privacy-heading" class="page-title">Privacy policy</h1>
+          <h1 id="privacy-heading" class="page-title">Road to Vostok — Privacy Policy</h1>
           <p class="page-dek">
             This policy describes how <strong>roadtovostok.net</strong> (the Road to Vostok Field Manual) handles information when you
             browse or email us. The site is mostly static articles and tools—no accounts, no comment login, and no marketing mailing
