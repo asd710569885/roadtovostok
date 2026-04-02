@@ -1,9 +1,29 @@
 /**
  * Title / Description / Keywords + Open Graph / Twitter after each client navigation.
  * For maximum crawl reliability, pair with SSR or prerender for public URLs.
+ *
+ * TDK notes: titles ~50–60 visible chars (primary keyword + brand); meta description ~155–160 for SERP snippets.
  */
 
 const SITE_NAME = 'Road to Vostok Field Manual'
+
+/** Google typically shows ~155–160 characters for meta description. */
+export const META_DESCRIPTION_MAX = 158
+
+/**
+ * Trim whitespace and cut at a word boundary so meta descriptions stay SERP-friendly.
+ * @param {string} text
+ * @param {number} [max]
+ */
+export function clampMetaDescription(text, max = META_DESCRIPTION_MAX) {
+  if (text == null || typeof text !== 'string') return ''
+  const t = text.replace(/\s+/g, ' ').trim()
+  if (t.length <= max) return t
+  const cut = t.slice(0, max - 1)
+  const lastSpace = cut.lastIndexOf(' ')
+  const base = lastSpace > Math.min(50, max - 24) ? cut.slice(0, lastSpace) : cut
+  return `${base.trimEnd()}…`
+}
 
 /** Default social preview (public/); crawlers need an absolute URL. */
 const DEFAULT_OG_IMAGE_PATH = '/images/logo.png'
@@ -113,8 +133,9 @@ export function applyRouteSeo(to) {
 
   document.title = typeof meta.title === 'string' && meta.title.trim() ? meta.title.trim() : SITE_NAME
 
-  if (meta.description) {
-    setOrCreateMetaByName('description', meta.description)
+  const description = meta.description ? clampMetaDescription(meta.description) : ''
+  if (description) {
+    setOrCreateMetaByName('description', description)
   }
   if (meta.keywords) {
     setOrCreateMetaByName('keywords', meta.keywords)
@@ -138,7 +159,7 @@ export function applyRouteSeo(to) {
   }
 
   const ogTitle = meta.ogTitle || document.title
-  const ogDescription = meta.ogDescription || meta.description || ''
+  const ogDescription = clampMetaDescription(meta.ogDescription || meta.description || '')
   const ogUrl = meta.ogUrl != null ? meta.ogUrl : canonical
 
   setOrCreateMetaByProperty('og:type', meta.ogType || 'website')

@@ -75,7 +75,7 @@ import { RouterLink } from 'vue-router'
             </li>
             <li>
               <strong>Community wikis</strong> (for example Fandom) can be useful but may lag behind your build; we link one from the
-              <RouterLink class="text-link" :to="{ path: '/wiki', query: { section: 'community-wiki' } }">wiki hub</RouterLink>
+              <RouterLink class="text-link" to="/wiki#wiki-community">wiki hub</RouterLink>
               for exploration, not as a copy source.
             </li>
             <li>

@@ -1,7 +1,16 @@
 <script setup>
-import { ref, computed, nextTick, onMounted, onUnmounted } from 'vue'
-import { RouterLink } from 'vue-router'
-import mapLocations from '../data/maps.js'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import mapLocations, { mapRouteForPin, MAP_PAGE, MAP_PIN_QUERY } from '../data/maps.js'
+
+const route = useRoute()
+const router = useRouter()
+
+function normalizePinQuery(raw) {
+  if (raw == null || raw === '') return ''
+  const s = Array.isArray(raw) ? raw[0] : String(raw)
+  return /^[a-z][a-z0-9-]*$/i.test(s) ? s.toLowerCase() : ''
+}
 
 const INTEL_KEYS = ['npcs', 'supplies', 'tasks']
 const intelBlockMeta = {
@@ -38,7 +47,6 @@ const MIN_SCALE = 1
 const MAX_SCALE = 3.5
 const FOCUS_SCALE = 1.85
 
-const boardRef = ref(null)
 const stageRef = ref(null)
 const innerRef = ref(null)
 const imgRef = ref(null)
@@ -53,10 +61,14 @@ const easeTransform = ref(false)
 const markers = computed(() => mapLocations.filter((m) => m.pin))
 const selected = computed(() => mapLocations.find((m) => m.id === selectedId.value) ?? null)
 const selectedIntel = computed(() => intelBlocksFor(selected.value))
+const selectedWikiLinks = computed(() => selected.value?.wikiLinks ?? [])
+const selectedNpcLinks = computed(() => selected.value?.npcLinks ?? [])
 const zoomPercent = computed(() => Math.round(mapScale.value * 100))
 
 let panStart = { x: 0, y: 0, tx: 0, ty: 0 }
 let easeTimer = null
+/** Coalesces focus from route watch + image load so we do not run two eased zooms (refresh “shake”). */
+let routeFocusRaf = 0
 
 /** Smooth camera for index / zoom buttons / reset — pan & wheel stay instant */
 function withEase(apply) {
@@ -103,8 +115,26 @@ function resetMapView() {
   })
 }
 
+function applyRoutePinFocus() {
+  const id = normalizePinQuery(route.query[MAP_PIN_QUERY])
+  if (!id || selectedId.value !== id) return
+  const m = mapLocations.find((x) => x.id === id && x.pin)
+  if (m) focusOnPin(m)
+}
+
+function scheduleApplyRouteFocus() {
+  if (routeFocusRaf) cancelAnimationFrame(routeFocusRaf)
+  routeFocusRaf = requestAnimationFrame(() => {
+    routeFocusRaf = 0
+    applyRoutePinFocus()
+  })
+}
+
 function onImgLoad() {
-  nextTick(() => clampPan())
+  nextTick(() => {
+    clampPan()
+    scheduleApplyRouteFocus()
+  })
 }
 
 function onWheelStage(e) {
@@ -190,20 +220,44 @@ function zoomStep(dir) {
   })
 }
 
-function selectMarker(id) {
+function clearSelection() {
+  selectedId.value = null
+  if (normalizePinQuery(route.query[MAP_PIN_QUERY])) {
+    router.replace({ path: MAP_PAGE, query: {} })
+  }
+}
+
+function selectPin(id) {
   if (selectedId.value === id) {
-    selectedId.value = null
+    clearSelection()
     return
   }
   selectedId.value = id
-  const hit = mapLocations.find((x) => x.id === id && x.pin)
-  nextTick(() => {
-    if (hit) {
-      focusOnPin(hit)
-      boardRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-    }
-  })
+  router.replace(mapRouteForPin(id))
+  // Focus is applied once via the route query watcher (+ coalesced rAF); avoid double withEase here.
 }
+
+watch(
+  () => route.query[MAP_PIN_QUERY],
+  (raw) => {
+    const id = normalizePinQuery(raw)
+    if (!id) {
+      selectedId.value = null
+      return
+    }
+    const m = mapLocations.find((x) => x.id === id && x.pin)
+    if (!m) {
+      selectedId.value = null
+      router.replace({ path: MAP_PAGE, query: {} })
+      return
+    }
+    if (selectedId.value !== id) {
+      selectedId.value = id
+    }
+    scheduleApplyRouteFocus()
+  },
+  { immediate: true },
+)
 
 function pinAriaLabel(m) {
   return `${m.name}. ${typeMeta[m.type]?.label ?? m.type}. Fan pin on promo artwork—not an in-game coordinate.`
@@ -214,11 +268,12 @@ function mapsForType(t) {
 }
 
 function onResize() {
+  killEase()
   clampPan()
 }
 
 function onEscape(e) {
-  if (e.key === 'Escape') selectedId.value = null
+  if (e.key === 'Escape') clearSelection()
 }
 
 onMounted(() => {
@@ -227,6 +282,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  if (routeFocusRaf) cancelAnimationFrame(routeFocusRaf)
+  routeFocusRaf = 0
   clearTimeout(easeTimer)
   window.removeEventListener('keydown', onEscape)
   window.removeEventListener('resize', onResize)
@@ -242,69 +299,48 @@ const innerTransform = computed(
 
 <template>
   <div class="page-map">
-    <section class="map-head-section section section--tight" aria-labelledby="map-heading">
+    <section class="map-hero section section--tight" aria-labelledby="map-heading">
+      <div class="map-hero__glow" aria-hidden="true" />
       <div class="container">
         <div class="wrap wrap--wide">
-          <p class="map-kicker">Atlas · Fan reference</p>
+          <p class="map-kicker">World atlas · Road to Vostok</p>
           <nav class="map-crumb" aria-label="Breadcrumb">
             <RouterLink to="/" class="map-crumb__link">Road to Vostok Field Manual</RouterLink>
             <span class="map-crumb__sep" aria-hidden="true">/</span>
             <span class="map-crumb__here">World map</span>
           </nav>
-          <h1 id="map-heading" class="map-title">Road to Vostok Map</h1>
-          <p class="map-lead">
-            This page is a <strong>fan-made UI</strong> on top of the developer’s published world-map image. <strong>Pin
-            coordinates are not official data</strong>—they were placed by hand for readability and will drift if the art file
-            changes. Only Steam, the official site, and your installed build are authoritative for mechanics. Deeper routing
-            write-ups belong in the
-            <RouterLink :to="{ path: '/wiki', query: { section: 'pillar-maps' } }">maps &amp; crossings</RouterLink> pillar once you’ve walked the route in your build. For a
-            full keyword index across every topic, hit the
-            <RouterLink :to="{ path: '/wiki', query: { section: 'quick-finder' } }">quick finder</RouterLink>
-            on the wiki page. Build and PC context live on
-            <RouterLink class="map-link" to="/start">Start</RouterLink>.
+          <h1 id="map-heading" class="map-title">Road to Vostok World Map</h1>
+          <p class="map-pitch">
+            We built this atlas to be one of the <strong>most complete and detailed unofficial Road to Vostok maps on the web</strong>:
+            zoomable official-style artwork, hand-placed pins across Area 05, the Border Zone, and Vostok, on-page summaries synced
+            with our Field Manual wiki, one-tap trader &amp; NPC dossiers, structured loot and task notes, and shareable
+            <code class="map-lead__code">?pin=…</code> links—geography, guides, and characters in a single view so you are not
+            juggling ten tabs.
           </p>
-          <div class="notice map-disclaimer" role="note">
-            <span class="notice__label">Accuracy</span>
-            <div class="notice__body">
-              <ul class="map-disclaimer__list">
-                <li>
-                  <strong>True:</strong> the JPG matches the public Squarespace-hosted file we save locally so the page loads fast;
-                  region names printed on that art (Area 05, Border Zone, Vostok, POI labels) are what you see on the image.
-                </li>
-                <li>
-                  <strong>Not verified here:</strong> exact pin alignment, encounter design, loot, quest triggers, or patch
-                  deltas—those require in-game testing or a primary source link in a dedicated article.
-                </li>
-              </ul>
-            </div>
-          </div>
+          <p class="map-lead">
+            Pins are for orientation only—not in-game GPS. Pick a pin for the short brief, then open
+            <RouterLink class="map-link" to="/wiki/maps">map walkthroughs</RouterLink>,
+            <RouterLink class="map-link" to="/wiki/npcs">NPC pages</RouterLink>, or other wiki topics. Articles on this site link
+            back here with the same pin deep links.
+          </p>
+          <p class="map-disclaimer-inline" role="note">
+            Labels on the JPG match the public art; pin positions are hand-placed. Always trust your installed build over this
+            overlay.
+          </p>
           <p class="map-note">
-            Map image © Road to Vostok Ltd.; reproduced here for commentary under fan-use norms. Always download or purchase the
-            game from
-            <a
-              class="map-link"
-              href="https://store.steampowered.com/app/1963610/Road_to_Vostok/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Steam
-            </a>
-            or follow
-            <a class="map-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">
-              roadtovostok.com
-            </a>
-            for canonical announcements.
+            Map image © Road to Vostok Ltd. ·
+            <a class="map-link" href="https://store.steampowered.com/app/1963610/Road_to_Vostok/" target="_blank" rel="noopener noreferrer">Steam</a>
+            ·
+            <a class="map-link" href="https://www.roadtovostok.com/game" target="_blank" rel="noopener noreferrer">roadtovostok.com/game</a>
           </p>
         </div>
       </div>
     </section>
 
-    <section class="map-board-section section" aria-labelledby="map-board-label">
+    <section class="map-atlas-section section" aria-label="Interactive map and selected location">
       <div class="container">
         <div class="wrap wrap--full">
-          <h2 id="map-board-label" class="map-board-title">Road to Vostok World Map</h2>
-
-          <div ref="boardRef" class="map-board" :class="{ 'map-board--has-focus': selectedId !== null }">
+          <div class="map-board" :class="{ 'map-board--has-focus': selectedId !== null }">
             <div class="map-frame">
               <figure class="map-figure">
                 <div class="map-viewport">
@@ -324,12 +360,13 @@ const innerTransform = computed(
                       <button type="button" class="map-float__fit" @click.stop="resetMapView">Fit map</button>
                     </div>
                   </div>
+
                   <div
                     ref="stageRef"
                     class="map-stage map-stage--pannable"
                     :class="{ 'map-stage--grabbing': isPanning }"
                     role="application"
-                    aria-label="Road to Vostok map; scroll to zoom, drag to pan, select pins for on-map details"
+                    aria-label="Road to Vostok map; scroll to zoom, drag to pan, choose a pin"
                     @wheel.prevent="onWheelStage"
                     @pointerdown="onPointerDownStage"
                   >
@@ -360,7 +397,7 @@ const innerTransform = computed(
                           :aria-pressed="selectedId === m.id"
                           :aria-expanded="selectedId === m.id"
                           :aria-label="pinAriaLabel(m)"
-                          @click.stop="selectMarker(m.id)"
+                          @click.stop="selectPin(m.id)"
                         >
                           <span class="map-pin__dot" aria-hidden="true" />
                           <span class="map-pin__label">{{ m.name }}</span>
@@ -369,72 +406,96 @@ const innerTransform = computed(
                     </div>
                   </div>
 
-                  <Transition name="map-popup-fade">
-                    <div v-if="selected" class="map-popup-layer">
-                      <button
-                        type="button"
-                        class="map-popup-layer__scrim"
-                        aria-label="Close location details"
-                        @click="selectedId = null"
-                      />
-                      <div
-                        class="map-popup"
-                        role="dialog"
-                        aria-modal="true"
-                        aria-labelledby="map-popup-title"
-                        @click.stop
-                      >
-                        <button type="button" class="map-popup__dismiss" aria-label="Close" @click="selectedId = null">
-                          <span aria-hidden="true">×</span>
-                        </button>
-                        <span class="map-popup__pill" :class="`map-popup__pill--${selected.type}`">{{
+                  <aside class="map-viewport__panel" aria-live="polite">
+                    <template v-if="selected">
+                      <div class="map-detail">
+                        <span class="map-detail__band" :class="`map-detail__band--${selected.type}`">{{
                           typeMeta[selected.type]?.label ?? selected.type
                         }}</span>
-                        <h3 id="map-popup-title" class="map-popup__title">{{ selected.name }}</h3>
-                        <p class="map-popup__text">{{ selected.content }}</p>
-                        <div
-                          v-if="selectedIntel.length"
-                          class="map-popup__intel"
-                          role="region"
-                          aria-label="Game facts for this label (official sources summarized)"
+                        <h2 class="map-detail__title">{{ selected.name }}</h2>
+                        <p class="map-detail__text">{{ selected.content }}</p>
+
+                        <RouterLink
+                          v-if="selected.wikiRoute"
+                          class="map-detail__guide"
+                          :to="selected.wikiRoute"
                         >
-                          <h4 class="map-popup__intel-heading">From the game</h4>
+                          <span class="map-detail__guide-kicker">This location on the wiki</span>
+                          <span class="map-detail__guide-title">{{ selected.name }} walkthrough</span>
+                          <span class="map-detail__guide-dek">Loot tables, containers, build notes</span>
+                          <span class="map-detail__guide-cta">Open guide →</span>
+                        </RouterLink>
+
+                        <div v-if="selectedNpcLinks.length" class="map-detail__npcs">
+                          <h3 class="map-detail__sub">Traders &amp; NPCs</h3>
+                          <p class="map-detail__npcs-intro">
+                            Tap through for tasks, stock, and behavior—we keep the short version here.
+                          </p>
+                          <ul class="map-detail__npc-list">
+                            <li v-for="(n, idx) in selectedNpcLinks" :key="'npc-' + idx">
+                              <RouterLink class="map-detail__npc-card" :to="n.to">
+                                <span class="map-detail__npc-top">
+                                  <span class="map-detail__npc-name">{{ n.label }}</span>
+                                  <span v-if="n.role" class="map-detail__npc-role">{{ n.role }}</span>
+                                </span>
+                                <span class="map-detail__npc-blurb">{{ n.blurb }}</span>
+                                <span class="map-detail__npc-cta">Full wiki page →</span>
+                              </RouterLink>
+                            </li>
+                          </ul>
+                        </div>
+
+                        <nav
+                          v-if="selectedWikiLinks.length"
+                          class="map-detail__extras"
+                          aria-label="More wiki links"
+                        >
+                          <h3 class="map-detail__sub">Also on the manual</h3>
+                          <ul class="map-detail__links">
+                            <li v-for="(link, idx) in selectedWikiLinks" :key="'wl-' + idx">
+                              <RouterLink class="map-detail__a" :to="link.to">{{ link.label }}</RouterLink>
+                            </li>
+                          </ul>
+                        </nav>
+
+                        <div v-if="selectedIntel.length" class="map-detail__intel">
+                          <h3 class="map-detail__sub">Notes</h3>
                           <dl class="map-intel-dl">
-                            <template v-for="block in selectedIntel" :key="block.key">
+                            <div v-for="block in selectedIntel" :key="block.key" class="map-intel-dl__group">
                               <dt class="map-intel-dl__dt">{{ block.title }}</dt>
                               <dd class="map-intel-dl__dd">
                                 <ul class="map-intel-dl__list">
                                   <li v-for="(line, idx) in block.lines" :key="block.key + '-' + idx">{{ line }}</li>
                                 </ul>
                               </dd>
-                            </template>
+                            </div>
                           </dl>
                         </div>
-                        <button type="button" class="map-popup__close" @click="selectedId = null">Close</button>
+
+                        <button type="button" class="map-detail__clear" @click="clearSelection">Clear</button>
                       </div>
+                    </template>
+                    <div v-else class="map-detail map-detail--empty">
+                      <p class="map-detail__placeholder">
+                        Tap a pin — summary matches the Field Manual wiki; open the guide for container counts and build notes.
+                      </p>
                     </div>
-                  </Transition>
+                  </aside>
                 </div>
                 <figcaption class="map-caption">
-                  Full-width atlas—click a pin or a chip below to focus the map; details open in a card over the image. Esc or the
-                  dimmed backdrop closes it.
+                  Blurb and links sit in the overlay on the map. Pin positions are still fan-placed on the promo art. Esc clears
+                  selection.
                 </figcaption>
               </figure>
             </div>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="map-list-section section section--tight" aria-labelledby="map-list-heading">
-      <div class="container">
-        <div class="wrap wrap--full">
-          <h2 id="map-list-heading" class="map-list-title">Quick jump</h2>
-          <p class="map-list-dek">
+          <h2 id="map-list-heading" class="map-quick-title">Quick jump</h2>
+          <p class="map-quick-dek">
             Same three bands as
-            <a href="https://www.roadtovostok.com/game" class="map-list-dek__a" target="_blank" rel="noopener noreferrer"
+            <a href="https://www.roadtovostok.com/game" class="map-link" target="_blank" rel="noopener noreferrer"
               >roadtovostok.com/game</a
-            >. Chips mirror the map pins (fan placement on the promo art).
+            >. Chips select the same pins as on the image.
           </p>
           <div class="map-jump">
             <div v-for="layerKey in typeOrder" :key="layerKey" class="map-jump__band">
@@ -450,13 +511,25 @@ const innerTransform = computed(
                   class="map-jump-chip"
                   :class="[`map-jump-chip--${m.type}`, { 'map-jump-chip--on': selectedId === m.id }]"
                   :aria-pressed="selectedId === m.id"
-                  @click="selectMarker(m.id)"
+                  @click="selectPin(m.id)"
                 >
                   {{ m.name }}
                 </button>
               </div>
             </div>
           </div>
+
+          <p class="map-foot-links">
+            <RouterLink class="map-link" to="/wiki">Wiki</RouterLink>
+            ·
+            <RouterLink class="map-link" to="/wiki/maps">Maps</RouterLink>
+            ·
+            <RouterLink class="map-link" to="/wiki/npcs">NPCs</RouterLink>
+            ·
+            <RouterLink class="map-link" to="/wiki/weapons">Weapons</RouterLink>
+            ·
+            <RouterLink class="map-link" to="/start">Start</RouterLink>
+          </p>
         </div>
       </div>
     </section>
@@ -464,6 +537,378 @@ const innerTransform = computed(
 </template>
 
 <style scoped>
+.page-map {
+  position: relative;
+}
+
+.map-hero {
+  position: relative;
+  overflow: hidden;
+}
+
+.map-hero__glow {
+  pointer-events: none;
+  position: absolute;
+  inset: -20% -10% auto;
+  height: min(420px, 55vw);
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 0%,
+    color-mix(in srgb, var(--color-accent) 22%, transparent),
+    transparent 72%
+  );
+  opacity: 0.85;
+}
+
+.map-lead__code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.78em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-bg-deep) 65%, transparent);
+  color: color-mix(in srgb, var(--color-text-muted) 75%, var(--color-frost));
+}
+
+.map-disclaimer-inline {
+  margin: 0 0 0.85rem;
+  max-width: 44rem;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+.map-viewport__panel {
+  pointer-events: none;
+  position: absolute;
+  z-index: 7;
+  top: 4.35rem;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  width: min(19.5rem, calc(100% - 1rem));
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.map-viewport__panel > * {
+  pointer-events: auto;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 72%, var(--color-frost) 14%);
+  background: color-mix(in srgb, var(--color-bg-panel) 88%, var(--color-bg-deep));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  padding: 0.75rem 0.85rem 0.85rem;
+  box-shadow: 0 12px 40px color-mix(in srgb, #000 45%, transparent);
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 639px) {
+  .map-viewport__panel {
+    top: auto;
+    right: 0.45rem;
+    left: 0.45rem;
+    bottom: 0.45rem;
+    width: auto;
+    max-height: min(42vh, 320px);
+  }
+}
+
+.map-detail--empty {
+  padding: 0.55rem 0.65rem;
+}
+
+.map-detail__band {
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-bg-deep);
+  background: color-mix(in srgb, var(--color-text-muted) 35%, var(--color-border));
+}
+
+.map-detail__band--area05 {
+  background: color-mix(in srgb, var(--color-frost) 55%, var(--color-forest));
+  color: var(--color-bg-deep);
+}
+
+.map-detail__band--borderZone {
+  background: linear-gradient(135deg, #e8c547, #9a7209);
+  color: #1a1406;
+}
+
+.map-detail__band--vostok {
+  background: color-mix(in srgb, var(--color-accent) 75%, #200);
+  color: #f5f0ea;
+}
+
+.map-detail__title {
+  margin: 0 0 0.5rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: clamp(1.05rem, 2.8vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: var(--color-text);
+}
+
+.map-detail__text {
+  margin: 0 0 0.85rem;
+  font-size: 0.875rem;
+  line-height: 1.62;
+  color: var(--color-text-muted);
+  white-space: pre-line;
+}
+
+.map-detail__guide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid color-mix(in srgb, var(--color-frost) 35%, var(--color-border));
+  background: color-mix(in srgb, var(--color-frost) 9%, var(--color-bg-deep));
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.2s ease;
+}
+
+.map-detail__guide:hover,
+.map-detail__guide:focus-visible {
+  border-color: color-mix(in srgb, var(--color-frost) 55%, var(--color-border));
+  box-shadow: 0 6px 22px color-mix(in srgb, #000 32%, transparent);
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.map-detail__guide-kicker {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.52rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.map-detail__guide-title {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text);
+  line-height: 1.2;
+}
+
+.map-detail__guide-dek {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.map-detail__guide-cta {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-frost);
+  letter-spacing: 0.03em;
+}
+
+.map-detail__npcs {
+  margin-bottom: 1rem;
+}
+
+.map-detail__npcs-intro {
+  margin: 0 0 0.55rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text-muted) 92%, var(--color-text));
+}
+
+.map-detail__npc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.map-detail__npc-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: 10px;
+  text-decoration: none;
+  color: inherit;
+  border: 1px solid color-mix(in srgb, var(--color-border) 78%, var(--color-frost) 8%);
+  background: color-mix(in srgb, var(--color-bg-deep) 45%, transparent);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.map-detail__npc-card:hover,
+.map-detail__npc-card:focus-visible {
+  border-color: color-mix(in srgb, var(--color-frost) 42%, var(--color-border));
+  background: color-mix(in srgb, var(--color-frost) 7%, var(--color-bg-panel));
+  transform: translateY(-1px);
+  outline: none;
+}
+
+.map-detail__npc-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.5rem;
+}
+
+.map-detail__npc-name {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.map-detail__npc-role {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.map-detail__npc-blurb {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.map-detail__npc-cta {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--color-frost);
+  letter-spacing: 0.02em;
+}
+
+.map-detail__sub {
+  margin: 0 0 0.45rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--color-text-muted) 80%, var(--color-text));
+}
+
+.map-detail__extras {
+  margin-bottom: 1rem;
+}
+
+.map-detail__links {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+.map-detail__links li + li {
+  margin-top: 0.35rem;
+}
+
+.map-detail__a {
+  color: var(--color-frost);
+  font-weight: 600;
+  text-underline-offset: 0.2em;
+}
+
+.map-detail__a:hover,
+.map-detail__a:focus-visible {
+  color: var(--color-text);
+}
+
+.map-detail__intel {
+  margin-bottom: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+}
+
+.map-detail__placeholder {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.map-detail__clear {
+  margin-top: 0.25rem;
+  padding: 0.45rem 0.85rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-frost) 12%);
+  background: color-mix(in srgb, var(--color-bg-deep) 70%, transparent);
+  color: var(--color-frost);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.map-detail__clear:hover,
+.map-detail__clear:focus-visible {
+  border-color: var(--color-frost);
+  color: var(--color-text);
+  outline: none;
+}
+
+.map-quick-title {
+  margin: 0 0 0.5rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: clamp(1.05rem, 2.2vw, 1.2rem);
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.map-quick-dek {
+  margin: 0 0 1rem;
+  max-width: 44rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+.map-foot-links {
+  margin: 1.5rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+}
+
 .visually-hidden {
   position: absolute;
   width: 1px;
@@ -519,7 +964,7 @@ const innerTransform = computed(
 }
 
 .map-title {
-  margin: 0 0 0.65rem;
+  margin: 0 0 0.75rem;
   font-family: 'Barlow Condensed', system-ui, sans-serif;
   font-weight: 700;
   font-size: clamp(1.85rem, 4vw, 2.35rem);
@@ -528,14 +973,27 @@ const innerTransform = computed(
   color: var(--color-text);
 }
 
-.map-board-title {
+.map-pitch {
   margin: 0 0 1rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  padding: 0.85rem 1rem 0.95rem 1.15rem;
+  max-width: 48rem;
+  border-radius: 12px;
+  border: 1px solid color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-bg-panel) 92%, var(--color-accent) 4%) 0%,
+    color-mix(in srgb, var(--color-bg-deep) 94%, transparent) 100%
+  );
+  box-shadow: 0 12px 28px color-mix(in srgb, #000 22%, transparent);
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  border-left: 3px solid color-mix(in srgb, var(--color-accent) 70%, var(--color-border));
+}
+
+.map-pitch strong {
+  color: color-mix(in srgb, var(--color-text) 90%, var(--color-accent));
   font-weight: 700;
-  font-size: clamp(1.2rem, 2.8vw, 1.45rem);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-accent);
 }
 
 .map-lead {
@@ -590,6 +1048,7 @@ const innerTransform = computed(
 
 .map-board {
   position: relative;
+  margin-bottom: 1.75rem;
 }
 
 .map-frame {
@@ -618,7 +1077,7 @@ const innerTransform = computed(
 
 .map-float {
   position: absolute;
-  z-index: 6;
+  z-index: 8;
   top: 0.65rem;
   right: 0.65rem;
   display: flex;
@@ -966,190 +1425,14 @@ const innerTransform = computed(
   line-height: 1.5;
 }
 
-.map-popup-fade-enter-active,
-.map-popup-fade-leave-active {
-  transition:
-    opacity 0.28s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.map-popup-fade-enter-active .map-popup,
-.map-popup-fade-leave-active .map-popup {
-  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.map-popup-fade-enter-from,
-.map-popup-fade-leave-to {
-  opacity: 0;
-}
-
-.map-popup-fade-enter-from .map-popup,
-.map-popup-fade-leave-to .map-popup {
-  transform: translateY(8px) scale(0.98);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .map-popup-fade-enter-active,
-  .map-popup-fade-leave-active {
-    transition: opacity 0.12s ease;
-  }
-
-  .map-popup-fade-enter-active .map-popup,
-  .map-popup-fade-leave-active .map-popup {
-    transition: none;
-  }
-
-  .map-popup-fade-enter-from .map-popup,
-  .map-popup-fade-leave-to .map-popup {
-    transform: none;
-  }
-
-  .map-popup__close:hover,
-  .map-popup__close:focus-visible,
-  .map-popup__dismiss:hover,
-  .map-popup__dismiss:focus-visible {
-    transform: none;
-  }
-}
-
-.map-popup-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.5rem;
-  pointer-events: none;
-}
-
-.map-popup-layer__scrim {
-  position: absolute;
-  inset: 0;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: inherit;
-  background: color-mix(in srgb, #050608 58%, transparent);
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.map-popup {
-  position: relative;
-  z-index: 1;
-  width: min(22.5rem, calc(100% - 0.75rem));
-  max-height: min(74vh, 540px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  margin: 0;
-  padding: 1rem 1.1rem 1.05rem;
-  padding-top: 2.35rem;
-  border-radius: 12px;
-  border: 1px solid color-mix(in srgb, var(--color-border) 82%, var(--color-frost) 10%);
-  background: color-mix(in srgb, var(--color-bg-panel) 97%, var(--color-bg-deep));
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, #fff 4%, transparent),
-    0 20px 50px color-mix(in srgb, #000 45%, transparent);
-  pointer-events: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-.map-popup__dismiss {
-  position: absolute;
-  top: 0.4rem;
-  right: 0.4rem;
-  width: 2.25rem;
-  height: 2.25rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  padding: 0;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.35rem;
-  line-height: 1;
-  color: var(--color-text-muted);
-  background: transparent;
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    background 0.15s ease;
-}
-
-.map-popup__dismiss:hover,
-.map-popup__dismiss:focus-visible {
-  color: var(--color-text);
-  background: color-mix(in srgb, var(--color-border) 40%, transparent);
-}
-
-.map-popup__pill {
-  display: inline-block;
-  margin-bottom: 0.55rem;
-  padding: 0.22rem 0.6rem;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.55rem;
-  font-weight: 600;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  border-radius: 999px;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-muted);
-}
-
-.map-popup__pill--area05 {
-  border-color: color-mix(in srgb, var(--color-frost) 40%, var(--color-border));
-  color: var(--color-frost);
-}
-
-.map-popup__pill--borderZone {
-  border-color: color-mix(in srgb, #c9a227 55%, var(--color-border));
-  color: #e8d089;
-}
-
-.map-popup__pill--vostok {
-  border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
-  color: color-mix(in srgb, var(--color-accent) 90%, #fff);
-}
-
-.map-popup__title {
-  margin: 0 0 0.65rem;
-  padding-right: 1.5rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 1.2rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  line-height: 1.15;
-  color: var(--color-text);
-}
-
-.map-popup__text {
-  margin: 0;
-  color: var(--color-text-muted);
-  font-size: 0.875rem;
-  line-height: 1.62;
-  white-space: pre-line;
-}
-
-.map-popup__intel {
-  margin-top: 0.95rem;
-  padding-top: 0.95rem;
-  border-top: 1px solid color-mix(in srgb, var(--color-border) 90%, transparent);
-}
-
-.map-popup__intel-heading {
-  margin: 0 0 0.65rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--color-text-muted) 72%, var(--color-text));
-}
-
 .map-intel-dl {
   margin: 0;
+}
+
+.map-intel-dl__group + .map-intel-dl__group {
+  margin-top: 0.85rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
 }
 
 .map-intel-dl__dt {
@@ -1158,12 +1441,6 @@ const innerTransform = computed(
   font-weight: 600;
   color: var(--color-text);
   letter-spacing: 0.02em;
-}
-
-.map-intel-dl__dt:not(:first-of-type) {
-  margin-top: 0.85rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
 }
 
 .map-intel-dl__dd {
@@ -1180,30 +1457,6 @@ const innerTransform = computed(
 
 .map-intel-dl__list li + li {
   margin-top: 0.3rem;
-}
-
-.map-popup__close {
-  margin-top: 0.95rem;
-  width: 100%;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 0.5rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid color-mix(in srgb, var(--color-border) 85%, var(--color-frost) 12%);
-  background: color-mix(in srgb, var(--color-bg-deep) 75%, transparent);
-  color: var(--color-frost);
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.map-popup__close:hover,
-.map-popup__close:focus-visible {
-  border-color: var(--color-frost);
-  transform: translateY(-1px);
 }
 
 .map-legend-dot {
@@ -1231,33 +1484,6 @@ const innerTransform = computed(
 .map-legend-dot--vostok {
   background: color-mix(in srgb, var(--color-accent) 88%, #200);
   border-color: color-mix(in srgb, var(--color-accent) 50%, #fff);
-}
-
-.map-list-title {
-  margin: 0 0 0.5rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 1.15rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text);
-}
-
-.map-list-dek {
-  margin: 0 0 1rem;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-  line-height: 1.55;
-  max-width: 48rem;
-}
-
-.map-list-dek__a {
-  color: var(--color-frost);
-  font-weight: 600;
-  text-underline-offset: 0.2em;
-}
-
-.map-list-dek__a:hover {
-  color: var(--color-text);
 }
 
 .map-jump {
@@ -1361,12 +1587,6 @@ const innerTransform = computed(
     border-radius: 10px;
   }
 
-  .map-popup {
-    padding: 0.9rem 1rem 1rem;
-    padding-top: 2.2rem;
-    max-height: min(70vh, 480px);
-  }
-
   .map-pin__dot {
     width: 16px;
     height: 16px;
@@ -1385,6 +1605,11 @@ const innerTransform = computed(
 
   .map-lead {
     font-size: 0.9rem;
+  }
+
+  .map-pitch {
+    font-size: 0.9rem;
+    padding: 0.75rem 0.85rem;
   }
 
   .map-pin__label {

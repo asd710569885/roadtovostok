@@ -8,12 +8,11 @@ export default [
     category: 'Beginner',
     readingTime: '8 min read',
     seo: {
-      title:
-        'Road to Vostok Beginner Guide | Area 05, Border Zone, Vostok & First Sessions — Field Manual Blog',
+      title: 'Road to Vostok Beginner Guide | Area 05, Vostok & First Runs | Blog',
       description:
-        'New to Road to Vostok? Learn the three-zone loop (Area 05, Border Zone, Vostok), realistic gunplay, survival cadence, traders and tasks, and permadeath rules—then jump to our Start page, wiki hub, and official sources.',
+        'New to Road to Vostok? Learn the Area 05 → Border → Vostok loop, gunplay, survival cadence, traders, tasks & permadeath—then open our Start page, wiki & official Steam sources.',
       keywords:
-        'road to vostok beginner guide, road to vostok tips, Area 05, Border Zone, Vostok permadeath, road to vostok survival, road to vostok steam, early access, solo survival fps, road to vostok wiki',
+        'road to vostok beginner guide, road to vostok tips, Area 05, Border Zone, Vostok permadeath, road to vostok survival, road to vostok steam, early access, solo survival fps, road to vostok wiki, field manual blog',
     },
     addressBar: 'road-to-vostok-beginner-guide',
     publishDate: '2025-03-25',

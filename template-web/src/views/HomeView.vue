@@ -6,6 +6,7 @@ const mapThumbSrc = `${import.meta.env.BASE_URL}images/road-to-vostok-map.jpg`
 const topics = [
   {
     slug: 'weapons',
+    wikiPath: '/wiki/weapons',
     title: 'Weapons & reloading',
     tag: 'Combat',
     blurb:
@@ -13,15 +14,17 @@ const topics = [
     bullets: ['Keybinds & interaction order', 'Ammo types & containers', 'Common combat mistakes debrief'],
   },
   {
-    slug: 'survival',
-    title: 'Survival & medical',
-    tag: 'Vitality',
+    slug: 'ammo',
+    wikiPath: '/wiki/ammo',
+    title: 'Ammo & magazines',
+    tag: 'Logistics',
     blurb:
-      'Temperature, nutrition, injury chains, and fractures—turn “stay alive” from instinct into a repeatable checklist.',
-    bullets: ['Medical triage order', 'Fishing & boat loops', 'Seasons, clothing, and exposure'],
+      'Caliber pairing, magazine logic, and loot discipline—keep the right rounds on your person and know what stacks where.',
+    bullets: ['Ammo types & containers', 'Weapon–ammo pairing', 'Scarcity vs run goals'],
   },
   {
     slug: 'tasks',
+    wikiPath: '/wiki/npcs',
     title: 'Tasks & traders',
     tag: 'Economy',
     blurb:
@@ -30,6 +33,7 @@ const topics = [
   },
   {
     slug: 'maps',
+    wikiPath: '/wiki/maps',
     title: 'Maps & crossings',
     tag: 'Traversal',
     blurb:
@@ -92,21 +96,21 @@ const outlineRows = [
     article: 'Shotgun loading & ammo identification',
     status: 'In progress',
     focus: 'How-to',
-    to: { path: '/wiki', query: { section: 'pillar-weapons' } },
+    to: '/wiki/weapons',
   },
   {
-    topic: 'Survival',
-    article: 'Injury chain: bleeding → fracture → triage order',
+    topic: 'Ammo',
+    article: 'Magazine IDs, caliber tables, and stash heuristics',
     status: 'Queued',
-    focus: 'Deep dive',
-    to: { path: '/wiki', query: { section: 'pillar-survival' } },
+    focus: 'Reference',
+    to: '/wiki/ammo',
   },
   {
     topic: 'Tasks',
     article: 'Trader tiers & payout matrix (EA tracked)',
     status: 'Queued',
     focus: 'Reference',
-    to: { path: '/wiki', query: { section: 'pillar-tasks' } },
+    to: '/wiki/npcs',
   },
   {
     topic: 'Maps',
@@ -120,7 +124,7 @@ const outlineRows = [
     article: 'Border crossings: mines, rivers, OPFOR sightlines',
     status: 'In progress',
     focus: 'Traversal',
-    to: { path: '/wiki', query: { section: 'pillar-maps' } },
+    to: '/wiki/maps',
   },
   {
     topic: 'Versions',
@@ -148,7 +152,7 @@ const faqItems = [
       { text: 'Because one loot pass or task rebalance can brick a write-up overnight. Labels save you from “the guide lied” when your build is ahead or behind the author’s. The split is spelled out on the ' },
       { text: 'Start page', to: '/start' },
       { text: ' and in each ' },
-      { text: 'wiki pillar', to: '/wiki' },
+      { text: 'wiki topics', to: '/wiki' },
       { text: '.' },
     ],
   },
@@ -219,7 +223,7 @@ const faqItems = [
               <p class="hero-lead hero-lead--secondary">
                 Deep dives live in the
                 <RouterLink class="hero-inline" to="/wiki">wiki hub</RouterLink>
-                (quick finder + pillars), the
+                (topic pages + official links), the
                 <RouterLink class="hero-inline" to="/map">interactive map</RouterLink>
                 for spatial context, and
                 <RouterLink class="hero-inline" to="/start">Start</RouterLink>
@@ -358,7 +362,7 @@ const faqItems = [
               farm.” Cross-check labels on the
               <RouterLink class="section-dek__link" to="/map">world map</RouterLink>
               and the
-              <RouterLink class="section-dek__link" :to="{ path: '/wiki', query: { section: 'pillar-maps' } }">maps pillar</RouterLink>
+              <RouterLink class="section-dek__link" to="/wiki/maps">maps wiki</RouterLink>
               before you commit meds to a crossing.
             </p>
           </div>
@@ -404,15 +408,15 @@ const faqItems = [
               <p class="map-spotlight__text">
                 Explore the same <strong>official world-map artwork</strong> used on the developer site, with clickable pins for
                 Area 05, the Border Zone, Vostok, Highway, Minefield, and coastal labels. It pairs with the
-                <RouterLink :to="{ path: '/wiki', query: { section: 'pillar-maps' } }">maps &amp; crossings</RouterLink> pillar for written articles once each route is
+                <RouterLink to="/wiki/maps">maps &amp; crossings</RouterLink> wiki for written articles once each route is
                 verified in your build.
               </p>
               <div class="map-spotlight__actions">
                 <RouterLink to="/map" class="map-spotlight__btn map-spotlight__btn--primary">
                   Open the Road to Vostok world map
                 </RouterLink>
-                <RouterLink :to="{ path: '/wiki', query: { section: 'pillar-maps' } }" class="map-spotlight__btn map-spotlight__btn--ghost">
-                  Maps pillar index
+                <RouterLink to="/wiki/maps" class="map-spotlight__btn map-spotlight__btn--ghost">
+                  Maps wiki
                 </RouterLink>
               </div>
             </div>
@@ -439,16 +443,17 @@ const faqItems = [
       <div class="container">
         <div class="wrap wrap--full">
           <div class="section-head">
-            <h2 id="topics-heading" class="section-title">Guide pillars</h2>
+            <h2 id="topics-heading" class="section-title">Wiki topics</h2>
             <p class="section-dek">
-              Four columns cover how most of us play: guns, staying alive, economy, and not stepping on mines. Each card jumps
-              straight into the matching section of the
-              <RouterLink class="section-dek__link" to="/wiki">wiki hub</RouterLink>.
+              Four columns cover how most of us play: guns, staying alive, economy, and not stepping on mines. Each card opens its
+              own wiki topic page; the
+              <RouterLink class="section-dek__link" to="/wiki">wiki hub</RouterLink>
+              lists every category (including armor).
             </p>
           </div>
           <ul class="topic-grid">
             <li v-for="item in topics" :key="item.slug" class="topic-card">
-              <RouterLink :to="{ path: '/wiki', query: { section: `pillar-${item.slug}` } }" class="topic-card__link">
+              <RouterLink :to="item.wikiPath" class="topic-card__link">
                 <div class="topic-card__top">
                   <span class="topic-card__tag">{{ item.tag }}</span>
                   <svg class="topic-card__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
@@ -578,7 +583,7 @@ const faqItems = [
             </div>
             <div class="cta-card__actions">
               <RouterLink to="/wiki" class="hero-btn hero-btn--primary">Wiki hub</RouterLink>
-              <RouterLink :to="{ path: '/wiki', query: { section: 'quick-finder' } }" class="hero-btn hero-btn--ghost">Quick finder</RouterLink>
+              <RouterLink to="/wiki/weapons" class="hero-btn hero-btn--ghost">Weapons</RouterLink>
               <RouterLink to="/start" class="hero-btn hero-btn--ghost">Demo / EA &amp; specs</RouterLink>
               <RouterLink to="/map" class="hero-btn hero-btn--ghost">World map</RouterLink>
             </div>

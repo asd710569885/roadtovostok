@@ -1,4 +1,5 @@
-# https://roadtovostok.net — Road to Vostok Field Manual (unofficial)
+# https://roadtovostok.net — Road to Vostok Field Manual (unofficial player wiki & map)
+# Crawl: all public SPA routes are listed in sitemap.xml (weapons, ammo, maps, NPCs, blog, etc.)
 User-agent: *
 Allow: /
 
