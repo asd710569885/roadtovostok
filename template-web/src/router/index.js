@@ -58,11 +58,11 @@ const router = createRouter({
       name: 'home',
       component: () => import('../views/HomeView.vue'),
       meta: {
-        title: 'Road to Vostok Guide | Wiki, Weapons, Maps, NPCs & Map',
+        title: 'Road to Vostok Guide | Wiki, Weapons, Maps, NPCs & Interactive Map',
         description:
-          'Unofficial Road to Vostok player guide: weapons & ammo wiki, interactive world map with pins, NPC traders, map walkthroughs (Village, Shipyard, Highway, Minefield), Start hub & updates. Not affiliated with Road to Vostok Ltd.',
+          'Unofficial Road to Vostok wiki and player guide: weapons, ammo, map walkthroughs, NPC traders, interactive world map with pins, Start hub and updates. Area 05, Border Zone, Vostok—not affiliated with Road to Vostok Ltd.',
         keywords:
-          'road to vostok, road to vostok wiki, road to vostok guide, road to vostok weapons, road to vostok map, road to vostok npcs, road to vostok steam, road to vostok demo, road to vostok early access, Area 05, Border Zone, Vostok, survival fps, field manual',
+          'road to vostok, road to vostok wiki, road to vostok guide, road to vostok weapons, road to vostok map, road to vostok interactive map, road to vostok npcs, road to vostok steam, road to vostok demo, early access, Area 05, Border Zone, Vostok, field manual',
       },
     },
     {

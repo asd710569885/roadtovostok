@@ -1,137 +1,70 @@
 <script setup>
+import { onMounted, onUnmounted } from 'vue'
 import { RouterLink } from 'vue-router'
 
 const mapThumbSrc = `${import.meta.env.BASE_URL}images/road-to-vostok-map.jpg`
 
-const topics = [
-  {
-    slug: 'weapons',
-    wikiPath: '/wiki/weapons',
-    title: 'Weapons & reloading',
-    tag: 'Combat',
-    blurb:
-      'Realistic ballistics and magazine logic: shotgun loading patterns, rifle reloads, failure drills, and attachment rails.',
-    bullets: ['Keybinds & interaction order', 'Ammo types & containers', 'Common combat mistakes debrief'],
-  },
-  {
-    slug: 'ammo',
-    wikiPath: '/wiki/ammo',
-    title: 'Ammo & magazines',
-    tag: 'Logistics',
-    blurb:
-      'Caliber pairing, magazine logic, and loot discipline—keep the right rounds on your person and know what stacks where.',
-    bullets: ['Ammo types & containers', 'Weapon–ammo pairing', 'Scarcity vs run goals'],
-  },
-  {
-    slug: 'tasks',
-    wikiPath: '/wiki/npcs',
-    title: 'Tasks & traders',
-    tag: 'Economy',
-    blurb:
-      'Barter economy, trader specialties, task tiers, and shelter unlocks—the spine of long-horizon sandbox progression.',
-    bullets: ['Relative item value', 'Reward types & keys', 'Furniture, storage, physics placement'],
-  },
-  {
-    slug: 'maps',
-    wikiPath: '/wiki/maps',
-    title: 'Maps & crossings',
-    tag: 'Traversal',
-    blurb:
-      'Area 05, mined border corridors, river crossings, and Vostok permadeath stakes—risk bands and loadout heuristics.',
-    bullets: ['Pre-crossing checklist', 'Patrols & air support cues', 'Loss tolerance self-test'],
-  },
+/** High-intent internal links — readable for users, keyword anchors for SEO. */
+const jumpLinks = [
+  { to: '/wiki', label: 'Road to Vostok wiki hub' },
+  { to: '/wiki/weapons', label: 'Weapons & reloading guide' },
+  { to: '/wiki/ammo', label: 'Ammo & magazines' },
+  { to: '/wiki/maps', label: 'Map walkthroughs (Village, Shipyard…)' },
+  { to: '/wiki/npcs', label: 'NPCs & traders' },
+  { to: '/map', label: 'Interactive world map' },
+  { to: '/start', label: 'Demo, Early Access & PC specs' },
+  { to: '/updates', label: 'Updates & patch notes' },
+  { to: '/blog', label: 'Player blog' },
 ]
 
-const signals = [
-  'road to vostok guide',
-  'how to load shotgun',
-  'steam demo',
-  'early access date',
-  'save backup',
-  'all tasks',
-  'fishing',
-  'broken bone',
-  'vostok permadeath',
-  'barter traders',
-  'shelter save',
-  'border zone',
-  'road to vostok map',
-]
-
-const bento = [
+const exploreCards = [
   {
-    kind: 'large',
-    title: 'If this is your first run',
-    text: 'Learn the loot → shelter save → push triangle early. Never roam hungry; meds and ammo beat cosmetics. Treat the border as a planning exam, and assume Vostok can erase your run’s stakes in one mistake.',
-    meta: 'Onboarding digest',
-  },
-  {
-    kind: 'stat',
-    label: 'Zone stack',
-    value: '3',
-    hint: 'Area 05 / Border / Vostok',
-  },
-  {
-    kind: 'stat',
-    label: 'Engine',
-    value: 'Godot',
-    hint: 'Open source · physicalized loot',
-  },
-  {
-    kind: 'stat',
-    label: 'Mode',
-    value: 'Solo',
-    hint: 'Sandbox · no forced win state',
-  },
-  {
-    kind: 'quote',
-    quote: 'The sandbox never gives you a “correct” playstyle—only consequences.',
-    cite: 'How we think about RTV runs',
-  },
-]
-
-const outlineRows = [
-  {
-    topic: 'Weapons',
-    article: 'Shotgun loading & ammo identification',
-    status: 'In progress',
-    focus: 'How-to',
     to: '/wiki/weapons',
+    title: 'Weapons',
+    tag: 'Wiki',
+    desc: 'Reload flow, caliber tables, thumbnails—cross-linked to ammo.',
   },
   {
-    topic: 'Ammo',
-    article: 'Magazine IDs, caliber tables, and stash heuristics',
-    status: 'Queued',
-    focus: 'Reference',
     to: '/wiki/ammo',
+    title: 'Ammo',
+    tag: 'Wiki',
+    desc: 'Stacks, weight, caliber pairing, and links back to weapons.',
   },
   {
-    topic: 'Tasks',
-    article: 'Trader tiers & payout matrix (EA tracked)',
-    status: 'Queued',
-    focus: 'Reference',
-    to: '/wiki/npcs',
-  },
-  {
-    topic: 'Maps',
-    article: 'Interactive world map (pins + disclaimers)',
-    status: 'Live',
-    focus: 'Map',
-    to: '/map',
-  },
-  {
-    topic: 'Maps',
-    article: 'Border crossings: mines, rivers, OPFOR sightlines',
-    status: 'In progress',
-    focus: 'Traversal',
     to: '/wiki/maps',
+    title: 'Maps',
+    tag: 'Wiki',
+    desc: 'Village, Shipyard, Highway, Minefield—loot, traders, build notes.',
   },
   {
-    topic: 'Versions',
-    article: 'Demo vs Early Access comparison',
-    status: 'Live',
-    focus: 'Boot',
+    to: '/wiki/npcs',
+    title: 'NPCs',
+    tag: 'Wiki',
+    desc: 'Bandits, Generalist, Doctor—tasks, barter, map deep links.',
+  },
+  {
+    to: '/map',
+    title: 'World map',
+    tag: 'Atlas',
+    desc: 'Zoomable pins, wiki blurbs, NPC cards, shareable ?pin= URLs.',
+  },
+  {
     to: '/start',
+    title: 'Start',
+    tag: 'Boot',
+    desc: 'New players: Demo vs EA, checklist, Steam & system requirements.',
+  },
+  {
+    to: '/updates',
+    title: 'Updates',
+    tag: 'News',
+    desc: 'Where to read official patch notes, Steam posts, and roadmap.',
+  },
+  {
+    to: '/blog',
+    title: 'Blog',
+    tag: 'Read',
+    desc: 'Longer guides and commentary—Area 05, Vostok, survival loop.',
   },
 ]
 
@@ -179,6 +112,41 @@ const faqItems = [
     ],
   },
 ]
+
+function faqPlainAnswer(segments) {
+  return segments.map((s) => s.text).join('')
+}
+
+let homeFaqJsonLdEl = null
+
+function removeHomeFaqJsonLd() {
+  homeFaqJsonLdEl?.remove()
+  homeFaqJsonLdEl = null
+}
+
+function injectHomeFaqJsonLd() {
+  removeHomeFaqJsonLd()
+  const data = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faqPlainAnswer(item.segments),
+      },
+    })),
+  }
+  homeFaqJsonLdEl = document.createElement('script')
+  homeFaqJsonLdEl.type = 'application/ld+json'
+  homeFaqJsonLdEl.setAttribute('data-home-faq-jsonld', '1')
+  homeFaqJsonLdEl.textContent = JSON.stringify(data)
+  document.head.appendChild(homeFaqJsonLdEl)
+}
+
+onMounted(() => injectHomeFaqJsonLd())
+onUnmounted(() => removeHomeFaqJsonLd())
 </script>
 
 <template>
@@ -211,28 +179,29 @@ const faqItems = [
             <div class="hero-layout__copy hero-layout__copy--rail">
               <p class="hero-eyebrow">
                 <span class="hero-eyebrow__dot" aria-hidden="true" />
-                Unofficial · written by players who sweat the details
+                Unofficial field manual · roadtovostok.net
               </p>
-              <h1 id="hero-heading" class="hero-title">Road to Vostok field manual: border survival &amp; combat</h1>
+              <h1 id="hero-heading" class="hero-title">
+                Road to Vostok wiki &amp; player guide — weapons, maps &amp; NPCs
+              </h1>
               <p class="hero-lead">
-                Built around the searches players actually run—<strong>weapon handling</strong>, <strong>survival &amp; medical</strong>,
-                <strong>traders &amp; tasks</strong>, and <strong>map crossings</strong>. The fiction sits on a post-collapse
-                Finland–Russia frontier: stabilize in <strong>Area 05</strong>, plan through <strong>patrols and mine belts</strong>,
-                then decide if <strong>Vostok’s permadeath stakes</strong> are worth the haul.
+                One place for <strong>Road to Vostok</strong> reference: a structured
+                <RouterLink class="hero-inline" to="/wiki">wiki</RouterLink>
+                (weapons, ammo, playable maps, traders), an
+                <RouterLink class="hero-inline" to="/map">interactive world map</RouterLink>
+                with wiki-tied pins, and a
+                <RouterLink class="hero-inline" to="/start">Start</RouterLink>
+                hub for Demo vs Early Access and PC specs. We cover the Finland–Russia border fantasy in layers—
+                <strong>Area 05</strong>, <strong>Border Zone</strong>, and high-stakes <strong>Vostok</strong>—so you can plan loot runs without tab chaos.
               </p>
               <p class="hero-lead hero-lead--secondary">
-                Deep dives live in the
-                <RouterLink class="hero-inline" to="/wiki">wiki hub</RouterLink>
-                (topic pages + official links), the
-                <RouterLink class="hero-inline" to="/map">interactive map</RouterLink>
-                for spatial context, and
-                <RouterLink class="hero-inline" to="/start">Start</RouterLink>
-                for demo vs EA and PC specs. Same layout everywhere so you’re not hunting for the actual article.
+                Pick a destination below, or use the jump links for common intents. Everything cross-links: NPC pages open the same pin on the atlas; map guides match Village, Shipyard, Highway, and Minefield write-ups.
               </p>
               <div class="hero-actions">
-                <RouterLink to="/wiki" class="hero-btn hero-btn--primary">Open wiki hub</RouterLink>
-                <RouterLink to="/map" class="hero-btn hero-btn--ghost">World map</RouterLink>
-                <RouterLink to="/start" class="hero-btn hero-btn--ghost">Demo / Early Access</RouterLink>
+                <RouterLink to="/wiki" class="hero-btn hero-btn--primary">Wiki hub</RouterLink>
+                <RouterLink to="/map" class="hero-btn hero-btn--ghost">Interactive map</RouterLink>
+                <RouterLink to="/start" class="hero-btn hero-btn--ghost">Start guide</RouterLink>
+                <RouterLink to="/updates" class="hero-btn hero-btn--ghost">Updates</RouterLink>
               </div>
             </div>
             <aside class="hero-panel hero-panel--hud" aria-label="At-a-glance game facts">
@@ -300,54 +269,55 @@ const faqItems = [
       </div>
     </section>
 
-    <section class="signal-section section--tight section" aria-label="Common player searches">
+    <section class="home-jump section section--tight" aria-labelledby="home-jump-h">
       <div class="container">
         <div class="wrap wrap--full">
-          <p class="signal-label">Stuff people actually type into Google</p>
-          <div class="signal-scroll" role="list">
-            <span v-for="s in signals" :key="s" class="signal-chip" role="listitem">{{ s }}</span>
+          <div class="section-head section-head--compact">
+            <h2 id="home-jump-h" class="section-title">Jump to…</h2>
+            <p class="section-dek">
+              Shortcuts to every major section—useful on mobile and for search-friendly internal navigation.
+            </p>
           </div>
+          <nav class="home-jump__nav" aria-label="Primary site sections">
+            <RouterLink v-for="j in jumpLinks" :key="j.to" :to="j.to" class="home-jump__link">
+              {{ j.label }}
+            </RouterLink>
+          </nav>
         </div>
       </div>
     </section>
 
-    <section class="bento-section section" aria-labelledby="bento-heading">
+    <section class="home-explore section" aria-labelledby="home-explore-h">
       <div class="container">
         <div class="wrap wrap--full">
           <div class="section-head">
-            <h2 id="bento-heading" class="section-title">How this site lays out info</h2>
+            <h2 id="home-explore-h" class="section-title">Explore the manual</h2>
             <p class="section-dek">
-              Long reads when you need them, short tiles when you don’t—so you can skim for “do I push east today?” and still drill
-              into numbers when you’re theorycrafting a border kit.
+              Eight entry points cover how most players use this site: reference tables, atlas, onboarding, and news. Each card opens
+              a dedicated route—no buried anchors.
             </p>
           </div>
-          <div class="bento">
-            <div
-              v-for="(cell, i) in bento"
-              :key="'bento-' + i"
-              class="bento__cell"
-              :class="{
-                'bento__cell--large': cell.kind === 'large',
-                'bento__cell--stat': cell.kind === 'stat',
-                'bento__cell--quote': cell.kind === 'quote',
-              }"
-            >
-              <template v-if="cell.kind === 'large'">
-                <p class="bento__meta">{{ cell.meta }}</p>
-                <p class="bento__title">{{ cell.title }}</p>
-                <p class="bento__text">{{ cell.text }}</p>
-              </template>
-              <template v-else-if="cell.kind === 'stat'">
-                <p class="bento__stat-label">{{ cell.label }}</p>
-                <p class="bento__stat-value">{{ cell.value }}</p>
-                <p class="bento__stat-hint">{{ cell.hint }}</p>
-              </template>
-              <template v-else>
-                <p class="bento__quote">“{{ cell.quote }}”</p>
-                <p class="bento__cite">— {{ cell.cite }}</p>
-              </template>
-            </div>
-          </div>
+          <ul class="home-explore__grid">
+            <li v-for="card in exploreCards" :key="card.to" class="home-explore__item">
+              <RouterLink :to="card.to" class="home-explore__card">
+                <div class="home-explore__top">
+                  <span class="home-explore__tag">{{ card.tag }}</span>
+                  <svg class="home-explore__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                    <path
+                      d="M4 10h10M11 6l4 4-4 4"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </div>
+                <span class="home-explore__title">{{ card.title }}</span>
+                <span class="home-explore__desc">{{ card.desc }}</span>
+                <span class="home-explore__cta">Open →</span>
+              </RouterLink>
+            </li>
+          </ul>
         </div>
       </div>
     </section>
@@ -401,19 +371,19 @@ const faqItems = [
         <div class="wrap wrap--full">
           <div class="map-spotlight">
             <div class="map-spotlight__copy">
-              <p class="map-spotlight__eyebrow">Atlas · Same art the official site uses</p>
+              <p class="map-spotlight__eyebrow">Featured · Road to Vostok interactive map</p>
               <h2 id="map-spotlight-heading" class="map-spotlight__title">
                 Road to Vostok interactive world map
               </h2>
               <p class="map-spotlight__text">
-                Explore the same <strong>official world-map artwork</strong> used on the developer site, with clickable pins for
-                Area 05, the Border Zone, Vostok, Highway, Minefield, and coastal labels. It pairs with the
-                <RouterLink to="/wiki/maps">maps &amp; crossings</RouterLink> wiki for written articles once each route is
-                verified in your build.
+                Pan and zoom the <strong>official-style world artwork</strong> with hand-placed pins for Area 05, Border Zone, Vostok,
+                Village, Shipyard, Highway, Minefield, and more. Each pin surfaces wiki-aligned notes, NPC cards, and
+                <code class="hero-code">?pin=</code> URLs you can share. Pair it with
+                <RouterLink to="/wiki/maps">map walkthroughs</RouterLink> for container tables and build caveats.
               </p>
               <div class="map-spotlight__actions">
                 <RouterLink to="/map" class="map-spotlight__btn map-spotlight__btn--primary">
-                  Open the Road to Vostok world map
+                  Open interactive map
                 </RouterLink>
                 <RouterLink to="/wiki/maps" class="map-spotlight__btn map-spotlight__btn--ghost">
                   Maps wiki
@@ -434,98 +404,6 @@ const faqItems = [
               />
               <span class="map-spotlight__badge" aria-hidden="true">Map</span>
             </RouterLink>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="topics-section section" aria-labelledby="topics-heading">
-      <div class="container">
-        <div class="wrap wrap--full">
-          <div class="section-head">
-            <h2 id="topics-heading" class="section-title">Wiki topics</h2>
-            <p class="section-dek">
-              Four columns cover how most of us play: guns, staying alive, economy, and not stepping on mines. Each card opens its
-              own wiki topic page; the
-              <RouterLink class="section-dek__link" to="/wiki">wiki hub</RouterLink>
-              lists every category (including armor).
-            </p>
-          </div>
-          <ul class="topic-grid">
-            <li v-for="item in topics" :key="item.slug" class="topic-card">
-              <RouterLink :to="item.wikiPath" class="topic-card__link">
-                <div class="topic-card__top">
-                  <span class="topic-card__tag">{{ item.tag }}</span>
-                  <svg class="topic-card__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                    <path
-                      d="M4 10h10M11 6l4 4-4 4"
-                      stroke="currentColor"
-                      stroke-width="1.5"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                    />
-                  </svg>
-                </div>
-                <span class="topic-card__title">{{ item.title }}</span>
-                <span class="topic-card__blurb">{{ item.blurb }}</span>
-                <ul class="topic-card__bullets">
-                  <li v-for="(b, j) in item.bullets" :key="j">{{ b }}</li>
-                </ul>
-                <span class="topic-card__cta">Open in wiki hub</span>
-              </RouterLink>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    <section class="outline-section section" aria-labelledby="outline-heading">
-      <div class="container">
-        <div class="wrap wrap--full">
-          <div class="section-head">
-            <h2 id="outline-heading" class="section-title">Coverage table</h2>
-            <p class="section-dek">
-              What’s live, what’s being written, and where it will live. Click a row when the link is there—everything eventually
-              resolves to the wiki hub or a dedicated route like the map.
-            </p>
-          </div>
-          <div class="outline-table-wrap">
-            <table class="outline-table">
-              <caption class="visually-hidden">
-                Guide coverage and status
-              </caption>
-              <thead>
-                <tr>
-                  <th scope="col">Pillar</th>
-                  <th scope="col">Article</th>
-                  <th scope="col">Focus</th>
-                  <th scope="col">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="row in outlineRows" :key="row.article">
-                  <td data-label="Pillar">{{ row.topic }}</td>
-                  <td data-label="Article">
-                    <RouterLink v-if="row.to" :to="row.to" class="outline-article-link">{{ row.article }}</RouterLink>
-                    <template v-else>{{ row.article }}</template>
-                  </td>
-                  <td data-label="Focus">
-                    <span class="outline-pill">{{ row.focus }}</span>
-                  </td>
-                  <td data-label="Status">
-                    <span
-                      class="outline-status"
-                      :class="{
-                        'outline-status--ok': row.status === 'Live',
-                        'outline-status--wip': row.status === 'In progress',
-                      }"
-                    >
-                      {{ row.status }}
-                    </span>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
           </div>
         </div>
       </div>
@@ -572,13 +450,16 @@ const faqItems = [
         <div class="wrap wrap--wide">
           <div class="cta-card">
             <div class="cta-card__copy">
-              <h2 id="cta-heading" class="cta-title">What to read next</h2>
+              <h2 id="cta-heading" class="cta-title">Suggested reading order</h2>
               <p class="cta-text">
-                Boot order that works: <RouterLink class="cta-inline" to="/start">Start</RouterLink> for build and specs, then
-                <RouterLink class="cta-inline" to="/wiki">wiki</RouterLink>
-                for mechanics, then
-                <RouterLink class="cta-inline" to="/map">map</RouterLink>
-                when you’re planning a push. That trio covers ninety percent of “where do I click next?”
+                <RouterLink class="cta-inline" to="/start">Start</RouterLink>
+                for Demo vs EA and PC requirements, then the
+                <RouterLink class="cta-inline" to="/wiki">wiki hub</RouterLink>
+                for weapons, ammo, maps, and NPCs, then the
+                <RouterLink class="cta-inline" to="/map">interactive map</RouterLink>
+                when you want geography and pin-level context. Add
+                <RouterLink class="cta-inline" to="/updates">Updates</RouterLink>
+                after major patches.
               </p>
             </div>
             <div class="cta-card__actions">
@@ -989,32 +870,38 @@ const faqItems = [
   }
 }
 
-.signal-label {
-  margin: 0 0 0.65rem;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+.section-head--compact {
+  margin-bottom: 1rem;
 }
 
-.signal-scroll {
+.home-jump__nav {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 0.75rem 0;
-  border-block: 1px solid var(--color-border);
+  gap: 0.5rem 0.65rem;
+  padding: 0.35rem 0 0.15rem;
 }
 
-.signal-chip {
-  padding: 0.35rem 0.65rem;
-  font-size: 0.75rem;
-  color: color-mix(in srgb, var(--color-text) 82%, var(--color-frost));
-  border: 1px solid color-mix(in srgb, var(--color-border) 80%, var(--color-frost));
+.home-jump__link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--color-text) 88%, var(--color-frost));
+  text-decoration: none;
+  border: 1px solid color-mix(in srgb, var(--color-border) 75%, var(--color-frost));
   border-radius: 999px;
-  background: color-mix(in srgb, var(--color-bg-panel) 75%, transparent);
-  backdrop-filter: blur(6px);
-  white-space: nowrap;
+  background: color-mix(in srgb, var(--color-bg-panel) 82%, transparent);
+  transition:
+    border-color 0.18s ease,
+    color 0.18s ease,
+    background 0.18s ease;
+}
+
+.home-jump__link:hover {
+  border-color: color-mix(in srgb, var(--color-frost) 45%, var(--color-border));
+  color: var(--color-frost);
+  background: color-mix(in srgb, var(--color-bg-elevated) 70%, transparent);
 }
 
 .section-head {
@@ -1043,150 +930,96 @@ const faqItems = [
   margin-bottom: 1.25rem;
 }
 
-.bento {
+.home-explore__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: grid;
   gap: 1rem;
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 768px) {
-  .bento {
-    grid-template-columns: repeat(6, 1fr);
-    grid-auto-rows: minmax(120px, auto);
-  }
-
-  .bento__cell--large {
-    grid-column: span 4;
-    grid-row: span 2;
-  }
-
-  .bento__cell--stat {
-    grid-column: span 2;
-  }
-
-  .bento__cell--quote {
-    grid-column: span 3;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .bento {
+@media (min-width: 640px) {
+  .home-explore__grid {
     grid-template-columns: repeat(2, 1fr);
-    grid-auto-rows: auto;
-  }
-
-  .bento__cell--large {
-    grid-column: span 2;
-    grid-row: span 1;
-    min-height: 200px;
-  }
-
-  .bento__cell--stat {
-    grid-column: span 1;
-  }
-
-  .bento__cell--quote {
-    grid-column: span 2;
   }
 }
 
-.bento__cell {
-  position: relative;
-  padding: 1.25rem 1.35rem;
+@media (min-width: 1100px) {
+  .home-explore__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.home-explore__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  height: 100%;
+  min-height: 8.5rem;
+  padding: 1.2rem 1.25rem;
+  text-decoration: none;
+  color: inherit;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--color-bg-panel) 82%, transparent);
-  overflow: hidden;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--color-bg-panel) 80%, transparent);
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.bento__cell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  opacity: 0.12;
-  background: radial-gradient(circle at 0 0, var(--color-frost), transparent 55%);
-  pointer-events: none;
+.home-explore__card:hover {
+  border-color: color-mix(in srgb, var(--color-frost) 38%, var(--color-border));
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px color-mix(in srgb, #000 42%, transparent);
 }
 
-.bento__cell--large {
-  min-height: 220px;
+.home-explore__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.bento__meta {
-  position: relative;
-  margin: 0 0 0.5rem;
+.home-explore__tag {
   font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--color-accent);
+  color: var(--color-frost);
 }
 
-.bento__title {
-  position: relative;
-  margin: 0 0 0.65rem;
+.home-explore__arrow {
+  flex-shrink: 0;
+  color: var(--color-accent);
+  opacity: 0.9;
+}
+
+.home-explore__title {
   font-family: 'Barlow Condensed', system-ui, sans-serif;
   font-weight: 700;
-  font-size: 1.35rem;
-  letter-spacing: 0.04em;
+  font-size: 1.15rem;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--color-text);
 }
 
-.bento__text {
-  position: relative;
-  margin: 0;
-  font-size: 0.9375rem;
+.home-explore__desc {
+  flex: 1;
+  font-size: 0.875rem;
   color: var(--color-text-muted);
-  line-height: 1.65;
-  max-width: 40rem;
+  line-height: 1.55;
 }
 
-.bento__stat-label {
-  position: relative;
-  margin: 0 0 0.35rem;
-  font-size: 0.7rem;
-  font-weight: 600;
+.home-explore__cta {
+  margin-top: auto;
+  padding-top: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
-.bento__stat-value {
-  position: relative;
-  margin: 0 0 0.25rem;
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 2rem;
-  letter-spacing: 0.04em;
-  color: var(--color-frost);
-}
-
-.bento__stat-hint {
-  position: relative;
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  line-height: 1.45;
-}
-
-.bento__quote {
-  position: relative;
-  margin: 0 0 0.75rem;
-  font-size: 1.05rem;
-  color: color-mix(in srgb, var(--color-text) 88%, var(--color-text-muted));
-  line-height: 1.55;
-  font-style: italic;
-}
-
-.bento__cite {
-  position: relative;
-  margin: 0;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  color: var(--color-accent);
 }
 
 .zone-track {
@@ -1431,178 +1264,6 @@ const faqItems = [
   border-radius: 2px;
 }
 
-.topic-grid {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 1.1rem;
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 768px) {
-  .topic-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.topic-card__link {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  height: 100%;
-  padding: 1.35rem 1.4rem;
-  text-decoration: none;
-  color: inherit;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--color-bg-panel) 78%, transparent);
-  cursor: pointer;
-  transition:
-    border-color 0.2s ease,
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.topic-card__link:hover {
-  border-color: color-mix(in srgb, var(--color-frost) 40%, var(--color-border));
-  transform: translateY(-2px);
-  box-shadow: 0 16px 40px color-mix(in srgb, #000 45%, transparent);
-}
-
-.topic-card__top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-
-.topic-card__tag {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-frost);
-}
-
-.topic-card__arrow {
-  flex-shrink: 0;
-  color: var(--color-accent);
-  opacity: 0.9;
-}
-
-.topic-card__title {
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-weight: 700;
-  font-size: 1.2rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  color: var(--color-text);
-}
-
-.topic-card__blurb {
-  font-size: 0.9rem;
-  color: var(--color-text-muted);
-  line-height: 1.55;
-}
-
-.topic-card__bullets {
-  margin: 0.25rem 0 0;
-  padding-left: 1.1rem;
-  color: color-mix(in srgb, var(--color-text-muted) 92%, var(--color-text));
-  font-size: 0.8125rem;
-  line-height: 1.5;
-}
-
-.topic-card__bullets li + li {
-  margin-top: 0.25rem;
-}
-
-.topic-card__cta {
-  margin-top: auto;
-  padding-top: 0.5rem;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent);
-}
-
-.outline-table-wrap {
-  overflow-x: auto;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
-  background: color-mix(in srgb, var(--color-bg-panel) 85%, transparent);
-}
-
-.outline-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-  min-width: 520px;
-}
-
-.outline-table th,
-.outline-table td {
-  padding: 0.85rem 1rem;
-  text-align: left;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.outline-table th {
-  font-family: 'Barlow Condensed', system-ui, sans-serif;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  background: color-mix(in srgb, var(--color-bg-deep) 65%, var(--color-bg-panel));
-}
-
-.outline-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.outline-table td {
-  color: var(--color-text-muted);
-}
-
-.outline-article-link {
-  color: var(--color-frost);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.outline-article-link:hover {
-  color: var(--color-text);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
-.outline-pill {
-  display: inline-block;
-  padding: 0.15rem 0.45rem;
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-frost);
-  border: 1px solid color-mix(in srgb, var(--color-frost) 35%, var(--color-border));
-  border-radius: 2px;
-}
-
-.outline-status {
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.outline-status--ok {
-  color: var(--color-forest);
-}
-
-.outline-status--wip {
-  color: var(--color-accent);
-}
-
 .faq-list {
   display: flex;
   flex-direction: column;
@@ -1757,22 +1418,14 @@ const faqItems = [
     padding: 1rem 1.05rem;
   }
 
-  .signal-scroll {
-    gap: 0.4rem;
-    padding: 0.65rem 0;
+  .home-jump__link {
+    padding: 0.4rem 0.72rem;
+    font-size: 0.78rem;
   }
 
-  .signal-chip {
-    padding: 0.32rem 0.55rem;
-    font-size: 0.7rem;
-  }
-
-  .bento__cell {
+  .home-explore__card {
     padding: 1.05rem 1.1rem;
-  }
-
-  .topic-card__link {
-    padding: 1.15rem 1.15rem;
+    min-height: 0;
   }
 
   .faq-item {
@@ -1782,15 +1435,6 @@ const faqItems = [
   .map-spotlight__btn {
     padding: 0.58rem 1rem;
     font-size: 0.82rem;
-  }
-
-  .outline-table th:nth-child(3),
-  .outline-table td:nth-child(3) {
-    display: none;
-  }
-
-  .outline-table {
-    min-width: 100%;
   }
 }
 </style>
