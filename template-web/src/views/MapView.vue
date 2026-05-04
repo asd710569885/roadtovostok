@@ -2,6 +2,7 @@
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import mapLocations, { mapRouteForPin, MAP_PAGE, MAP_PIN_QUERY } from '../data/maps.js'
+import { RASTER_MAP_PAGES } from '../data/raster-maps/rasterMapPages.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -33,6 +34,12 @@ function intelBlocksFor(m) {
 }
 
 const mapSrc = `${import.meta.env.BASE_URL}images/road-to-vostok-map.jpg`
+
+const rasterBase = (import.meta.env.BASE_URL || '/').replace(/\/$/, '')
+function rasterImageUrl(u) {
+  if (!u) return ''
+  return u.startsWith('/') ? `${rasterBase}${u}` : `${rasterBase}/${u}`
+}
 
 /** Official three-layer model: https://www.roadtovostok.com/game */
 const typeOrder = ['area05', 'borderZone', 'vostok']
@@ -531,6 +538,33 @@ const innerTransform = computed(
             <RouterLink class="map-link" to="/start">Start</RouterLink>
           </p>
         </div>
+      </div>
+    </section>
+
+    <section class="map-raster-hub section" aria-labelledby="raster-maps-h2" id="raster-maps">
+      <div class="container">
+        <h2 id="raster-maps-h2" class="map-raster-hub__h2">In-game rasters (single-zone maps)</h2>
+        <p class="map-raster-hub__lead">
+          High-resolution, area-filling map images with dense wiki-style layers (POI, fires, containers, ground loot). Each opens its own
+          page (SEO-friendly URLs) with full first-screen art and
+          <code class="map-raster-hub__code">?pin=</code> deep links—below the world atlas, not a replacement for it.
+        </p>
+        <ul class="map-raster-tiles" role="list">
+          <li v-for="m in RASTER_MAP_PAGES" :key="m.path" class="map-raster-tile-li">
+            <RouterLink :to="m.path" class="map-raster-tile" :style="{ '--m-accent': m.accent }">
+              <img
+                :src="rasterImageUrl(m.thumb)"
+                class="map-raster-tile__img"
+                :alt="`Thumbnail: ${m.label} interactive map`"
+                width="200"
+                height="120"
+                loading="lazy"
+                decoding="async"
+              />
+              <span class="map-raster-tile__label">{{ m.navLabel }}</span>
+            </RouterLink>
+          </li>
+        </ul>
       </div>
     </section>
   </div>
@@ -1621,5 +1655,103 @@ const innerTransform = computed(
     padding: 0.34rem 0.62rem;
     font-size: 0.78rem;
   }
+}
+
+.map-raster-hub {
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 55%, transparent);
+  background: color-mix(in srgb, var(--color-bg) 100%, #000 0%);
+}
+
+.map-raster-hub__h2 {
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin: 0 0 0.5rem;
+  color: var(--color-text);
+}
+
+.map-raster-hub__lead {
+  margin: 0 0 1.1rem;
+  max-width: 46rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.map-raster-hub__code {
+  font-size: 0.85em;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--color-bg-deep) 60%, transparent);
+  color: var(--color-frost);
+}
+
+.map-raster-tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+@media (min-width: 640px) {
+  .map-raster-tiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (min-width: 900px) {
+  .map-raster-tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (min-width: 1200px) {
+  .map-raster-tiles {
+    grid-template-columns: repeat(7, 1fr);
+  }
+}
+
+.map-raster-tile-li {
+  margin: 0;
+}
+
+.map-raster-tile {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--m-accent, #666) 35%, var(--color-border) 50%);
+  background: #08090a;
+  transition:
+    border-color 0.18s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0 8px 20px #0002;
+}
+.map-raster-tile:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--m-accent) 70%, #fff 8%);
+  box-shadow: 0 10px 28px #0003;
+}
+.map-raster-tile__img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+}
+.map-raster-tile__label {
+  display: block;
+  padding: 0.45rem 0.4rem 0.55rem;
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: center;
+  background: color-mix(in srgb, var(--color-bg-panel) 92%, #000 8%);
+  color: var(--color-text);
 }
 </style>

@@ -4,6 +4,17 @@
   box-sizing: border-box;
 }
 
+:root {
+  /* 顶栏：accent 条 + 主行 min-height，供首屏 `calc(100dvh - …)` 使用 */
+  --app-header-offset: calc(3px + 4rem);
+}
+
+@media (max-width: 899px) {
+  :root {
+    --app-header-offset: calc(3px + 3.65rem);
+  }
+}
+
 html {
   scroll-behavior: smooth;
   overflow-x: clip;

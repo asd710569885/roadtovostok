@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { applyRouteSeo, applyBlogPostSeo } from '../utils/seo.js'
 import blogPosts from '../data/blog.js'
+import { rasterMapRoutes } from './rasterMapRoutes.js'
 
 /** Legacy ?section= from the old single-page wiki → path + hash. */
 function resolveLegacyWikiSection(key) {
@@ -313,11 +314,12 @@ const router = createRouter({
       meta: {
         title: 'Road to Vostok Interactive Map | Atlas & Wiki Pins',
         description:
-          'Zoomable Road to Vostok world map: Area 05, Border Zone, Vostok pins, wiki summaries, NPC cards, loot notes & ?pin= links (Village, Shipyard, Highway, Minefield…).',
+          'Zoomable Road to Vostok world map: Area 05, Border Zone, Vostok pins, wiki summaries, NPC cards, loot notes & ?pin= links. Plus high-res area rasters (Village, Highway, School, Outpost, Minefield, Apartments, Terminal).',
         keywords:
-          'road to vostok map, road to vostok interactive map, road to vostok world map, road to vostok atlas, road to vostok wiki map, road to vostok Village map, Area 05, Border Zone, Vostok, road to vostok loot',
+          'road to vostok map, road to vostok interactive map, road to vostok world map, road to vostok atlas, road to vostok area maps, road to vostok village map, road to vostok minefield map, Area 05, Border Zone, Vostok, road to vostok loot',
       },
     },
+    ...rasterMapRoutes,
     {
       path: '/about',
       name: 'about',

@@ -179,7 +179,13 @@ export function applyRouteSeo(to) {
   }
 
   if (meta.canonical !== false) {
-    const ogImage = meta.ogImage || defaultOgImageUrl()
+    const rawOg = meta.ogImage
+    const ogImage =
+      rawOg && String(rawOg).trim()
+        ? /^https?:\/\//i.test(String(rawOg).trim())
+          ? String(rawOg).trim()
+          : absoluteUrlFromRootPath(String(rawOg).trim())
+        : defaultOgImageUrl()
     const ogImageAlt =
       typeof meta.ogImageAlt === 'string' && meta.ogImageAlt.trim()
         ? meta.ogImageAlt.trim()
