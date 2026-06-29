@@ -1,0 +1,108 @@
+---
+import LegalPageShell from '../../components/legal/LegalPageShell.astro'
+import { LEGAL_CONTACT_EMAIL } from '../../lib/legalNav'
+
+const path = '/legal/terms'
+const mailto = `mailto:${LEGAL_CONTACT_EMAIL}`
+---
+
+<LegalPageShell
+  path={path}
+  breadcrumb="Terms"
+  headline="Terms of use"
+  dek="These terms govern your use of roadtovostok.net (Road to Vostok Field Manual). By accessing the site, you agree to them. If you do not agree, do not use the site."
+  metaLine="Last updated: June 24, 2026"
+>
+  <section class="legal-section section" aria-labelledby="terms-nature">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-nature" class="section-heading">Nature of the service</h2>
+        <p class="legal-prose">
+          This website is a player strategy guide for Road to Vostok. Content is provided for general information. It is not
+          professional advice, is not guaranteed to match your installed game build, and may contain errors or become outdated
+          after patches.
+        </p>
+        <p class="legal-prose">
+          We are not affiliated with Road to Vostok Ltd. or its licensors. Trademarks and game assets belong to their respective
+          owners. See
+          <a class="text-link" href="/legal/copyright">Copyright</a>
+          for more detail.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="terms-acceptable">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-acceptable" class="section-heading">Acceptable use</h2>
+        <p class="legal-prose">You agree not to:</p>
+        <ul class="legal-list">
+          <li>Use the site in any way that violates applicable law or third-party rights.</li>
+          <li>Attempt to disrupt, scrape at abusive rates, or probe the hosting infrastructure without permission.</li>
+          <li>Misrepresent fan content as official developer communication or guaranteed in-game behaviour.</li>
+          <li>Upload or transmit malware through any channel connected to the site (including email attachments).</li>
+        </ul>
+        <p class="legal-prose">
+          Reasonable automated access (search engine crawlers, accessibility tools) is expected for a public reference site.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="terms-disclaimer">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-disclaimer" class="section-heading">Disclaimer of warranties</h2>
+        <p class="legal-prose">
+          The site and all content are provided “as is” and “as available” without warranties of any kind, whether express or
+          implied, including but not limited to accuracy, completeness, fitness for a particular purpose, or non-infringement.
+          Your use of the site is at your own risk.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="terms-liability">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-liability" class="section-heading">Limitation of liability</h2>
+        <p class="legal-prose">
+          To the fullest extent permitted by law, the site operator shall not be liable for any indirect, incidental, special,
+          consequential, or punitive damages, or for any loss of data, profits, or goodwill, arising from your use of or inability
+          to use the site—even if advised of the possibility of such damages.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="terms-links">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-links" class="section-heading">External links</h2>
+        <p class="legal-prose">
+          Pages may link to Steam, the developer website, or other third-party sites. We do not control those sites and are not
+          responsible for their content or privacy practices. Links do not imply endorsement unless explicitly stated in context.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section section--tight" aria-labelledby="terms-changes">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="terms-changes" class="section-heading">Changes and contact</h2>
+        <p class="legal-prose">
+          We may revise these terms at any time by posting an updated version on this page. Material changes will be reflected in
+          the “Last updated” date. Questions about these terms:
+          <a class="text-link" href={mailto}>{LEGAL_CONTACT_EMAIL}</a>.
+        </p>
+        <p class="legal-prose">
+          <a class="text-link" href="/legal/privacy">Privacy</a>
+          ·
+          <a class="text-link" href="/legal/about">About</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</LegalPageShell>

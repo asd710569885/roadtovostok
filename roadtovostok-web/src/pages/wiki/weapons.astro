@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../lib/seo'
+import weapons from '../../data/wiki/weapons.js'
+import WikiTopicShell from '../../components/wiki/WikiTopicShell.astro'
+import WikiWeaponTables from '../../components/wiki/WikiWeaponTables.astro'
+
+const path = '/wiki/weapons'
+const seo = seoForPath(path)
+
+const meta = {
+  slug: 'weapons',
+  heading: 'Road to Vostok Weapons',
+  kicker: 'Combat',
+  lead:
+    'Grouped weapon tables with on-site thumbnails—each row links to a dedicated weapon dossier with stats, ammo pairing, and field notes.',
+}
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Weapons', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Weapons Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiTopicShell meta={meta}>
+    <WikiWeaponTables items={weapons} />
+  </WikiTopicShell>
+</BaseLayout>

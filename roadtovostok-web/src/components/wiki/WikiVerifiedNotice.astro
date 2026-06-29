@@ -1,0 +1,24 @@
+---
+import { WIKI_LAST_VERIFIED, WIKI_VERIFIED_BUILD, WIKI_VERIFIED_LABEL, EDITORIAL_BYLINE, EDITORIAL_METHOD } from '../../lib/contentMeta'
+
+interface Props {
+  compact?: boolean
+}
+
+const { compact = false } = Astro.props
+---
+
+<aside class:list={['wiki-verified', compact && 'wiki-verified--compact']} aria-label="Editorial verification">
+  <p class="wiki-verified__row">
+    <span class="wiki-verified__label">Verified</span>
+    <span class="wiki-verified__text">{WIKI_VERIFIED_LABEL}</span>
+  </p>
+  <p class="wiki-verified__row wiki-verified__row--meta">
+    <span class="wiki-verified__byline">{EDITORIAL_BYLINE}</span>
+    <span class="wiki-verified__sep" aria-hidden="true">·</span>
+    <a class="wiki-verified__contact" href="/legal/about#about-editorial">Editorial policy</a>
+    <span class="wiki-verified__sep" aria-hidden="true">·</span>
+    <a class="wiki-verified__contact" href="/legal/contact">Suggest a correction</a>
+  </p>
+  {!compact && <p class="wiki-verified__method">{EDITORIAL_METHOD}</p>}
+</aside>

@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath } from '../../lib/nav'
+import { collectionPageJsonLd, breadcrumbJsonLd } from '../../lib/seo'
+import blogPosts from '../../data/blog.js'
+import '../../styles/pages/blog.css'
+
+const path = '/blog'
+const seo = seoForPath(path)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Blog',
+    description: seo.description,
+    path,
+  }),
+]
+
+const posts = [...blogPosts].sort((a, b) => (a.publishDate < b.publishDate ? 1 : -1))
+
+function formatDate(iso: string) {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(iso + 'T12:00:00'))
+  } catch {
+    return iso
+  }
+}
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-blog">
+    <section class="page-head-section section section--tight" aria-labelledby="blog-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="page-kicker">Field manual · Blog</p>
+          <nav class="blog-crumb" aria-label="Breadcrumb">
+            <a href="/" class="blog-crumb__link">Road to Vostok Field Manual</a>
+            <span class="blog-crumb__sep" aria-hidden="true">/</span>
+            <span class="blog-crumb__here">Blog</span>
+          </nav>
+          <h1 id="blog-heading" class="page-title">Road to Vostok Blog</h1>
+          <p class="page-dek">
+            Longer reads and orientation pieces for players—always cross-check dates and mechanics on the official site and Steam.
+            For structured lookups, use the
+            <a class="blog-dek__link" href="/wiki">wiki index</a>
+            and
+            <a class="blog-dek__link" href="/start">Start</a>
+            hub.
+          </p>
+          <WikiVerifiedNotice compact />
+        </div>
+      </div>
+    </section>
+
+    <section class="blog-list-section section" aria-label="Articles">
+      <div class="container">
+        <div class="wrap wrap--wide blog-list-wrap">
+          <ul class="blog-card-list">
+            {posts.map((p) => (
+              <li class="blog-card-item">
+                <a
+                  href={`/blog/${p.addressBar}`}
+                  class="blog-card"
+                  aria-labelledby={`blog-card-title-${p.id}`}
+                >
+                  <div class="blog-card__media">
+                    <img
+                      class="blog-card__img"
+                      src={p.imageUrl}
+                      alt={p.imageAlt}
+                      width="640"
+                      height="360"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <div class="blog-card__body">
+                    {p.category && (
+                      <p class="blog-card__meta">
+                        <span class="blog-card__cat">{p.category}</span>
+                        <time class="blog-card__date" datetime={p.publishDate}>{formatDate(p.publishDate)}</time>
+                        {p.readingTime && <span class="blog-card__time">{p.readingTime}</span>}
+                      </p>
+                    )}
+                    <h2 id={`blog-card-title-${p.id}`} class="blog-card__title">{p.title}</h2>
+                    <p class="blog-card__excerpt">{p.excerpt}</p>
+                    <span class="blog-card__read">Read article</span>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

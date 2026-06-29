@@ -1,0 +1,79 @@
+---
+import {
+  LEGACY_GUIDES_HASH,
+  LEGACY_WIKI_FINDER_HASH,
+  LEGACY_WIKI_SECTION,
+} from '../lib/legacyRedirects'
+
+interface Props {
+  mode: 'guides' | 'wiki'
+}
+
+const { mode } = Astro.props
+---
+
+<script
+  is:inline
+  define:vars={{
+    mode,
+    LEGACY_WIKI_SECTION,
+    LEGACY_GUIDES_HASH,
+    LEGACY_WIKI_FINDER_HASH,
+  }}
+>
+  ;(() => {
+    function redirectTo(path, hash) {
+      const url = hash ? path + hash : path
+      if (location.pathname + location.search + location.hash === url) return
+      location.replace(url)
+    }
+
+    function destFromSection(key) {
+      if (!key || typeof key !== 'string') return null
+      if (LEGACY_WIKI_SECTION[key]) return LEGACY_WIKI_SECTION[key]
+      if (key.startsWith('finder-')) {
+        const mapped = LEGACY_WIKI_SECTION['finder-' + key.slice(7)]
+        if (mapped) return mapped
+      }
+      return null
+    }
+
+    function destFromHash(hash, maps) {
+      if (!hash) return null
+      for (let i = 0; i < maps.length; i++) {
+        const dest = maps[i][hash]
+        if (dest) return dest
+      }
+      if (hash.indexOf('#wiki-') === 0) {
+        const dest = LEGACY_WIKI_FINDER_HASH[hash]
+        if (dest) return dest
+      }
+      return null
+    }
+
+    if (mode === 'guides') {
+      const dest =
+        destFromHash(location.hash, [LEGACY_GUIDES_HASH]) || { path: '/wiki' }
+      redirectTo(dest.path, dest.hash)
+      return
+    }
+
+    if (mode === 'wiki') {
+      const params = new URLSearchParams(location.search)
+      const section = params.get('section')
+      const fromQuery = destFromSection(section)
+      if (fromQuery) {
+        params.delete('section')
+        const qs = params.toString()
+        const path = fromQuery.path + (qs ? '?' + qs : '')
+        redirectTo(path, fromQuery.hash)
+        return
+      }
+
+      const fromHash = destFromHash(location.hash, [LEGACY_GUIDES_HASH, LEGACY_WIKI_FINDER_HASH])
+      if (fromHash && fromHash.path !== '/wiki') {
+        redirectTo(fromHash.path, fromHash.hash)
+      }
+    }
+  })()
+</script>

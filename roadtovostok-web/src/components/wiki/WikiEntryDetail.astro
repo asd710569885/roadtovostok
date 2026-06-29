@@ -1,0 +1,278 @@
+﻿---
+import { WIKI_NAV } from '../../lib/nav'
+import type { WikiEntry, WikiEntryPeer } from '../../lib/wikiEntry'
+import WikiVerifiedNotice from './WikiVerifiedNotice.astro'
+
+interface Props {
+  entry: WikiEntry
+  peers: WikiEntryPeer[]
+}
+
+const { entry, peers } = Astro.props
+
+const baseUrl = import.meta.env.BASE_URL
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== entry.topicSlug)
+const peerLinks = peers.filter((p) => p.slug !== entry.slug)
+const visiblePeers = entry.peerLimit ? peerLinks.slice(0, entry.peerLimit) : peerLinks
+const headline = entry.headline ?? entry.name
+const heroMode = entry.heroMode ?? 'default'
+const statsTitle = entry.statsTitle ?? 'At a glance'
+
+function assetSrc(path?: string) {
+  if (!path) return ''
+  const p = path.startsWith('/') ? path.slice(1) : path
+  return `${baseUrl}${p}`
+}
+---
+
+<div class="page-wiki-entry">
+  <section class="wiki-entry-head section section--tight" aria-labelledby={`wiki-entry-h-${entry.slug}`}>
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <p class="wiki-entry-kicker">
+          {entry.kicker}
+          {entry.badge && <span class="wiki-entry-badge">{entry.badge}</span>}
+        </p>
+        <nav class="wiki-entry-crumb" aria-label="Breadcrumb">
+          <a href="/" class="wiki-entry-crumb__a">Road to Vostok Field Manual</a>
+          <span class="wiki-entry-crumb__sep" aria-hidden="true">/</span>
+          <a href="/wiki" class="wiki-entry-crumb__a">Wiki</a>
+          <span class="wiki-entry-crumb__sep" aria-hidden="true">/</span>
+          <a href={entry.topicIndexPath} class="wiki-entry-crumb__a">{entry.topicTitle}</a>
+          <span class="wiki-entry-crumb__sep" aria-hidden="true">/</span>
+          <span class="wiki-entry-crumb__here">{entry.name}</span>
+        </nav>
+
+        <div class:list={['wiki-entry-hero', `wiki-entry-hero--${heroMode}`]}>
+          {
+            entry.image && (
+              <div class="wiki-entry-hero__frame">
+                <img
+                  class="wiki-entry-hero__img"
+                  src={assetSrc(entry.image)}
+                  alt={entry.imageAlt ?? entry.name}
+                  width="960"
+                  height="540"
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            )
+          }
+          <div class="wiki-entry-hero__text">
+            <h1 id={`wiki-entry-h-${entry.slug}`} class="wiki-entry-title">{headline}</h1>
+            {
+              entry.flags?.length ? (
+                <ul class="wiki-entry-flags" aria-label="Tags">
+                  {entry.flags.map((f) => (
+                    <li class="wiki-entry-flag">{f}</li>
+                  ))}
+                </ul>
+              ) : null
+            }
+            <p class="wiki-entry-lead">{entry.summary}</p>
+          </div>
+        </div>
+
+        <WikiVerifiedNotice compact />
+
+        {
+          entry.callout && (
+            <div class="wiki-entry-callout" role="note">
+              <span class="wiki-entry-callout__label">{entry.callout.label}</span>
+              <p class="wiki-entry-callout__p">{entry.callout.text}</p>
+            </div>
+          )
+        }
+
+        {
+          entry.ctas?.length ? (
+            <div class="wiki-entry-ctas">
+              {entry.ctas.map((cta) => (
+                <a
+                  class:list={['wiki-entry-cta', cta.secondary && 'wiki-entry-cta--secondary']}
+                  href={cta.href}
+                >
+                  {cta.label}
+                </a>
+              ))}
+            </div>
+          ) : null
+        }
+
+        <nav class="wiki-pill-nav wiki-entry-peers" aria-label={`Other ${entry.topicTitle.toLowerCase()}`}>
+          {visiblePeers.map((p) => (
+            <a href={p.routePath} class="wiki-pill">{p.title}</a>
+          ))}
+          <a href={entry.topicIndexPath} class="wiki-pill wiki-pill--accent">
+            All {entry.topicTitle}
+          </a>
+        </nav>
+
+        <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+          {wikiSiblings.map((c) => (
+            <a href={c.routePath} class="wiki-pill">{c.title}</a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="wiki-entry-body section" aria-label={`${entry.name} details`}>
+    <div class="container">
+      <div class="wrap wrap--wide">
+        {
+          entry.stats?.length ? (
+            <div class="wiki-entry-stat-grid" role="list" aria-label={statsTitle}>
+              {entry.stats.map((row) => (
+                <div class="wiki-entry-stat" role="listitem">
+                  <span class="wiki-entry-stat__label">{row.label}</span>
+                  <span class="wiki-entry-stat__value">{row.value}</span>
+                </div>
+              ))}
+            </div>
+          ) : null
+        }
+
+        {entry.sections?.flatMap((sec) => {
+          if (sec.kind === 'taskTiers') {
+            return sec.tiers.map((tier) => (
+              <article class="wiki-entry-panel">
+                <h2 class="wiki-entry-panel__h">Task items 路 level {tier.level}</h2>
+                <div class="wiki-entry-table-wrap">
+                  <table class="wiki-entry-table">
+                    <thead>
+                      <tr>
+                        <th scope="col">Task</th>
+                        <th scope="col">Deliver</th>
+                        <th scope="col">Receive</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {tier.tasks.map((t) => (
+                        <tr>
+                          <th scope="row" class="wiki-entry-table__row-h">{t.name}</th>
+                          <td>{t.deliver}</td>
+                          <td>{t.receive}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </article>
+            ))
+          }
+
+          const panelClass =
+            sec.kind === 'list' && sec.soft
+              ? 'wiki-entry-panel wiki-entry-panel--soft'
+              : 'wiki-entry-panel'
+
+          return [
+            <article class={panelClass}>
+              <h2 class="wiki-entry-panel__h">{sec.title}</h2>
+              {sec.kind === 'table' && sec.dek && <p class="wiki-entry-panel__dek">{sec.dek}</p>}
+              {
+                sec.kind === 'paragraphs' &&
+                  sec.paragraphs.map((p) => <p class="wiki-entry-panel__p">{p}</p>)
+              }
+              {
+                sec.kind === 'list' && (
+                  <ul class="wiki-entry-list">
+                    {sec.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ul>
+                )
+              }
+              {
+                sec.kind === 'ordered' && (
+                  <ol class="wiki-entry-list wiki-entry-list--ordered">
+                    {sec.items.map((item) => (
+                      <li>{item}</li>
+                    ))}
+                  </ol>
+                )
+              }
+              {
+                sec.kind === 'links' && (
+                  <ul class="wiki-entry-links">
+                    {sec.links.map((link) => (
+                      <li>
+                        <a class="wiki-entry-link" href={link.href}>{link.label}</a>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              }
+              {
+                sec.kind === 'definitions' && (
+                  <dl class="wiki-entry-defs">
+                    {sec.pairs.map((pair) => (
+                      <div class="wiki-entry-defs__pair">
+                        <dt>{pair.term}</dt>
+                        <dd>{pair.desc}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                )
+              }
+              {
+                sec.kind === 'table' && (
+                  <div class="wiki-entry-table-wrap">
+                    <table class="wiki-entry-table">
+                      <thead>
+                        <tr>
+                          {sec.columns.map((col) => (
+                            <th scope="col">{col}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sec.rows.map((row) => (
+                          <tr>
+                            {
+                              row.rowHeader ? (
+                                <>
+                                  <th scope="row" class="wiki-entry-table__row-h">{row.rowHeader}</th>
+                                  {row.cells.map((cell) => (
+                                    <td>{cell}</td>
+                                  ))}
+                                </>
+                              ) : (
+                                row.cells.map((cell) => <td>{cell}</td>)
+                              )
+                            }
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )
+              }
+            </article>,
+          ]
+        })}
+
+        {
+          entry.footer ? (
+            <footer class="wiki-entry-foot" role="region" aria-labelledby={`wiki-entry-foot-${entry.slug}`}>
+              <div class="wiki-entry-foot__accent" aria-hidden="true" />
+              <h2 id={`wiki-entry-foot-${entry.slug}`} class="wiki-entry-foot__title">{entry.footer.title}</h2>
+              <p class="wiki-entry-foot__p" set:html={entry.footer.html} />
+              <p class="wiki-entry-foot__nav">
+                <a class="wiki-entry-link" href={entry.footer.backHref}>鈫?{entry.footer.backLabel}</a>
+                路
+                <a class="wiki-entry-link" href="/wiki">Wiki hub</a>
+              </p>
+            </footer>
+          ) : (
+            <p class="wiki-entry-back">
+              <a class="wiki-entry-link" href={entry.topicIndexPath}>鈫?Back to {entry.topicTitle}</a>
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</div>

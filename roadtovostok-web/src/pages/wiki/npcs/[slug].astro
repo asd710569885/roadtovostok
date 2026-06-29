@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { seoForPath, NPC_NAV } from '../../../lib/nav'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { npcToEntry } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import bandits from '../../../data/wiki/npc-bandits.js'
+import generalist from '../../../data/wiki/npc-generalist.js'
+import doctor from '../../../data/wiki/npc-doctor.js'
+import gunsmith from '../../../data/wiki/npc-gunsmith.js'
+
+export function getStaticPaths() {
+  const pages = [bandits, generalist, doctor, gunsmith]
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = `/wiki/npcs/${page.slug}`
+const entry = npcToEntry(page)
+const peers = NPC_NAV.map((n) => ({ slug: n.slug, routePath: n.routePath, title: n.title }))
+const seo = { ...seoForPath(path), author: EDITORIAL_BYLINE }
+const imagePath = page.image?.startsWith('/') ? page.image : page.image ? `/${page.image}` : undefined
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${page.name} — Road to Vostok NPC guide`,
+  description: seo.description,
+  path,
+  image: imagePath,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'NPCs', path: '/wiki/npcs' },
+    { name: page.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

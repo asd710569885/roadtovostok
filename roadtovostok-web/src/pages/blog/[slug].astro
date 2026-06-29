@@ -1,0 +1,149 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../components/wiki/WikiVerifiedNotice.astro'
+import {
+  absoluteUrlFromRootPath,
+  breadcrumbJsonLd,
+  canonicalUrlForPath,
+  organizationPublisher,
+} from '../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../lib/contentMeta'
+import blogPosts from '../../data/blog.js'
+import '../../styles/pages/blog-detail.css'
+
+export function getStaticPaths() {
+  return blogPosts.map((post) => ({
+    params: { slug: post.addressBar },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props
+const path = `/blog/${post.addressBar}`
+
+function articleH1Title(title: string) {
+  const t = title.trim()
+  if (/^road\s+to\s+vostok\b/i.test(t)) return title
+  return `Road to Vostok — ${title}`
+}
+
+function formatDate(iso: string) {
+  try {
+    return new Intl.DateTimeFormat('en-GB', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(new Date(iso + 'T12:00:00'))
+  } catch {
+    return iso
+  }
+}
+
+const articleH1 = articleH1Title(post.title)
+
+const seoInput = {
+  title: post.seo.title.trim(),
+  description: post.seo.description,
+  keywords: post.seo.keywords,
+  ogTitle: post.seo.title.trim(),
+  ogDescription: post.seo.description,
+  ogType: 'article',
+  ogImage: post.imageUrl,
+  ogImageAlt: (post.imageAlt && post.imageAlt.trim()) || post.title,
+  twitterCard: post.imageUrl ? 'summary_large_image' : 'summary',
+  author: EDITORIAL_BYLINE,
+  canonical: path,
+}
+
+const publisher = organizationPublisher()
+const dateModified = post.dateModified ?? post.publishDate
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Blog', path: '/blog' },
+    { name: post.title, path },
+  ]),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: articleH1,
+    datePublished: post.publishDate,
+    dateModified,
+    author: { '@type': 'Organization', name: EDITORIAL_BYLINE, url: publisher.url },
+    publisher,
+    description: post.seo.description,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': canonicalUrlForPath(path) },
+    ...(post.imageUrl ? { image: [absoluteUrlFromRootPath(post.imageUrl)] } : {}),
+  },
+]
+---
+
+<BaseLayout seo={seoInput} path={path} jsonLd={jsonLd}>
+  <div class="page-blog-detail">
+    <article itemscope itemtype="https://schema.org/BlogPosting">
+      <meta itemprop="headline" content={articleH1} />
+      <meta itemprop="datePublished" content={post.publishDate} />
+      <meta itemprop="description" content={post.seo.description} />
+
+      <section class="page-head-section section section--tight" aria-labelledby={`article-heading-${post.id}`}>
+        <div class="container">
+          <div class="wrap wrap--wide">
+            <p class="page-kicker">Blog · {post.category || 'Article'}</p>
+            <nav class="blog-crumb" aria-label="Breadcrumb">
+              <a href="/" class="blog-crumb__link">Road to Vostok Field Manual</a>
+              <span class="blog-crumb__sep" aria-hidden="true">/</span>
+              <a href="/blog" class="blog-crumb__link">Blog</a>
+              <span class="blog-crumb__sep" aria-hidden="true">/</span>
+              <span class="blog-crumb__here">{post.title}</span>
+            </nav>
+            <h1 id={`article-heading-${post.id}`} class="page-title" itemprop="name">{articleH1}</h1>
+            <p class="article-meta">
+              <time itemprop="datePublished" datetime={post.publishDate}>{formatDate(post.publishDate)}</time>
+              {post.readingTime && (
+                <>
+                  <span class="article-meta__sep" aria-hidden="true">·</span>
+                  <span>{post.readingTime}</span>
+                </>
+              )}
+            </p>
+            <p class="page-dek">{post.excerpt}</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-hero section section--tight" aria-hidden="false">
+        <div class="container">
+          <div class="wrap wrap--wide">
+            <figure class="article-figure">
+              <img
+                itemprop="image"
+                class="article-hero__img"
+                src={post.imageUrl}
+                alt={post.imageAlt}
+                width="1200"
+                height="675"
+                fetchpriority="high"
+                decoding="async"
+              />
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="article-body-section section">
+        <div class="container">
+          <div class="wrap wrap--wide">
+            <div class="blog-prose" itemprop="articleBody" set:html={post.detailsHtml} />
+            <WikiVerifiedNotice compact />
+            <nav class="article-nav" aria-label="Related on this site">
+              <a class="article-nav__link" href="/blog">← All posts</a>
+              <a class="article-nav__link" href="/start">Start hub</a>
+              <a class="article-nav__link" href="/wiki">Wiki index</a>
+            </nav>
+          </div>
+        </div>
+      </section>
+    </article>
+  </div>
+</BaseLayout>

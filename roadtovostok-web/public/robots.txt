@@ -1,0 +1,12 @@
+# https://roadtovostok.net — Road to Vostok Field Manual (unofficial player wiki & map)
+User-agent: *
+Allow: /
+
+# Redirect-only legacy routes (no unique content)
+Disallow: /primer
+Disallow: /wiki/armor
+Disallow: /about
+Disallow: /contact
+Disallow: /privacy
+
+Sitemap: https://roadtovostok.net/sitemap-index.xml

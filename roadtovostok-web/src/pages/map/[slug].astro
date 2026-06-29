@@ -1,0 +1,95 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { RASTER_MAP_PAGES, RASTER_PIN_QUERY } from '../../data/raster-maps/rasterMapPages.js'
+import RasterMapPageView from '../../components/islands/RasterMapPageView.vue'
+import { breadcrumbJsonLd, webPageJsonLd } from '../../lib/seo'
+import { WIKI_LAST_VERIFIED } from '../../lib/contentMeta'
+import '../../styles/raster-atlas-leaflet.css'
+import '../../styles/pages/map-raster.css'
+
+export function getStaticPaths() {
+  return RASTER_MAP_PAGES.map((page) => ({
+    params: { slug: page.path.replace(/^\/map\//, '') },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = page.path
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'World map', path: '/map' },
+    { name: page.navLabel, path },
+  ]),
+  webPageJsonLd({
+    name: `Road to Vostok — ${page.label}`,
+    description: page.description,
+    path,
+    image: page.fullMap,
+    dateModified: WIKI_LAST_VERIFIED,
+  }),
+]
+---
+
+<BaseLayout
+  title={page.title}
+  description={page.description}
+  keywords={page.keywords}
+  ogImage={page.fullMap}
+  ogImageAlt={page.ogImageAlt}
+  path={path}
+  jsonLd={jsonLd}
+>
+  <section class="raster-seo section section--tight" aria-labelledby="raster-page-h">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <nav class="legal-crumb" aria-label="Breadcrumb">
+          <a class="legal-crumb__link" href="/">Field Manual</a>
+          <span aria-hidden="true"> / </span>
+          <a class="legal-crumb__link" href="/map">World map</a>
+          <span aria-hidden="true"> / </span>
+          <span>{page.navLabel}</span>
+        </nav>
+        <p class="page-kicker">Area raster</p>
+        <h1 id="raster-page-h" class="page-title">Road to Vostok — {page.label}</h1>
+        <p class="page-dek">
+          Pan / zoom · sidebar layers and pin list.
+          <code class="raster-path-code">{path}?{RASTER_PIN_QUERY}=…</code>
+        </p>
+        <figure class="raster-preview">
+          <img
+            class="raster-preview__img"
+            src={page.fullMap}
+            alt={page.ogImageAlt}
+            width="1200"
+            height="750"
+            loading="eager"
+            decoding="async"
+          />
+          <figcaption class="raster-preview__cap">
+            Static preview; interactive pins and layers load below when JavaScript is enabled.
+          </figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="raster-map section" aria-label={`Interactive map: ${page.label}`}>
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <RasterMapPageView client:only="vue" mapModule={page.mapModule} />
+      </div>
+    </div>
+  </section>
+
+  <article class="raster-article-static section section--tight" lang="en">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 class="page-subtitle">Map guide: {page.navLabel}</h2>
+        <p class="legal-prose">{page.article}</p>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

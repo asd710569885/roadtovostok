@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../../lib/nav'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { enrichDbPage, peersFromCatalog } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import shelters from '../../../data/wiki/shelters.js'
+
+export function getStaticPaths() {
+  return shelters.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = `/wiki/shelters/${page.slug}`
+const entry = enrichDbPage(page, {
+  topicSlug: 'shelters',
+  topicTitle: 'Shelters',
+  topicIndexPath: '/wiki/shelters',
+})
+const peers = peersFromCatalog(shelters, '/wiki/shelters')
+const seo = { ...seoForPath(path), author: EDITORIAL_BYLINE }
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${page.name} shelter — Road to Vostok`,
+  description: seo.description ?? page.summary,
+  path,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Shelters', path: '/wiki/shelters' },
+    { name: page.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

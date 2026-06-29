@@ -1,0 +1,46 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { buildWeaponDetailSeo } from '../../../lib/wikiSeo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { weaponSummary } from '../../../lib/wikiCombat'
+import { weaponToEntry, peersFromCatalog } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import weapons from '../../../data/wiki/weapons.js'
+
+export function getStaticPaths() {
+  return weapons.map((weapon) => ({
+    params: { slug: weapon.id },
+    props: { weapon },
+  }))
+}
+
+const { weapon } = Astro.props
+const path = `/wiki/weapons/${weapon.id}`
+const entry = weaponToEntry(weapon)
+const peers = peersFromCatalog(weapons, '/wiki/weapons', 'id')
+const desc = weaponSummary(weapon.name, weapon.category, weapon.caliber)
+const seo = {
+  ...buildWeaponDetailSeo(weapon, desc),
+  author: EDITORIAL_BYLINE,
+}
+
+const imagePath = weapon.image?.startsWith('/') ? weapon.image : weapon.image ? `/${weapon.image}` : undefined
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${weapon.name} — Road to Vostok weapon guide`,
+  description: seo.description,
+  path,
+  image: imagePath,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Weapons', path: '/wiki/weapons' },
+    { name: weapon.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

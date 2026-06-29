@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../../lib/seo'
+import village from '../../../data/wiki/map-village.js'
+import school from '../../../data/wiki/map-school.js'
+import highway from '../../../data/wiki/map-highway.js'
+import outpost from '../../../data/wiki/map-outpost.js'
+import minefield from '../../../data/wiki/map-minefield.js'
+import apartments from '../../../data/wiki/map-apartments.js'
+import terminal from '../../../data/wiki/map-terminal.js'
+import shipyard from '../../../data/wiki/map-shipyard.js'
+import '../../../styles/pages/wiki-maps-index.css'
+
+const path = '/wiki/maps'
+const seo = seoForPath(path)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Maps', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Maps Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+
+const eaMaps = [village, school, highway, outpost, minefield, apartments, terminal]
+const legacyMaps = [shipyard]
+
+function cardImage(image?: string) {
+  if (!image) return ''
+  return image.startsWith('/') ? image : `/${image}`
+}
+
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== 'maps')
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-maps-idx">
+    <section class="maps-idx-hero section section--tight" aria-labelledby="maps-idx-h">
+      <div class="maps-idx-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="maps-idx-eyebrow">Atlas · Maps hub</p>
+          <nav class="maps-idx-crumb" aria-label="Breadcrumb">
+            <a href="/" class="maps-idx-crumb-a">Road to Vostok Field Manual</a>
+            <span class="maps-idx-crumb-sep" aria-hidden="true">/</span>
+            <a href="/wiki" class="maps-idx-crumb-a">Wiki</a>
+            <span class="maps-idx-crumb-sep" aria-hidden="true">/</span>
+            <span class="maps-idx-crumb-here">Maps</span>
+          </nav>
+          <h1 id="maps-idx-h" class="maps-idx-title">Road to Vostok Maps</h1>
+          <p class="maps-idx-lead">
+            Seven EA Build 1 (Road) location write-ups—Village through Terminal—with loot tables, trader notes, and
+            permadeath warnings where they apply. Use the interactive <a class="maps-idx-inline" href="/map">world map</a>
+            for where each label sits on the artwork.
+          </p>
+          <ul class="wiki-stat-bar" aria-label="Map scope">
+            <li class="wiki-stat-bar__item">
+              <span class="wiki-stat-bar__val">7</span>
+              <span class="wiki-stat-bar__lbl">EA maps</span>
+            </li>
+            <li class="wiki-stat-bar__item">
+              <span class="wiki-stat-bar__val">1</span>
+              <span class="wiki-stat-bar__lbl">Legacy</span>
+            </li>
+          </ul>
+          <WikiVerifiedNotice compact />
+          <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+            {wikiSiblings.map((c) => (
+              <a class="wiki-pill" href={c.routePath}>{c.title}</a>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="maps-idx-grid section" aria-label="EA Build 1 maps">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 class="maps-idx-section-h">Build 1 (Road) · EA maps</h2>
+          <ul class="maps-idx-cards">
+            {eaMaps.map((page) => (
+              <li class="maps-idx-cell">
+                <a class="maps-card" href={`/wiki/maps/${page.slug}`}>
+                  <div class="maps-card__visual">
+                    <img
+                      class="maps-card__img"
+                      src={cardImage(page.image)}
+                      alt={`Road to Vostok ${page.name} map`}
+                      width="400"
+                      height="225"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span class="maps-card__role">{page.kicker}</span>
+                  <span class="maps-card__title">{page.name}</span>
+                  <p class="maps-card__blurb">{page.summary}</p>
+                  <span class="maps-card__cta">Open guide ?</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="maps-idx-grid section section--tight" aria-label="Legacy demo maps">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 class="maps-idx-section-h">Legacy · Demo archive</h2>
+          <p class="maps-idx-section-lead">
+            Shipyard shipped in the free demo but is not part of EA Build 1. Kept for historical loot routes and
+            comparison with the School Doctor relocation.
+          </p>
+          <ul class="maps-idx-cards maps-idx-cards--legacy">
+            {legacyMaps.map((page) => (
+              <li class="maps-idx-cell">
+                <a class="maps-card maps-card--legacy" href={`/wiki/maps/${page.slug}`}>
+                  <div class="maps-card__visual">
+                    <img
+                      class="maps-card__img"
+                      src={cardImage(page.image)}
+                      alt={`Road to Vostok ${page.name} map`}
+                      width="400"
+                      height="225"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span class="maps-card__role">
+                    {page.kicker}
+                    <span class="maps-card__legacy">Legacy</span>
+                  </span>
+                  <span class="maps-card__title">{page.name}</span>
+                  <p class="maps-card__blurb">{page.summary}</p>
+                  <span class="maps-card__cta">Open archive ?</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p class="maps-idx-back">
+            <a class="maps-idx-back-a" href="/wiki">? Wiki index</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

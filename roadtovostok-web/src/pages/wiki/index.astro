@@ -1,0 +1,159 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import LegacyRedirect from '../../components/LegacyRedirect.astro'
+import WikiVerifiedNotice from '../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../lib/seo'
+import '../../styles/pages/wiki-index.css'
+
+const path = '/wiki'
+const seo = seoForPath(path)
+
+const totalDossiers = WIKI_NAV.reduce((sum, c) => sum + c.entryCount, 0)
+
+const intro = {
+  dek1:
+    'The Road to Vostok wiki: grouped tables, item dossiers, an interactive world map, and Start/Updates hubs for onboarding and patch context—all in one guide.',
+  dek2:
+    'Pick a topic below. Stats and loot tables carry build tags wherever patches can change the numbers.',
+}
+
+const strengths = [
+  {
+    title: 'One atlas, one manual',
+    text: 'The /map view and these wiki tables live beside /start and /updates so orientation, reference data, and patch context stay in a single guide.',
+  },
+  {
+    title: 'Tables you can scan',
+    text: 'Weapons, ammo, maps, and NPCs use the same grouped-table pattern—fast to read on desktop or phone, no nested article noise.',
+  },
+  {
+    title: 'Build-tagged pages',
+    text: 'Loot, tasks, and traders note Demo vs EA and Build 1 context on every page where tuning can drift between releases.',
+  },
+  {
+    title: 'Deep dossiers',
+    text: 'Every weapon, ammo type, map, and NPC opens its own page with cross-links—not one endless scroll.',
+  },
+]
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-hub">
+    <section class="wiki-hub-head wiki-hero section section--tight" aria-labelledby="wiki-heading">
+      <div class="wiki-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-hub-kicker">Index · Wiki hub</p>
+          <nav class="wiki-hub-crumb" aria-label="Breadcrumb">
+            <a href="/" class="wiki-hub-crumb__link">Road to Vostok Field Manual</a>
+            <span class="wiki-hub-crumb__sep" aria-hidden="true">/</span>
+            <span class="wiki-hub-crumb__here">Wiki</span>
+          </nav>
+          <h1 id="wiki-heading" class="wiki-hub-title">Road to Vostok Wiki</h1>
+          <p class="wiki-hub-dek">{intro.dek1}</p>
+          <p class="wiki-hub-dek wiki-hub-dek--muted">{intro.dek2}</p>
+          <ul class="wiki-stat-bar" aria-label="Wiki scope">
+            <li class="wiki-stat-bar__item">
+              <span class="wiki-stat-bar__val">{WIKI_NAV.length}</span>
+              <span class="wiki-stat-bar__lbl">Topics</span>
+            </li>
+            <li class="wiki-stat-bar__item">
+              <span class="wiki-stat-bar__val">{totalDossiers}</span>
+              <span class="wiki-stat-bar__lbl">Dossiers</span>
+            </li>
+            <li class="wiki-stat-bar__item">
+              <span class="wiki-stat-bar__val">EA</span>
+              <span class="wiki-stat-bar__lbl">Build 1 (Road)</span>
+            </li>
+          </ul>
+          <WikiVerifiedNotice compact />
+        </div>
+      </div>
+    </section>
+
+    <section class="wiki-hub-cats section section--tight" aria-label="Wiki categories">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 class="wiki-hub-section-title">Browse by topic</h2>
+          <p class="wiki-hub-section-lead">
+            Seven data tracks—each on its own URL. Tables and dossiers group by category; detail pages cross-link maps, traders, and shelters.
+          </p>
+          <ul class="wiki-hub-grid">
+            {WIKI_NAV.map((c) => (
+              <li class="wiki-hub-grid__cell">
+                <a class="wiki-hub-card" href={c.routePath}>
+                  <span class="wiki-hub-card__top">
+                    <span class="wiki-hub-card__kicker">{c.kicker}</span>
+                    <span class="wiki-hub-card__count">{c.entryCount} entries</span>
+                  </span>
+                  <span class="wiki-hub-card__title">{c.title}</span>
+                  <span class="wiki-hub-card__blurb">{c.blurb}</span>
+                  <span class="wiki-hub-card__go">Open topic →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wiki-hub-why section section--tight" aria-labelledby="wiki-why-h">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="wiki-why-h" class="wiki-hub-section-title">Why use this site</h2>
+          <p class="wiki-hub-why__lead">
+            Built for players who want structure: reference tables, map tooling, and onboarding in one place—optimized for quick lookup, not endless outbound reading lists.
+          </p>
+          <ul class="wiki-hub-why-grid">
+            {strengths.map((s) => (
+              <li class="wiki-hub-why-card">
+                <h3 class="wiki-hub-why-card__title">{s.title}</h3>
+                <p class="wiki-hub-why-card__text">{s.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="wiki-hub-foot section section--tight" aria-labelledby="wiki-foot-h">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="wiki-foot-h" class="wiki-hub-foot__title">Using the wiki</h2>
+          <ul class="wiki-hub-foot__list">
+            <li>Each topic page renders curated data with build verification stamps—trust your Steam build string when numbers disagree.</li>
+            <li>
+              Cross-link to
+              <a class="wiki-hub-foot__inline" href="/map">/map</a>,
+              <a class="wiki-hub-foot__inline" href="/start">/start</a>, and
+              <a class="wiki-hub-foot__inline" href="/updates">/updates</a>
+              when you need atlas, onboarding, or patch context.
+            </li>
+            <li>
+              Every wiki row with stats opens a dedicated dossier page—weapons, ammo, items, shelters, and loot containers included.
+            </li>
+            <li>
+              Editorial corrections welcome via
+              <a class="wiki-hub-foot__inline" href="/legal/contact">Contact</a>
+              ·
+              <a class="wiki-hub-foot__inline" href="/legal/about#about-editorial">Editorial policy</a>.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+  <LegacyRedirect mode="wiki" />
+</BaseLayout>

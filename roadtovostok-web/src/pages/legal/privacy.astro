@@ -1,0 +1,108 @@
+---
+import LegalPageShell from '../../components/legal/LegalPageShell.astro'
+import { LEGAL_CONTACT_EMAIL } from '../../lib/legalNav'
+
+const path = '/legal/privacy'
+const mailto = `mailto:${LEGAL_CONTACT_EMAIL}`
+---
+
+<LegalPageShell
+  path={path}
+  breadcrumb="Privacy"
+  headline="Privacy policy"
+  dek="This policy describes how roadtovostok.net (Road to Vostok Field Manual) handles information when you browse or email us. The site is mostly static articles and tools—no accounts, no comment login, and no marketing mailing list on these pages."
+  metaLine="Last updated: June 24, 2026"
+>
+  <section class="legal-section section" aria-labelledby="privacy-controller">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-controller" class="section-heading">Who this policy covers</h2>
+        <p class="legal-prose">
+          The operator of this site is reachable at
+          <a class="text-link" href={mailto}>{LEGAL_CONTACT_EMAIL}</a>
+          for privacy questions. We are not Road to Vostok Ltd.; privacy practices for the game client, Steam, or other platforms
+          follow those companies' policies, not this document.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="privacy-collect">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-collect" class="section-heading">What we collect automatically</h2>
+        <p class="legal-prose">
+          When you load a page, standard web hosting infrastructure may log technical data such as your IP address, approximate
+          region, browser type, referring URL, time of request, and HTTP status. Providers use that for security, capacity
+          planning, and aggregate traffic statistics. We do not sell those logs and we do not use them to build individual
+          profiles for advertising on this project.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="privacy-voluntary">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-voluntary" class="section-heading">What you send us on purpose</h2>
+        <p class="legal-prose">
+          There is no contact form on roadtovostok.net—only a mailto link on the
+          <a class="text-link" href="/legal/contact">Contact</a>
+          page. If you email us, we receive whatever you type: address, subject, body, attachments, and metadata your mail
+          provider adds. Do not send passwords, payment card numbers, or government ID unless we explicitly asked for them.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="privacy-cookies">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-cookies" class="section-heading">Cookies, fonts, and third-party requests</h2>
+        <p class="legal-prose">
+          The site may load fonts or analytics scripts from third-party hosts (for example Google Fonts or Google Analytics).
+          Those providers' privacy policies apply to those requests. If you block third-party requests, the site should still
+          render with sensible system fonts.
+        </p>
+        <p class="legal-prose">
+          We do not intentionally embed social “like” buttons or remarketing pixels on guide pages. If you still see cookies from
+          a CDN or host dashboard, that usually reflects the infrastructure serving the files—not a deliberate tracker added to
+          monetize the Field Manual.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="privacy-rights">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-rights" class="section-heading">Your rights</h2>
+        <p class="legal-prose">
+          Depending on where you live, you may have rights to access, correct, delete, or restrict certain processing of personal
+          data. To exercise a right, email
+          <a class="text-link" href={mailto}>{LEGAL_CONTACT_EMAIL}</a>
+          from the address involved or describe the message date if you used another mailbox.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section section--tight" aria-labelledby="privacy-changes">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="privacy-changes" class="section-heading">Changes to this policy</h2>
+        <p class="legal-prose">
+          When we add features that materially change how data is collected, we will update this text and bump the “Last updated”
+          date. Continued use of the site after a change means you accept the revised policy.
+        </p>
+        <p class="legal-prose">
+          <a class="text-link" href="/legal/about">About</a>
+          ·
+          <a class="text-link" href="/legal/terms">Terms</a>
+          ·
+          <a class="text-link" href="/legal/copyright">Copyright</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</LegalPageShell>

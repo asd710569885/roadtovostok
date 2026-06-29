@@ -1,0 +1,147 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../../lib/seo'
+import items from '../../../data/wiki/items-catalog.js'
+import weapons from '../../../data/wiki/weapons.js'
+import '../../../styles/pages/wiki-db-index.css'
+
+const path = '/wiki/items'
+const seo = seoForPath(path)
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== 'items')
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Items', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Items Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+
+const categoryLabels: Record<string, string> = {
+  key: 'Keys & access',
+  medical: 'Medical',
+  consumable: 'Consumables',
+  clothing: 'Clothing',
+  electronics: 'Electronics',
+  misc: 'Misc',
+}
+
+const groups = Object.entries(categoryLabels).map(([id, title]) => ({
+  id,
+  title,
+  cards: items.filter((i) => i.category === id),
+}))
+
+const weaponCount = weapons.length
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-db-idx">
+    <section class="wiki-db-idx-hero section section--tight" aria-labelledby="items-idx-h">
+      <div class="wiki-db-idx-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-db-idx-eyebrow">Database · Items</p>
+          <nav class="wiki-db-idx-crumb" aria-label="Breadcrumb">
+            <a href="/" class="wiki-db-idx-crumb-a">Road to Vostok Field Manual</a>
+            <span aria-hidden="true">/</span>
+            <a href="/wiki" class="wiki-db-idx-crumb-a">Wiki</a>
+            <span aria-hidden="true">/</span>
+            <span>Items</span>
+          </nav>
+          <h1 id="items-idx-h" class="wiki-db-idx-title">Road to Vostok Items</h1>
+          <p class="wiki-db-idx-lead">
+            Curated item dossiers for keys, medical staples, and high-value loot—with cross-links to weapons, ammo,
+            shelters, and map wikis on this site.
+          </p>
+          <ul class="wiki-db-idx-stats" aria-label="Items summary">
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">{items.length}</span>
+              <span class="wiki-db-idx-stat-lbl">Item dossiers</span>
+            </li>
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">{weaponCount}</span>
+              <span class="wiki-db-idx-stat-lbl">Weapon dossiers</span>
+            </li>
+          </ul>
+          <WikiVerifiedNotice compact />
+          <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+            {wikiSiblings.map((c) => (
+              <a class="wiki-pill" href={c.routePath}>{c.title}</a>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tight" aria-label="Bulk reference tables">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 class="wiki-db-idx-section-h">Weapons & ammo dossiers</h2>
+          <ul class="wiki-db-idx-cards">
+            <li>
+              <a class="wiki-db-idx-card" href="/wiki/weapons">
+                <span class="wiki-db-idx-card__kicker">Combat</span>
+                <span class="wiki-db-idx-card__title">Weapons</span>
+                <p class="wiki-db-idx-card__blurb">Grouped tables—each weapon opens a dedicated stats and field-notes page.</p>
+                <span class="wiki-db-idx-card__cta">Browse weapons →</span>
+              </a>
+            </li>
+            <li>
+              <a class="wiki-db-idx-card" href="/wiki/ammo">
+                <span class="wiki-db-idx-card__kicker">Ammunition</span>
+                <span class="wiki-db-idx-card__title">Ammo & magazines</span>
+                <p class="wiki-db-idx-card__blurb">Per-caliber dossiers with economy stats and compatible weapon links.</p>
+                <span class="wiki-db-idx-card__cta">Browse ammo →</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    {
+      groups.map((group) => {
+        if (!group.cards.length) return null
+        return (
+          <section class="section section--tight" aria-label={group.title}>
+            <div class="container">
+              <div class="wrap wrap--wide">
+                <h2 class="wiki-db-idx-section-h">{group.title}</h2>
+                <ul class="wiki-db-idx-cards">
+                  {group.cards.map((item) => (
+                    <li>
+                      <a class="wiki-db-idx-card" href={`/wiki/items/${item.slug}`}>
+                        <span class="wiki-db-idx-card__kicker">{item.kicker}</span>
+                        <span class="wiki-db-idx-card__title">{item.name}</span>
+                        <p class="wiki-db-idx-card__blurb">{item.summary}</p>
+                        <span class="wiki-db-idx-card__cta">Open dossier →</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        )
+      })
+    }
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-db-idx-back">
+            <a class="wiki-db-idx-back-a" href="/wiki">← Wiki index</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

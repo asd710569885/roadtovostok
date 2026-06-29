@@ -1,0 +1,98 @@
+---
+import LegalPageShell from '../../components/legal/LegalPageShell.astro'
+import { LEGAL_CONTACT_EMAIL } from '../../lib/legalNav'
+
+const path = '/legal/copyright'
+const mailto = `mailto:${LEGAL_CONTACT_EMAIL}`
+const year = new Date().getFullYear()
+---
+
+<LegalPageShell
+  path={path}
+  breadcrumb="Copyright"
+  headline="Copyright and trademarks"
+  dek="This page explains how original writing on roadtovostok.net relates to Road to Vostok and other rights holders, and how to request corrections or takedowns."
+  metaLine="Last updated: June 24, 2026"
+>
+  <section class="legal-section section" aria-labelledby="copy-site">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="copy-site" class="section-heading">Site content</h2>
+        <p class="legal-prose">
+          Original text, layout, and editorial structure on roadtovostok.net are © {year} Road to Vostok Field Manual (the site
+          operator), unless otherwise noted. You may quote short excerpts with attribution and a link to the source page. Bulk
+          reproduction, mirroring, or commercial reuse requires prior written permission—email
+          <a class="text-link" href={mailto}>{LEGAL_CONTACT_EMAIL}</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="copy-game">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="copy-game" class="section-heading">Game materials</h2>
+        <p class="legal-prose">
+          <strong>Road to Vostok</strong>, related logos, in-game screenshots, weapon icons, map artwork, and other assets are
+          the property of Road to Vostok Ltd. and/or its licensors. This site is not endorsed by or affiliated with the
+          developer. We use game-related visuals under a fair-use / fan-reference rationale: to identify the game, illustrate
+          mechanics, and help players navigate content they already own or are considering purchasing.
+        </p>
+        <p class="legal-prose">
+          If you are a rights holder and believe material on this site exceeds that scope, contact us with the URL and your
+          relationship to the work. We will review and respond in good faith.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="copy-third">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="copy-third" class="section-heading">Third-party materials</h2>
+        <p class="legal-prose">
+          Fonts, hosting infrastructure, and open-source libraries used to build the site remain subject to their respective
+          licenses. Community map pin data and similar references are credited in context where practical; we do not claim
+          ownership of third-party datasets.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="copy-dmca">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="copy-dmca" class="section-heading">Takedown requests</h2>
+        <p class="legal-prose">
+          To report copyright or trademark concerns, email
+          <a class="text-link" href={mailto}>{LEGAL_CONTACT_EMAIL}</a>
+          with:
+        </p>
+        <ul class="legal-list">
+          <li>Your name and role (rights holder or authorized agent).</li>
+          <li>The exact URL(s) on roadtovostok.net at issue.</li>
+          <li>A description of the work you believe is infringed.</li>
+          <li>A statement of good-faith belief and accuracy under penalty of perjury where applicable.</li>
+        </ul>
+        <p class="legal-prose">
+          Counter-notices and repeat-infringer policy: we handle valid requests promptly; repeat bad-faith claims may be ignored.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section section--tight" aria-labelledby="copy-more">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="copy-more" class="section-heading">Related pages</h2>
+        <p class="legal-prose">
+          <a class="text-link" href="/legal/about">About</a>
+          ·
+          <a class="text-link" href="/legal/terms">Terms of use</a>
+          ·
+          <a class="text-link" href="/legal/privacy">Privacy</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</LegalPageShell>

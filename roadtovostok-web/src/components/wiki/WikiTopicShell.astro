@@ -1,0 +1,71 @@
+---
+import { WIKI_NAV } from '../../lib/nav'
+import WikiVerifiedNotice from './WikiVerifiedNotice.astro'
+
+interface WikiTopicMeta {
+  slug: string
+  heading: string
+  kicker: string
+  lead: string
+}
+
+interface Props {
+  meta: WikiTopicMeta
+}
+
+const { meta } = Astro.props
+
+const siblings = WIKI_NAV.filter((c) => c.slug !== meta.slug)
+const topic = WIKI_NAV.find((c) => c.slug === meta.slug)
+---
+
+<div class="page-wiki-cat">
+  <section class="wiki-cat-head wiki-hero section section--tight" aria-labelledby="wiki-cat-heading">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <p class="wiki-cat-kicker">{meta.kicker}</p>
+        <nav class="wiki-cat-crumb" aria-label="Breadcrumb">
+          <a href="/" class="wiki-cat-crumb__link">Road to Vostok Field Manual</a>
+          <span class="wiki-cat-crumb__sep" aria-hidden="true">/</span>
+          <a href="/wiki" class="wiki-cat-crumb__link">Wiki</a>
+          <span class="wiki-cat-crumb__sep" aria-hidden="true">/</span>
+          <span class="wiki-cat-crumb__here">{meta.heading}</span>
+        </nav>
+        <h1 id="wiki-cat-heading" class="wiki-cat-title">{meta.heading}</h1>
+        <p class="wiki-cat-lead">{meta.lead}</p>
+        {
+          topic?.entryCount != null && (
+            <ul class="wiki-stat-bar" aria-label="Topic scope">
+              <li class="wiki-stat-bar__item">
+                <span class="wiki-stat-bar__val">{topic.entryCount}</span>
+                <span class="wiki-stat-bar__lbl">Entries</span>
+              </li>
+              <li class="wiki-stat-bar__item">
+                <span class="wiki-stat-bar__val">EA</span>
+                <span class="wiki-stat-bar__lbl">Build 1</span>
+              </li>
+            </ul>
+          )
+        }
+        <WikiVerifiedNotice compact />
+
+        <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+          {siblings.map((c) => (
+            <a href={c.routePath} class="wiki-pill">{c.title}</a>
+          ))}
+        </nav>
+      </div>
+    </div>
+  </section>
+
+  <section class="wiki-cat-body section" aria-label="Reference data">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <slot />
+        <p class="wiki-cat-back">
+          <a class="wiki-cat-back__a" href="/wiki">← Back to wiki index</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</div>

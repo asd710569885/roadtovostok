@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath } from '../../lib/nav'
+import { breadcrumbJsonLd, webPageJsonLd } from '../../lib/seo'
+import { WIKI_LAST_VERIFIED } from '../../lib/contentMeta'
+import MapView from '../../components/islands/MapView.vue'
+import '../../styles/pages/map-index.css'
+
+const path = '/map'
+const seo = seoForPath(path)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'World map', path: '/map' },
+  ]),
+  webPageJsonLd({
+    name: 'Road to Vostok interactive world map',
+    description: seo.description,
+    path,
+    image: '/images/road-to-vostok-map.jpg',
+    dateModified: WIKI_LAST_VERIFIED,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <section class="map-seo section section--tight" aria-labelledby="map-seo-h">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <nav class="legal-crumb" aria-label="Breadcrumb">
+          <a class="legal-crumb__link" href="/">Road to Vostok Field Manual</a>
+          <span aria-hidden="true"> / </span>
+          <span>World map</span>
+        </nav>
+        <p class="page-kicker">Atlas · Area 05 · Border · Vostok</p>
+        <h1 id="map-seo-h" class="page-title">Road to Vostok interactive world map</h1>
+        <p class="page-dek">
+          Zoomable fan atlas on official promo artwork: Area 05, Border Zone, and Vostok pins with wiki blurbs, NPC cards,
+          and shareable <code>?pin=</code> URLs. For high-resolution in-game rasters (Village, Highway, School, Outpost,
+          Minefield, Apartments, Terminal), open the
+          <a class="text-link" href="/wiki/maps">map guides hub</a>
+          or pick a zone from the atlas sidebar after the map loads.
+        </p>
+        <p class="map-seo__pitch">
+          Hand-placed pins across Area 05, the Border Zone, and Vostok with on-page summaries synced to our Field Manual wiki,
+          trader and NPC dossiers, and shareable deep links—geography, guides, and characters in one view.
+        </p>
+        <p class="map-seo__lead">
+          Pins are for orientation only—not in-game GPS. Pick a pin for the short brief, then open
+          <a class="text-link" href="/wiki/maps">map walkthroughs</a>,
+          <a class="text-link" href="/wiki/npcs">NPC pages</a>, or other wiki topics.
+        </p>
+        <p class="map-seo__note" role="note">
+          Pin positions are hand-placed on published artwork—open wiki map guides for loot tables and build-specific notes.
+        </p>
+        <p class="map-seo__credit">
+          Map image © Road to Vostok Ltd. ·
+          <a class="text-link" href="https://store.steampowered.com/app/1963610/Road_to_Vostok/" target="_blank" rel="noopener noreferrer">Steam</a>
+          ·
+          <a class="text-link" href="https://www.roadtovostok.com/game" target="_blank" rel="noopener noreferrer">roadtovostok.com/game</a>
+        </p>
+        <WikiVerifiedNotice compact />
+      </div>
+    </div>
+  </section>
+
+  <div class="map-island-shell">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <p class="map-island-shell__hint">
+          Interactive controls load with JavaScript. Without JS, use
+          <a href="/wiki/maps">static map guides</a>.
+        </p>
+        <MapView client:only="vue" />
+      </div>
+    </div>
+  </div>
+</BaseLayout>

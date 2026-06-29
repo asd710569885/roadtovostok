@@ -1,0 +1,363 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { seoForPath } from '../lib/nav'
+import { webSiteJsonLd } from '../lib/seo'
+import '../styles/pages/home.css'
+
+const path = '/'
+const seo = seoForPath(path)
+const mapThumbSrc = '/images/road-to-vostok-map.jpg'
+
+const jumpLinks = [
+  { href: '/wiki', label: 'Road to Vostok wiki hub' },
+  { href: '/wiki/weapons', label: 'Weapons & reloading guide' },
+  { href: '/wiki/ammo', label: 'Ammo & magazines' },
+  { href: '/wiki/maps', label: 'Map walkthroughs (Village, Highway, Minefield…)' },
+  { href: '/wiki/npcs', label: 'NPCs & traders (incl. Gunsmith)' },
+  { href: '/map', label: 'Interactive world map' },
+  { href: '/start', label: 'EA Build 1, demo & PC specs' },
+  { href: '/updates', label: 'Updates & patch notes' },
+  { href: '/blog', label: 'Player blog' },
+]
+
+const exploreCards = [
+  { href: '/wiki/weapons', title: 'Weapons', tag: 'Wiki', desc: 'Reload flow, caliber tables, thumbnails—cross-linked to ammo.' },
+  { href: '/wiki/ammo', title: 'Ammo', tag: 'Wiki', desc: 'Stacks, weight, caliber pairing, and links back to weapons.' },
+  { href: '/wiki/maps', title: 'Maps', tag: 'Wiki', desc: 'Village, Shipyard, Highway, Minefield—loot, traders, build notes.' },
+  { href: '/wiki/npcs', title: 'NPCs', tag: 'Wiki', desc: 'Bandits, Generalist, Doctor—tasks, barter, map deep links.' },
+  { href: '/map', title: 'World map', tag: 'Atlas', desc: 'Zoomable pins, wiki blurbs, NPC cards, shareable ?pin= URLs.' },
+  { href: '/start', title: 'Start', tag: 'Boot', desc: 'New players: Demo vs EA, checklist, Steam & system requirements.' },
+  { href: '/updates', title: 'Updates', tag: 'News', desc: 'Where to read official patch notes, Steam posts, and roadmap.' },
+  { href: '/blog', title: 'Blog', tag: 'Read', desc: 'Longer guides and commentary—Area 05, Vostok, survival loop.' },
+]
+
+const faqItems = [
+  {
+    q: 'What is Road to Vostok Field Manual?',
+    html: `A curated <strong>Road to Vostok</strong> strategy guide: wiki tables, interactive maps, trader dossiers, and onboarding for EA Build 1. Game purchase and live patch notes are on <a class="faq-a__link" href="https://store.steampowered.com/app/1963610/Road_to_Vostok/" target="_blank" rel="noopener noreferrer">Steam</a> and <a class="faq-a__link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">roadtovostok.com</a>.`,
+    plain: 'A curated Road to Vostok strategy guide: wiki tables, interactive maps, trader dossiers, and onboarding for EA Build 1. Game purchase and live patch notes are on Steam and roadtovostok.com.',
+  },
+  {
+    q: 'Is Early Access out yet?',
+    html: `Yes. Road to Vostok entered Steam Early Access on <strong>April 7, 2026</strong> (Build 1 — Road). A free demo remains on Steam; see our <a class="faq-a__link" href="/start">Start page</a> for the Demo vs EA matrix and the seven-map roster.`,
+    plain: 'Yes. Road to Vostok entered Steam Early Access on April 7, 2026 (Build 1 — Road). A free demo remains on Steam; see our Start page for the Demo vs EA matrix and the seven-map roster.',
+  },
+  {
+    q: 'Why split Demo vs Early Access on the wiki?',
+    html: `Because one loot pass or task rebalance can brick a write-up overnight. Labels save you from "the guide lied" when your build is ahead or behind the author's. The split is spelled out on the <a class="faq-a__link" href="/start">Start page</a> and in each <a class="faq-a__link" href="/wiki">wiki topic</a>.`,
+    plain: 'Because one loot pass or task rebalance can brick a write-up overnight. Labels save you from "the guide lied" when your build is ahead or behind the author\'s. The split is spelled out on the Start page and in each wiki topic.',
+  },
+  {
+    q: 'Is Road to Vostok multiplayer?',
+    html: `Marketing and store copy pitch a solo sandbox. If that ever changes, read the dev posts first—we keep the standing note on the <a class="faq-a__link" href="/start">Start page</a> in sync with what's public.`,
+    plain: "Marketing and store copy pitch a solo sandbox. If that ever changes, read the dev posts first—we keep the standing note on the Start page in sync with what's public.",
+  },
+  {
+    q: 'How often do you update?',
+    html: `After major patches we refresh the <a class="faq-a__link" href="/wiki">wiki hub</a>, <a class="faq-a__link" href="/map">map atlas</a>, and <a class="faq-a__link" href="/start">Start guide</a> first. Last full review: June 24, 2026 (Build 1 Road).`,
+    plain: 'After major patches we refresh the wiki hub, map atlas, and Start guide first. Last full review: June 24, 2026 (Build 1 Road).',
+  },
+]
+
+const jsonLd = [
+  webSiteJsonLd(),
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.plain,
+      },
+    })),
+  },
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-home">
+    <section class="hero-section section section--loose" aria-labelledby="hero-heading">
+      <div class="hero-section__bg" aria-hidden="true">
+        <svg class="hero-section__svg" viewBox="0 0 800 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="hg" x1="120" y1="0" x2="640" y2="520" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#6eb4c9" stop-opacity="0.14" />
+              <stop offset="0.45" stop-color="#d4652e" stop-opacity="0.12" />
+              <stop offset="1" stop-color="#070a0d" stop-opacity="0" />
+            </linearGradient>
+          </defs>
+          <rect width="800" height="520" fill="url(#hg)" />
+          <path
+            d="M40 420h220l60-180 80 220 120-340 140 300h100"
+            stroke="color-mix(in srgb, #6eb4c9 35%, transparent)"
+            stroke-width="1.25"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          />
+          <circle cx="660" cy="120" r="3" fill="#d4652e" opacity="0.85" />
+          <circle cx="200" cy="200" r="2.5" fill="#6eb4c9" opacity="0.7" />
+        </svg>
+      </div>
+      <div class="container">
+        <div class="wrap wrap--full">
+          <div class="hero-layout">
+            <div class="hero-layout__copy hero-layout__copy--rail">
+              <p class="hero-eyebrow">
+                <span class="hero-eyebrow__dot" aria-hidden="true" />
+                Strategy guide · EA Build 1 (Road) · roadtovostok.net
+              </p>
+              <h1 id="hero-heading" class="hero-title">
+                Road to Vostok wiki &amp; player guide — weapons, maps &amp; NPCs
+              </h1>
+              <p class="hero-lead">
+                One place for <strong>Road to Vostok</strong> reference: a structured
+                <a class="hero-inline" href="/wiki">wiki</a>
+                (weapons, ammo, playable maps, traders), an
+                <a class="hero-inline" href="/map">interactive world map</a>
+                with wiki-tied pins, and a
+                <a class="hero-inline" href="/start">Start</a>
+                hub for Demo vs Early Access and PC specs. Steam Early Access has been live since <strong>April 7, 2026</strong> (Build 1 — Road). We cover the Finland–Russia border in layers —
+                <strong>Area 05</strong>, <strong>Border Zone</strong>, and high-stakes <strong>Vostok</strong> — so you can plan loot runs without tab chaos.
+              </p>
+              <p class="hero-lead hero-lead--secondary">
+                Pick a destination below, or use the jump links for common intents. Everything cross-links: NPC pages open atlas pins; raster maps cover all seven EA Build 1 zones.
+              </p>
+              <div class="hero-actions">
+                <a href="/wiki" class="hero-btn hero-btn--primary">Wiki hub</a>
+                <a href="/map" class="hero-btn hero-btn--ghost">Interactive map</a>
+                <a href="/start" class="hero-btn hero-btn--ghost">Start guide</a>
+                <a href="/updates" class="hero-btn hero-btn--ghost">Updates</a>
+              </div>
+            </div>
+            <aside class="hero-panel hero-panel--hud" aria-label="At-a-glance game facts">
+              <div class="hero-panel__corners" aria-hidden="true">
+                <span class="hero-panel__corner hero-panel__corner--tl" />
+                <span class="hero-panel__corner hero-panel__corner--tr" />
+                <span class="hero-panel__corner hero-panel__corner--bl" />
+                <span class="hero-panel__corner hero-panel__corner--br" />
+              </div>
+              <div class="hero-panel__head">
+                <span class="hero-panel__tag">Briefing</span>
+                <span class="hero-panel__id">RTV-GUIDE-01</span>
+              </div>
+              <dl class="hero-panel__stats">
+                <div class="hero-panel__row">
+                  <dt>Core loop</dt>
+                  <dd>Loot · barter · tasks · shelter saves</dd>
+                </div>
+                <div class="hero-panel__row">
+                  <dt>Spike risk</dt>
+                  <dd>Vostok — death can wipe the zone's stakes</dd>
+                </div>
+                <div class="hero-panel__row">
+                  <dt>On-ramp</dt>
+                  <dd>Steam demo for muscle memory, then follow EA notes</dd>
+                </div>
+              </dl>
+              <ul class="hero-panel__chips" aria-label="Core topics">
+                <li>Realistic ballistics</li>
+                <li>Barter economy</li>
+                <li>Dynamic weather</li>
+                <li>Sandbox tempo</li>
+              </ul>
+              <p class="hero-panel__foot">
+                Quick briefing—open wiki dossiers for weapon stats, trader stock, and full map routes.
+              </p>
+            </aside>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-jump section section--tight" aria-labelledby="home-jump-h">
+      <div class="container">
+        <div class="wrap wrap--full">
+          <div class="section-head section-head--compact">
+            <h2 id="home-jump-h" class="section-title">Jump to</h2>
+            <p class="section-dek">
+              Shortcuts to every major section—useful on mobile and for search-friendly internal navigation.
+            </p>
+          </div>
+          <nav class="home-jump__nav" aria-label="Primary site sections">
+            {jumpLinks.map((j) => (
+              <a href={j.href} class="home-jump__link">{j.label}</a>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="home-explore section" aria-labelledby="home-explore-h">
+      <div class="container">
+        <div class="wrap wrap--full">
+          <div class="section-head">
+            <h2 id="home-explore-h" class="section-title">Explore the manual</h2>
+            <p class="section-dek">
+              Eight entry points cover how most players use this site: reference tables, atlas, onboarding, and news. Each card opens
+              a dedicated route—no buried anchors.
+            </p>
+          </div>
+          <ul class="home-explore__grid">
+            {exploreCards.map((card) => (
+              <li class="home-explore__item">
+                <a href={card.href} class="home-explore__card">
+                  <div class="home-explore__top">
+                    <span class="home-explore__tag">{card.tag}</span>
+                    <svg class="home-explore__arrow" width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                      <path
+                        d="M4 10h10M11 6l4 4-4 4"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </div>
+                  <span class="home-explore__title">{card.title}</span>
+                  <span class="home-explore__desc">{card.desc}</span>
+                  <span class="home-explore__cta">Open →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="zones-section section" aria-labelledby="zones-heading">
+      <div class="container">
+        <div class="wrap wrap--full">
+          <div class="section-head">
+            <h2 id="zones-heading" class="section-title">Zone progression: exfil mindset to permadeath</h2>
+            <p class="section-dek">
+              Understanding the three layers explains why players stall at the border—and why Vostok is not "just another map
+              farm." Cross-check labels on the
+              <a class="section-dek__link" href="/map">world map</a>
+              and the
+              <a class="section-dek__link" href="/wiki/maps">maps wiki</a>
+              before you commit meds to a crossing.
+            </p>
+          </div>
+          <ol class="zone-track">
+            <li class="zone-card">
+              <span class="zone-card__step">01</span>
+              <h3 class="zone-card__title">Area 05</h3>
+              <p class="zone-card__text">
+                Evacuated southeastern Finland: shelters, traders, tasks, baseline loot. Death usually taxes only what you
+                <strong>carry right now</strong>—ideal for drills in gunplay, loot cadence, and inventory Tetris.
+              </p>
+            </li>
+            <li class="zone-card">
+              <span class="zone-card__step">02</span>
+              <h3 class="zone-card__title">Border Zone</h3>
+              <p class="zone-card__text">
+                Composite obstacles—mine belts, physical blocks, rivers, boats—plus heavier guard pressure and air support. Treat
+                it as <strong>recon → plan → execute</strong>, not a sprint.
+              </p>
+            </li>
+            <li class="zone-card zone-card--risk">
+              <span class="zone-card__step">03</span>
+              <h3 class="zone-card__title">Vostok</h3>
+              <p class="zone-card__text">
+                High-value Russian interior with military-grade threats. The headline rule is <strong>permadeath-style wipes</strong>:
+                mistakes here hurt more than anywhere else—endgame content, not tutorial space.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-spotlight-section section" aria-labelledby="map-spotlight-heading">
+      <div class="container">
+        <div class="wrap wrap--full">
+          <div class="map-spotlight">
+            <div class="map-spotlight__copy">
+              <p class="map-spotlight__eyebrow">Featured · Road to Vostok interactive map</p>
+              <h2 id="map-spotlight-heading" class="map-spotlight__title">
+                Road to Vostok interactive world map
+              </h2>
+              <p class="map-spotlight__text">
+                Pan and zoom the <strong>official-style world artwork</strong> with hand-placed pins for Area 05, Border Zone, Vostok,
+                Village, School, Outpost, Highway, Minefield, and more. Each pin surfaces wiki-aligned notes, NPC cards, and
+                <code class="hero-code">?pin=</code> URLs you can share. Pair it with
+                <a href="/wiki/maps">map walkthroughs</a> for container tables and build caveats.
+              </p>
+              <div class="map-spotlight__actions">
+                <a href="/map" class="map-spotlight__btn map-spotlight__btn--primary">
+                  Open interactive map
+                </a>
+                <a href="/wiki/maps" class="map-spotlight__btn map-spotlight__btn--ghost">
+                  Maps wiki
+                </a>
+              </div>
+            </div>
+            <a
+              href="/map"
+              class="map-spotlight__visual"
+              aria-label="Open the Road to Vostok interactive world map page"
+            >
+              <img
+                class="map-spotlight__img"
+                src={mapThumbSrc}
+                loading="lazy"
+                decoding="async"
+                alt="Road to Vostok world map preview showing Area 05, Border Zone, and Vostok"
+              />
+              <span class="map-spotlight__badge" aria-hidden="true">Map</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq-section section section--tight" aria-labelledby="faq-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 id="faq-heading" class="section-title">FAQ</h2>
+          <p class="section-dek section-dek--tight">
+            Straight answers on EA status, wiki update cadence, and why Demo vs Early Access labels matter.
+          </p>
+          <div class="faq-list">
+            {faqItems.map((item) => (
+              <details class="faq-item">
+                <summary class="faq-q">{item.q}</summary>
+                <div class="faq-a" set:html={item.html} />
+              </details>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section section section--tight" aria-labelledby="cta-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <div class="cta-card">
+            <div class="cta-card__copy">
+              <h2 id="cta-heading" class="cta-title">Suggested reading order</h2>
+              <p class="cta-text">
+                <a class="cta-inline" href="/start">Start</a>
+                for Demo vs EA and PC requirements, then the
+                <a class="cta-inline" href="/wiki">wiki hub</a>
+                for weapons, ammo, maps, and NPCs, then the
+                <a class="cta-inline" href="/map">interactive map</a>
+                when you want geography and pin-level context. Add
+                <a class="cta-inline" href="/updates">Updates</a>
+                after major patches.
+              </p>
+            </div>
+            <div class="cta-card__actions">
+              <a href="/wiki" class="hero-btn hero-btn--primary">Wiki hub</a>
+              <a href="/wiki/weapons" class="hero-btn hero-btn--ghost">Weapons</a>
+              <a href="/start" class="hero-btn hero-btn--ghost">Demo / EA &amp; specs</a>
+              <a href="/map" class="hero-btn hero-btn--ghost">World map</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

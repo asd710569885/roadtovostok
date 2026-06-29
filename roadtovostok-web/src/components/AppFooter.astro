@@ -1,0 +1,230 @@
+---
+import { LEGAL_NAV } from '../lib/legalNav'
+
+const year = new Date().getFullYear()
+
+const tags = ['Survival', 'Realistic guns', 'Loot', 'Sandbox', 'Border fiction', 'Permadeath zone']
+---
+
+<footer class="app-footer" role="contentinfo">
+  <div class="app-footer__glow" aria-hidden="true"></div>
+  <div class="app-footer__scan" aria-hidden="true"></div>
+  <div class="container">
+    <div class="app-footer__grid">
+      <div class="app-footer__block app-footer__block--brand">
+        <div class="app-footer__brand">
+          <a href="/" class="app-footer__brand-mark" aria-label="Road to Vostok Field Manual home">
+            <img class="app-footer__logo" src="/images/logo.png" alt="" width="44" height="44" decoding="async" />
+          </a>
+          <p class="app-footer__name">Road to Vostok Field Manual</p>
+        </div>
+        <p class="app-footer__desc">
+          <strong>Systems-first</strong> guides for Road to Vostok: weapons and reloading, survival and medical, traders and
+          tasks, map crossings, and Demo vs Early Access routing. Core routes:
+          <a href="/wiki">Wiki</a> · <a href="/start" title="Onboarding · Demo / EA / PC specs">Start</a> ·
+          <a href="/map">Map</a> · <a href="/updates">Updates</a> · <a href="/blog">Blog</a> · <a href="/">Home</a>
+        </p>
+        <ul class="app-footer__tags" aria-label="Content themes">
+          {tags.map((t) => <li class="app-footer__tag">{t}</li>)}
+        </ul>
+      </div>
+      <div class="app-footer__block">
+        <p class="app-footer__label">On this site</p>
+        <ul class="app-footer__list">
+          <li><a href="/">Home overview</a></li>
+          <li><a href="/wiki">Wiki index</a></li>
+          <li><a href="/start" title="Onboarding · Demo / EA / PC specs">Start</a></li>
+          <li><a href="/map">World map</a></li>
+          <li><a href="/updates">Updates hub</a></li>
+          <li><a href="/blog">Blog</a></li>
+        </ul>
+      </div>
+      <div class="app-footer__block">
+        <p class="app-footer__label">How we write</p>
+        <ul class="app-footer__standards">
+          <li>Step-by-step routes for Area 05 through Vostok when you plan a run.</li>
+          <li>Demo vs Early Access labels on pages where loot, tasks, or tuning can diverge.</li>
+          <li>Weapons, ammo, traders, and maps cross-linked from one hub—no dead-end articles.</li>
+          <li>Interactive map pins open the matching wiki dossier for loot and NPC context.</li>
+          <li>
+            <a href="/legal/about#about-editorial">Editorial &amp; verification policy</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <nav class="app-footer__legal" aria-label="Legal and site information">
+      {LEGAL_NAV.map((item, i) => (
+        <>
+          {i > 0 && <span class="app-footer__legal-sep" aria-hidden="true">·</span>}
+          <a class="app-footer__legal-link" href={item.href}>{item.label}</a>
+        </>
+      ))}
+    </nav>
+    <div class="app-footer__bottom">
+      <span class="app-footer__mono">© {year} · Road to Vostok Field Manual</span>
+      <span class="app-footer__hint">Finland–Russia border · Post-collapse · Solo sandbox</span>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  .app-footer {
+    position: relative;
+    z-index: 5;
+    margin-top: auto;
+    border-top: 1px solid var(--color-border);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-bg-panel) 40%, var(--color-bg-deep)) 0%,
+      var(--color-bg-deep) 100%
+    );
+    padding-block: 3rem 1.75rem;
+    overflow: hidden;
+  }
+
+  .app-footer__grid {
+    display: grid;
+    gap: 2.25rem;
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 768px) {
+    .app-footer__grid {
+      grid-template-columns: 1.4fr 1fr;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .app-footer__grid {
+      grid-template-columns: 1.55fr 0.95fr 1.15fr;
+    }
+  }
+
+  .app-footer__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .app-footer__name {
+    margin: 0;
+    font-family: 'Barlow Condensed', system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .app-footer__desc {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+    max-width: 32rem;
+  }
+
+  .app-footer__desc a {
+    color: var(--color-frost);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .app-footer__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .app-footer__tag {
+    padding: 0.2rem 0.55rem;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    border-radius: 2px;
+  }
+
+  .app-footer__label {
+    margin: 0 0 0.75rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .app-footer__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .app-footer__list a {
+    color: var(--color-text-muted);
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+
+  .app-footer__list a:hover {
+    color: var(--color-frost);
+  }
+
+  .app-footer__standards {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: var(--color-text-muted);
+    font-size: 0.8125rem;
+    line-height: 1.55;
+  }
+
+  .app-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem 0.65rem;
+    margin-top: 2.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .app-footer__legal-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-decoration: none;
+  }
+
+  .app-footer__legal-link:hover {
+    color: var(--color-frost);
+  }
+
+  .app-footer__legal-sep {
+    opacity: 0.45;
+  }
+
+  .app-footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1.15rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .app-footer__mono {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+</style>

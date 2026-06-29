@@ -1,0 +1,225 @@
+﻿.page-kicker {
+  margin: 0 0 0.5rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.page-title {
+  margin: 0 0 0.75rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.65rem, 4vw, 2.35rem);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.page-dek {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  max-width: 46rem;
+}
+
+.page-dek strong {
+  color: color-mix(in srgb, var(--color-text) 86%, var(--color-text-muted));
+  font-weight: 600;
+}
+
+.section-heading {
+  margin: 0 0 0.75rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.15rem, 2.4vw, 1.35rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text);
+}
+
+.legal-prose {
+  margin: 0 0 1rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+  max-width: 46rem;
+}
+
+.legal-list {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+  max-width: 46rem;
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.65;
+}
+
+.legal-list li + li {
+  margin-top: 0.55rem;
+}
+
+.legal-list strong {
+  color: color-mix(in srgb, var(--color-text) 86%, var(--color-text-muted));
+}
+
+.source-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 48rem;
+}
+
+.source-list__item {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.source-list__item:first-child {
+  padding-top: 0;
+}
+
+.source-list__item:last-child {
+  border-bottom: none;
+}
+
+.source-list__link {
+  display: inline-block;
+  font-weight: 700;
+  color: var(--color-frost);
+  text-decoration: none;
+  margin-bottom: 0.25rem;
+}
+
+.source-list__link:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.source-list__note {
+  display: block;
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  line-height: 1.55;
+}
+
+.text-link {
+  color: var(--color-frost);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  font-weight: 600;
+}
+
+.text-link:hover {
+  color: var(--color-text);
+}
+
+.updates-notice {
+  max-width: 46rem;
+}
+
+.updates-section + .updates-section {
+  border-top: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+}
+
+.roadmap-sub {
+  margin: 1.25rem 0 0.5rem;
+  font-family: 'Barlow Condensed', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.roadmap-sub:first-of-type {
+  margin-top: 0.5rem;
+}
+
+.roadmap-zones {
+  margin-bottom: 0.5rem;
+}
+
+.roadmap-features {
+  margin: 0 0 0.5rem;
+  padding-left: 1.2rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  columns: 1;
+}
+
+@media (min-width: 640px) {
+  .roadmap-features {
+    columns: 2;
+    column-gap: 2rem;
+  }
+}
+
+.roadmap-features li {
+  break-inside: avoid;
+  margin-bottom: 0.35rem;
+}
+
+.roadmap-builds {
+  margin: 0;
+  padding-left: 1.15rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 48rem;
+}
+
+.roadmap-builds > li + li {
+  margin-top: 1rem;
+}
+
+.roadmap-builds strong {
+  color: color-mix(in srgb, var(--color-text) 88%, var(--color-text-muted));
+}
+
+.roadmap-builds ul {
+  margin: 0.35rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.roadmap-build__when {
+  display: block;
+  margin: 0.15rem 0 0.35rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-frost);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1023px) {
+  .page-title {
+    letter-spacing: 0.045em;
+  }
+
+  .legal-prose,
+  .legal-list {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .page-title {
+    font-size: clamp(1.4rem, 5.5vw, 2rem);
+    letter-spacing: 0.035em;
+  }
+
+  .page-dek,
+  .legal-prose,
+  .legal-list {
+    font-size: 0.875rem;
+  }
+
+  .section-heading {
+    font-size: clamp(1.05rem, 4vw, 1.25rem);
+  }
+}

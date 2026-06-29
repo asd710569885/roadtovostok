@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../../lib/nav'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { enrichDbPage, peersFromCatalog } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import items from '../../../data/wiki/items-catalog.js'
+
+export function getStaticPaths() {
+  return items.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = `/wiki/items/${page.slug}`
+const entry = enrichDbPage(page, {
+  topicSlug: 'items',
+  topicTitle: 'Items',
+  topicIndexPath: '/wiki/items',
+})
+const peers = peersFromCatalog(items, '/wiki/items')
+const seo = { ...seoForPath(path), author: EDITORIAL_BYLINE }
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${page.name} — Road to Vostok item`,
+  description: seo.description ?? page.summary,
+  path,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Items', path: '/wiki/items' },
+    { name: page.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

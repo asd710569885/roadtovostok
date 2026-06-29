@@ -1,0 +1,189 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../../lib/seo'
+import gunsmithData from '../../../data/wiki/npc-gunsmith.js'
+import '../../../styles/pages/wiki-npcs-index.css'
+
+const path = '/wiki/npcs'
+const seo = seoForPath(path)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'NPCs', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok NPCs & Traders Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+
+const cards = [
+  {
+    slug: 'bandits',
+    href: '/wiki/npcs/bandits',
+    kicker: 'Hostiles',
+    title: 'Bandits',
+    blurb: 'Spawned enemies, loadouts, and combat behaviours across maps.',
+    image: '/images/wiki/npcs/bandits.png',
+    variant: 'hostile',
+    index: '01',
+    hint: 'AI · loot · quirks',
+    featured: true,
+  },
+  {
+    slug: 'generalist',
+    href: '/wiki/npcs/generalist',
+    kicker: 'Trader',
+    title: 'Generalist',
+    blurb: 'Village-area trader: broad buy/sell, restock timer, and task tiers.',
+    image: '/images/wiki/npcs/generalist.png',
+    variant: 'trader',
+    index: '02',
+    hint: 'Barter · tasks L1—',
+    featured: false,
+  },
+  {
+    slug: 'doctor',
+    href: '/wiki/npcs/doctor',
+    kicker: 'Medic',
+    title: 'Doctor',
+    blurb: 'School medic: medical stock, tasks, and 3rd-floor directions.',
+    image: '/images/wiki/npcs/doctor.png',
+    variant: 'medic',
+    index: '03',
+    hint: 'Meds · School',
+    featured: false,
+  },
+  {
+    slug: 'gunsmith',
+    href: '/wiki/npcs/gunsmith',
+    kicker: gunsmithData.kicker,
+    title: 'Gunsmith',
+    blurb: gunsmithData.summary,
+    image: `/${gunsmithData.image}`,
+    variant: 'trader',
+    index: '04',
+    hint: 'Guns · mods · tasks',
+    featured: false,
+  },
+]
+
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== 'npcs')
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-npcs-index">
+    <section class="npcs-hero section section--tight" aria-labelledby="npcs-idx-h">
+      <div class="npcs-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="npcs-hero__eyebrow">People · NPC hub</p>
+          <nav class="npcs-hero__crumb" aria-label="Breadcrumb">
+            <a href="/" class="npcs-hero__crumb-a">Road to Vostok Field Manual</a>
+            <span class="npcs-hero__crumb-sep" aria-hidden="true">/</span>
+            <a href="/wiki" class="npcs-hero__crumb-a">Wiki</a>
+            <span class="npcs-hero__crumb-sep" aria-hidden="true">/</span>
+            <span class="npcs-hero__crumb-here">NPCs</span>
+          </nav>
+
+          <div class="npcs-hero__row">
+            <div class="npcs-hero__main">
+              <h1 id="npcs-idx-h" class="npcs-hero__title">Road to Vostok NPCs &amp; Traders</h1>
+              <p class="npcs-hero__lead">
+                Four dedicated dossiers—one hostile faction and three traders—with portraits, behaviour or stock notes, and task tables when they apply.
+              </p>
+            </div>
+            <ul class="npcs-hero__stats" aria-label="Page contents">
+              <li class="npcs-hero__stat">
+                <span class="npcs-hero__stat-val">4</span>
+                <span class="npcs-hero__stat-lbl">Profiles</span>
+              </li>
+              <li class="npcs-hero__stat">
+                <span class="npcs-hero__stat-val">3</span>
+                <span class="npcs-hero__stat-lbl">Traders</span>
+              </li>
+              <li class="npcs-hero__stat">
+                <span class="npcs-hero__stat-val">1</span>
+                <span class="npcs-hero__stat-lbl">Faction</span>
+              </li>
+            </ul>
+          </div>
+
+          <WikiVerifiedNotice compact />
+
+          <nav class="npcs-hero__topics" aria-label="Other wiki topics">
+            <span class="npcs-hero__topics-label">Also on the manual</span>
+            <div class="npcs-hero__topics-list">
+              {wikiSiblings.map((c) => (
+                <a class="npcs-hero__topic" href={c.routePath}>{c.title}</a>
+              ))}
+            </div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="npcs-list section" aria-label="NPC list">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <header class="npcs-list__head">
+            <h2 class="npcs-list__h">Choose a profile</h2>
+            <p class="npcs-list__sub">Cards open the full article—tables, locations, and cross-links stay on this site.</p>
+          </header>
+
+          <ul class="npcs-list__grid">
+            {cards.map((c) => (
+              <li
+                class:list={['npcs-list__cell', { 'npcs-list__cell--featured': c.featured }]}
+              >
+                <a
+                  class={`npcs-card npcs-card--${c.variant}`}
+                  href={c.href}
+                >
+                  <span class="npcs-card__index" aria-hidden="true">{c.index}</span>
+                  <div class="npcs-card__shine" aria-hidden="true" />
+                  <div class="npcs-card__visual">
+                    <div class="npcs-card__visual-inner">
+                      <img
+                        class="npcs-card__img"
+                        src={c.image}
+                        alt={c.title}
+                        width="400"
+                        height="240"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
+                    <div class="npcs-card__visual-fade" aria-hidden="true" />
+                  </div>
+                  <div class="npcs-card__body">
+                    <span class="npcs-card__kicker">{c.kicker}</span>
+                    <span class="npcs-card__title">{c.title}</span>
+                    <span class="npcs-card__hint">{c.hint}</span>
+                    <p class="npcs-card__blurb">{c.blurb}</p>
+                    <span class="npcs-card__cta">
+                      <span>Open dossier</span>
+                      <span class="npcs-card__cta-arrow" aria-hidden="true">→</span>
+                    </span>
+                  </div>
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <footer class="npcs-list__foot">
+            <a class="npcs-list__back" href="/wiki">
+              <span class="npcs-list__back-arrow" aria-hidden="true">—/span>
+              Wiki index
+            </a>
+          </footer>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

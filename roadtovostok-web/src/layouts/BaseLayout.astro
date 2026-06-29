@@ -1,0 +1,115 @@
+---
+import '../styles/main.css'
+import '../styles/notice.css'
+import '../styles/pages.css'
+import '../styles/pages/wiki-shared.css'
+import AppHeader from '../components/AppHeader.astro'
+import AppFooter from '../components/AppFooter.astro'
+import { buildSeo, webSiteJsonLd, type SeoInput } from '../lib/seo'
+
+interface Props {
+  title?: string
+  description?: string
+  keywords?: string
+  ogImage?: string
+  ogImageAlt?: string
+  canonical?: string | false
+  robots?: string
+  jsonLd?: Record<string, unknown>[]
+  seo?: SeoInput
+  path?: string
+}
+
+const {
+  title,
+  description,
+  keywords,
+  ogImage,
+  ogImageAlt,
+  canonical,
+  robots,
+  jsonLd = [],
+  seo: seoOverride,
+  path = Astro.url.pathname,
+} = Astro.props
+
+const seo = buildSeo(
+  {
+    ...seoOverride,
+    ...(title != null ? { title } : {}),
+    ...(description != null ? { description } : {}),
+    ...(keywords != null ? { keywords } : {}),
+    ...(ogImage != null ? { ogImage } : {}),
+    ...(ogImageAlt != null ? { ogImageAlt } : {}),
+    ...(canonical !== undefined ? { canonical } : {}),
+    ...(robots != null ? { robots } : {}),
+  },
+  path,
+)
+
+const jsonLdScripts = jsonLd.length ? jsonLd : [webSiteJsonLd()]
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b1014" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    />
+    <link rel="icon" href="/images/logo.png" type="image/png" />
+    <title>{seo.title}</title>
+    {seo.description && <meta name="description" content={seo.description} />}
+    {seo.keywords && <meta name="keywords" content={seo.keywords} />}
+    <meta name="robots" content={seo.robots} />
+    {seo.author && <meta name="author" content={seo.author} />}
+    {seo.canonical && <link rel="canonical" href={seo.canonical} />}
+    {seo.canonical && <link rel="alternate" hreflang="en" href={seo.canonical} />}
+    {seo.canonical && <link rel="alternate" hreflang="x-default" href={seo.canonical} />}
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:type" content={seo.og.type} />
+    <meta property="og:site_name" content={seo.og.siteName} />
+    <meta property="og:title" content={seo.og.title} />
+    {seo.og.description && <meta property="og:description" content={seo.og.description} />}
+    {seo.og.url && <meta property="og:url" content={seo.og.url} />}
+    {seo.og.image && <meta property="og:image" content={seo.og.image} />}
+    {seo.og.image && <meta property="og:image:alt" content={seo.og.imageAlt} />}
+    <meta name="twitter:card" content={seo.twitter.card} />
+    <meta name="twitter:title" content={seo.twitter.title} />
+    {seo.twitter.description && <meta name="twitter:description" content={seo.twitter.description} />}
+    {seo.twitter.image && <meta name="twitter:image" content={seo.twitter.image} />}
+    {seo.twitter.image && <meta name="twitter:image:alt" content={seo.twitter.imageAlt} />}
+    {jsonLdScripts.map((data) => (
+      <script type="application/ld+json" set:html={JSON.stringify(data)} />
+    ))}
+    <meta name="google-adsense-account" content="ca-pub-2922872862277130" />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2922872862277130"
+      crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-3NEWHFE6WJ"></script>
+    <script is:inline>
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('js', new Date())
+      gtag('config', 'G-3NEWHFE6WJ')
+    </script>
+  </head>
+  <body>
+    <div class="app-layout">
+      <a href="#main-content" class="skip-link visually-hidden">Skip to main content</a>
+      <AppHeader currentPath={path} />
+      <main id="main-content" class="app-main" role="main">
+        <slot />
+      </main>
+      <AppFooter />
+    </div>
+  </body>
+</html>

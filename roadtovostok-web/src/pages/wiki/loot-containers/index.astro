@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../../lib/seo'
+import containers from '../../../data/wiki/loot-containers.js'
+import '../../../styles/pages/wiki-db-index.css'
+
+const path = '/wiki/loot-containers'
+const seo = seoForPath(path)
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== 'loot-containers')
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Loot containers', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Loot Containers Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+
+const groups = [
+  { title: 'Civilian containers', filter: (c) => c.category === 'civilian' },
+  { title: 'Military & special', filter: (c) => c.category === 'military' },
+  { title: 'Events', filter: (c) => c.category === 'event' },
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-db-idx">
+    <section class="wiki-db-idx-hero section section--tight" aria-labelledby="containers-idx-h">
+      <div class="wiki-db-idx-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-db-idx-eyebrow">Loot · Container types</p>
+          <nav class="wiki-db-idx-crumb" aria-label="Breadcrumb">
+            <a href="/" class="wiki-db-idx-crumb-a">Road to Vostok Field Manual</a>
+            <span aria-hidden="true">/</span>
+            <a href="/wiki" class="wiki-db-idx-crumb-a">Wiki</a>
+            <span aria-hidden="true">/</span>
+            <span>Loot containers</span>
+          </nav>
+          <h1 id="containers-idx-h" class="wiki-db-idx-title">Road to Vostok Loot Containers</h1>
+          <p class="wiki-db-idx-lead">
+            Twenty container types with civilian, military, and event flags—cabinets, corpses, stashes, and airdrops.
+            Each dossier summarizes maps and loot character; map wikis add per-location counts where we track them.
+          </p>
+          <ul class="wiki-db-idx-stats" aria-label="Container summary">
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">20</span>
+              <span class="wiki-db-idx-stat-lbl">Types</span>
+            </li>
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">~10%</span>
+              <span class="wiki-db-idx-stat-lbl">Stash roll (est.)</span>
+            </li>
+          </ul>
+          <WikiVerifiedNotice compact />
+          <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+            {wikiSiblings.map((c) => (
+              <a class="wiki-pill" href={c.routePath}>{c.title}</a>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    {
+      groups.map((group) => {
+        const cards = containers.filter(group.filter)
+        if (!cards.length) return null
+        return (
+          <section class="section section--tight" aria-label={group.title}>
+            <div class="container">
+              <div class="wrap wrap--wide">
+                <h2 class="wiki-db-idx-section-h">{group.title}</h2>
+                <ul class="wiki-db-idx-cards">
+                  {cards.map((c) => (
+                    <li>
+                      <a class="wiki-db-idx-card" href={`/wiki/loot-containers/${c.slug}`}>
+                        <span class="wiki-db-idx-card__kicker">{c.kicker}</span>
+                        <span class="wiki-db-idx-card__title">{c.name}</span>
+                        <p class="wiki-db-idx-card__blurb">{c.summary}</p>
+                        <span class="wiki-db-idx-card__cta">Open dossier →</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        )
+      })
+    }
+
+    <section class="section section--tight">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-db-idx-back">
+            <a class="wiki-db-idx-back-a" href="/wiki">← Wiki index</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

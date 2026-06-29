@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { seoForPath, MAP_NAV } from '../../../lib/nav'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { mapToEntry } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import village from '../../../data/wiki/map-village.js'
+import school from '../../../data/wiki/map-school.js'
+import highway from '../../../data/wiki/map-highway.js'
+import outpost from '../../../data/wiki/map-outpost.js'
+import minefield from '../../../data/wiki/map-minefield.js'
+import apartments from '../../../data/wiki/map-apartments.js'
+import terminal from '../../../data/wiki/map-terminal.js'
+import shipyard from '../../../data/wiki/map-shipyard.js'
+
+export function getStaticPaths() {
+  const pages = [village, school, highway, outpost, minefield, apartments, terminal, shipyard]
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = `/wiki/maps/${page.slug}`
+const entry = mapToEntry(page)
+const peers = MAP_NAV.map((m) => ({ slug: m.slug, routePath: m.routePath, title: m.title }))
+const seo = { ...seoForPath(path), author: EDITORIAL_BYLINE }
+const imagePath = page.image?.startsWith('/') ? page.image : page.image ? `/${page.image}` : undefined
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${page.name} map guide — Road to Vostok`,
+  description: seo.description,
+  path,
+  image: imagePath,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Maps', path: '/wiki/maps' },
+    { name: page.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

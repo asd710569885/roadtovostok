@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { buildAmmoDetailSeo } from '../../../lib/wikiSeo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { ammoToEntry, peersFromCatalog } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import ammo from '../../../data/wiki/ammo.js'
+
+export function getStaticPaths() {
+  return ammo.map((row) => ({
+    params: { slug: row.id },
+    props: { row },
+  }))
+}
+
+const { row } = Astro.props
+const path = `/wiki/ammo/${row.id}`
+const entry = ammoToEntry(row)
+const peers = peersFromCatalog(ammo, '/wiki/ammo', 'id')
+const seo = {
+  ...buildAmmoDetailSeo(row),
+  author: EDITORIAL_BYLINE,
+}
+
+const imagePath = row.image?.startsWith('/') ? row.image : row.image ? `/${row.image}` : undefined
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${row.name} — Road to Vostok ammo guide`,
+  description: seo.description,
+  path,
+  image: imagePath,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Ammo', path: '/wiki/ammo' },
+    { name: row.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

@@ -1,0 +1,38 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../lib/seo'
+import ammo from '../../data/wiki/ammo.js'
+import WikiTopicShell from '../../components/wiki/WikiTopicShell.astro'
+import WikiAmmoTables from '../../components/wiki/WikiAmmoTables.astro'
+
+const path = '/wiki/ammo'
+const seo = seoForPath(path)
+
+const meta = {
+  slug: 'ammo',
+  heading: 'Road to Vostok Ammo & Magazines',
+  kicker: 'Ammunition',
+  lead:
+    'Per-round economy, weight, stack size, and weapon pairing—each caliber links to a dedicated ammo dossier with compatible guns.',
+}
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Ammo', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Ammo Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiTopicShell meta={meta}>
+    <WikiAmmoTables items={ammo} />
+  </WikiTopicShell>
+</BaseLayout>

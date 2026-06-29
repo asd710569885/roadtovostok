@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../../lib/nav'
+import { wikiDetailArticleJsonLd } from '../../../lib/seo'
+import { EDITORIAL_BYLINE } from '../../../lib/contentMeta'
+import { enrichDbPage, peersFromCatalog } from '../../../lib/wikiEntry'
+import WikiEntryDetail from '../../../components/wiki/WikiEntryDetail.astro'
+import containers from '../../../data/wiki/loot-containers.js'
+
+export function getStaticPaths() {
+  return containers.map((page) => ({
+    params: { slug: page.slug },
+    props: { page },
+  }))
+}
+
+const { page } = Astro.props
+const path = `/wiki/loot-containers/${page.slug}`
+const entry = enrichDbPage(page, {
+  topicSlug: 'loot-containers',
+  topicTitle: 'Loot containers',
+  topicIndexPath: '/wiki/loot-containers',
+})
+const peers = peersFromCatalog(containers, '/wiki/loot-containers')
+const seo = { ...seoForPath(path), author: EDITORIAL_BYLINE }
+
+const jsonLd = wikiDetailArticleJsonLd({
+  headline: `${page.name} — Road to Vostok loot container`,
+  description: seo.description ?? page.summary,
+  path,
+  breadcrumbs: [
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Loot containers', path: '/wiki/loot-containers' },
+    { name: page.name, path },
+  ],
+})
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <WikiEntryDetail entry={entry} peers={peers} />
+</BaseLayout>

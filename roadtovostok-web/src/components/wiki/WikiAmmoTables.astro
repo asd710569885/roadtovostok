@@ -1,0 +1,182 @@
+---
+interface AmmoItem {
+  id: string
+  category?: string
+  name: string
+  image?: string
+  valueEuro?: number | null
+  weightKg?: number | null
+  maxStack?: number | null
+  compatibility?: string
+}
+
+interface Props {
+  items: AmmoItem[]
+}
+
+const { items } = Astro.props
+
+const baseUrl = import.meta.env.BASE_URL
+
+const CATEGORY_ORDER = ['pistol_smg', 'rifle', 'full_power', 'shotgun'] as const
+
+const CATEGORY_LABELS: Record<string, string> = {
+  pistol_smg: 'Pistol, SMG & PDW rounds',
+  rifle: 'Rifle calibers',
+  full_power: 'Full-power rifle',
+  shotgun: 'Shotgun shells',
+}
+
+function buildGroups(rows: AmmoItem[]) {
+  const byCat = new Map<string, AmmoItem[]>()
+  for (const row of rows) {
+    const k = row.category || 'other'
+    if (!byCat.has(k)) byCat.set(k, [])
+    byCat.get(k)!.push(row)
+  }
+  const out: { key: string; label: string; rows: AmmoItem[] }[] = []
+  for (const key of CATEGORY_ORDER) {
+    const groupRows = byCat.get(key)
+    if (groupRows?.length) out.push({ key, label: CATEGORY_LABELS[key] || key, rows: groupRows })
+    byCat.delete(key)
+  }
+  for (const [key, groupRows] of byCat) {
+    if (groupRows.length) out.push({ key, label: CATEGORY_LABELS[key] || key, rows: groupRows })
+  }
+  return out
+}
+
+function fmtEuro(n: number | null | undefined) {
+  if (n === null || n === undefined) return '—'
+  return `${n}€`
+}
+
+function fmtWeight(n: number | null | undefined) {
+  if (n === null || n === undefined) return '—'
+  return Number(n).toFixed(2)
+}
+
+function imgSrc(path: string) {
+  if (!path) return ''
+  const p = path.startsWith('/') ? path.slice(1) : path
+  return `${baseUrl}${p}`
+}
+
+const groups = buildGroups(items)
+---
+
+<div class="wiki-ref">
+  {
+    groups.map((g) => (
+      <section class="wiki-ref__panel" aria-labelledby={`wiki-ref-ammo-${g.key}`}>
+        <header class="wiki-ref__head">
+          <div class="wiki-ref__head-text">
+            <h2 id={`wiki-ref-ammo-${g.key}`} class="wiki-ref__title">
+              {g.label}
+            </h2>
+            <p class="wiki-ref__dek">
+              Click a caliber for the ammo dossier · per-round value @ 100% condition
+            </p>
+          </div>
+          <span class="wiki-ref__count" aria-label={`${g.rows.length} entries`}>
+            {g.rows.length}
+          </span>
+        </header>
+
+        <div class="wiki-ref__table-wrap">
+          <table class="wiki-ref__table wiki-ref__table--ammo">
+            <thead>
+              <tr>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--icon">
+                  Icon
+                </th>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--name">
+                  Caliber
+                </th>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--num">
+                  Value (€)
+                </th>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--num">
+                  Wt. (kg)
+                </th>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--num">
+                  Max stack
+                </th>
+                <th scope="col" class="wiki-ref__th wiki-ref__th--compat">
+                  Compatibility
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {g.rows.map((row) => (
+                <tr class="wiki-ref__tr">
+                  <td class="wiki-ref__td wiki-ref__td--icon">
+                    <div class="wiki-ref__photo wiki-ref__photo--sm">
+                      {row.image ? (
+                        <img
+                          class="wiki-ref__img wiki-ref__img--sm"
+                          src={imgSrc(row.image)}
+                          alt={row.name}
+                          width="48"
+                          height="48"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span class="wiki-ref__photo-ph wiki-ref__photo-ph--sm" aria-hidden="true" />
+                      )}
+                    </div>
+                  </td>
+                  <th scope="row" class="wiki-ref__td wiki-ref__td--name">
+                    <a class="wiki-ref__name-a" href={`/wiki/ammo/${row.id}`}>{row.name}</a>
+                  </th>
+                  <td class="wiki-ref__td wiki-ref__td--num">{fmtEuro(row.valueEuro)}</td>
+                  <td class="wiki-ref__td wiki-ref__td--num">{fmtWeight(row.weightKg)}</td>
+                  <td class="wiki-ref__td wiki-ref__td--num">{row.maxStack ?? '—'}</td>
+                  <td class="wiki-ref__td wiki-ref__td--compat">{row.compatibility}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    ))
+  }
+
+  <div class="wiki-ref__about" role="region" aria-labelledby="wiki-ref-ammo-intro-h">
+    <div class="wiki-ref__about-accent" aria-hidden="true" />
+    <h2 id="wiki-ref-ammo-intro-h" class="wiki-ref__about-title">About this ammo table</h2>
+    <p class="wiki-ref__about-lead">
+      Values, weights, stack caps, and weapon pairing are kept in lockstep with our
+      <a class="wiki-ref__about-a" href="/wiki/weapons">weapons</a>
+      hub—same card layout as that page so you can flip between "what shoots" and "what it eats" without
+      relearning the UI.
+    </p>
+    <ul class="wiki-ref__about-list">
+      <li>
+        <span class="wiki-ref__about-dot" aria-hidden="true" />
+        <span>
+          <strong>Economy &amp; stash.</strong>
+          Per-round € assumes full condition like the reference sheet; stacks matter when you plan extracts and
+          barter—patch notes can nudge both.
+        </span>
+      </li>
+      <li>
+        <span class="wiki-ref__about-dot" aria-hidden="true" />
+        <span>
+          <strong>Verify in client.</strong>
+          HUD build string wins if anything disagrees; use this table to pre-flight a loadout, not to argue with
+          your inventory screen.
+        </span>
+      </li>
+      <li>
+        <span class="wiki-ref__about-dot" aria-hidden="true" />
+        <span>
+          <strong>Elsewhere on the manual.</strong>
+          <a class="wiki-ref__about-a" href="/wiki">Wiki index</a>,
+          <a class="wiki-ref__about-a" href="/map">Map</a>,
+          <a class="wiki-ref__about-a" href="/updates">Updates</a>.
+        </span>
+      </li>
+    </ul>
+  </div>
+</div>

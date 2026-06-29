@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { seoForPath } from '../../lib/nav'
+import { breadcrumbJsonLd, legalPageJsonLd } from '../../lib/seo'
+import '../../styles/pages/legal.css'
+
+interface Props {
+  path: string
+  breadcrumb: string
+  headline: string
+  dek: string
+  dekFollow?: string
+  metaLine?: string
+  pageType?: 'WebPage' | 'AboutPage' | 'ContactPage'
+}
+
+const { path, breadcrumb, headline, dek, dekFollow, metaLine, pageType = 'WebPage' } = Astro.props
+const seo = seoForPath(path)
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Legal', path: '/legal/about' },
+    { name: breadcrumb, path },
+  ]),
+  legalPageJsonLd({
+    name: headline,
+    description: seo.description,
+    path,
+    pageType,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-legal">
+    <section class="page-head-section section section--tight" aria-labelledby="legal-page-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="page-kicker">Legal · {breadcrumb}</p>
+          <nav class="legal-crumb" aria-label="Breadcrumb">
+            <a href="/" class="legal-crumb__link">Road to Vostok Field Manual</a>
+            <span class="legal-crumb__sep" aria-hidden="true">/</span>
+            <a href="/legal/about" class="legal-crumb__link">Legal</a>
+            <span class="legal-crumb__sep" aria-hidden="true">/</span>
+            <span class="legal-crumb__here">{breadcrumb}</span>
+          </nav>
+          <h1 id="legal-page-heading" class="page-title">{headline}</h1>
+          <p class="page-dek">{dek}</p>
+          {dekFollow && <p class="page-dek page-dek--follow">{dekFollow}</p>}
+          {metaLine && <p class="page-dek page-dek--meta">{metaLine}</p>}
+        </div>
+      </div>
+    </section>
+    <slot />
+  </div>
+</BaseLayout>

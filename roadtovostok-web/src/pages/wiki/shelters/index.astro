@@ -1,0 +1,93 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WikiVerifiedNotice from '../../../components/wiki/WikiVerifiedNotice.astro'
+import { seoForPath, WIKI_NAV } from '../../../lib/nav'
+import { breadcrumbJsonLd, collectionPageJsonLd } from '../../../lib/seo'
+import shelters from '../../../data/wiki/shelters.js'
+import '../../../styles/pages/wiki-db-index.css'
+
+const path = '/wiki/shelters'
+const seo = seoForPath(path)
+const wikiSiblings = WIKI_NAV.filter((c) => c.slug !== 'shelters')
+
+const jsonLd = [
+  breadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'Wiki', path: '/wiki' },
+    { name: 'Shelters', path },
+  ]),
+  collectionPageJsonLd({
+    name: 'Road to Vostok Shelters Wiki',
+    description: seo.description,
+    path,
+  }),
+]
+---
+
+<BaseLayout seo={seo} path={path} jsonLd={jsonLd}>
+  <div class="page-wiki-db-idx">
+    <section class="wiki-db-idx-hero section section--tight" aria-labelledby="shelters-idx-h">
+      <div class="wiki-db-idx-hero__glow" aria-hidden="true" />
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="wiki-db-idx-eyebrow">Hideouts · Shelters</p>
+          <nav class="wiki-db-idx-crumb" aria-label="Breadcrumb">
+            <a href="/" class="wiki-db-idx-crumb-a">Road to Vostok Field Manual</a>
+            <span aria-hidden="true">/</span>
+            <a href="/wiki" class="wiki-db-idx-crumb-a">Wiki</a>
+            <span aria-hidden="true">/</span>
+            <span>Shelters</span>
+          </nav>
+          <h1 id="shelters-idx-h" class="wiki-db-idx-title">Road to Vostok Shelters</h1>
+          <p class="wiki-db-idx-lead">
+            Five player hideouts across Village, School, and Outpost—save progress, stash gear, and expand with furniture.
+            Some unlock by default; others need keys found in the world or from trader tasks.
+          </p>
+          <ul class="wiki-db-idx-stats" aria-label="Shelter summary">
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">5</span>
+              <span class="wiki-db-idx-stat-lbl">Shelters</span>
+            </li>
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">2</span>
+              <span class="wiki-db-idx-stat-lbl">Default unlock</span>
+            </li>
+            <li class="wiki-db-idx-stat">
+              <span class="wiki-db-idx-stat-val">3</span>
+              <span class="wiki-db-idx-stat-lbl">Key-gated</span>
+            </li>
+          </ul>
+          <WikiVerifiedNotice compact />
+          <nav class="wiki-pill-nav" aria-label="Other wiki topics">
+            {wikiSiblings.map((c) => (
+              <a class="wiki-pill" href={c.routePath}>{c.title}</a>
+            ))}
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-label="Shelter list">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <h2 class="wiki-db-idx-section-h">All shelters</h2>
+          <ul class="wiki-db-idx-cards">
+            {shelters.map((s) => (
+              <li>
+                <a class="wiki-db-idx-card" href={`/wiki/shelters/${s.slug}`}>
+                  <span class="wiki-db-idx-card__kicker">{s.kicker}</span>
+                  <span class="wiki-db-idx-card__title">{s.name}</span>
+                  <p class="wiki-db-idx-card__blurb">{s.summary}</p>
+                  <span class="wiki-db-idx-card__cta">Open dossier →</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+          <p class="wiki-db-idx-back">
+            <a class="wiki-db-idx-back-a" href="/wiki">← Wiki index</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

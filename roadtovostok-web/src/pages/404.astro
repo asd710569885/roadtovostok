@@ -1,0 +1,29 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { seoForPath } from '../lib/nav'
+import '../styles/pages/404.css'
+
+const path = '/404'
+---
+
+<BaseLayout seo={seoForPath(path)} path={path}>
+  <div class="page-not-found">
+    <section class="not-found-section section section--loose" aria-labelledby="not-found-heading">
+      <div class="container">
+        <div class="wrap wrap--wide">
+          <p class="not-found-kicker">HTTP 404</p>
+          <h1 id="not-found-heading" class="not-found-title">Road to Vostok — Page not found</h1>
+          <p class="not-found-text">
+            The URL may be mistyped, or the page was moved. Use the navigation above or return to the field manual home.
+          </p>
+          <div class="not-found-actions">
+            <a href="/" class="not-found-btn not-found-btn--primary">Back to home</a>
+            <a href="/wiki" class="not-found-btn not-found-btn--ghost">Wiki hub</a>
+            <a href="/map" class="not-found-btn not-found-btn--ghost">World map</a>
+            <a href="/start" class="not-found-btn not-found-btn--ghost">Start &amp; specs</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

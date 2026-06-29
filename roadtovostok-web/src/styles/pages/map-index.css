@@ -1,0 +1,54 @@
+.map-seo {
+  border-bottom: 1px solid var(--color-border);
+  background: color-mix(in srgb, var(--color-bg-panel) 35%, transparent);
+}
+
+.map-seo code {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 0.85em;
+}
+
+.map-seo__pitch {
+  margin: 0.75rem 0 0;
+  max-width: 46rem;
+  font-size: 0.92rem;
+  line-height: 1.65;
+  color: var(--color-text-muted);
+}
+
+.map-seo__lead {
+  margin: 0.65rem 0 0;
+  max-width: 46rem;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.map-seo__note {
+  margin: 0.55rem 0 0;
+  max-width: 46rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: color-mix(in srgb, var(--color-text-muted) 90%, var(--color-frost) 10%);
+}
+
+.map-seo__credit {
+  margin: 0.45rem 0 0;
+  max-width: 46rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.map-island-shell {
+  position: relative;
+}
+
+.map-island-shell__hint {
+  margin: 0 0 0.75rem;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+
+.map-island-shell__hint a {
+  color: var(--color-frost);
+}

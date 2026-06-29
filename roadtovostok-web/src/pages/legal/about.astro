@@ -1,0 +1,131 @@
+---
+import LegalPageShell from '../../components/legal/LegalPageShell.astro'
+import { EDITORIAL_BYLINE, EDITORIAL_METHOD, WIKI_LAST_VERIFIED, WIKI_VERIFIED_BUILD } from '../../lib/contentMeta'
+
+const path = '/legal/about'
+---
+
+<LegalPageShell
+  path={path}
+  breadcrumb="About"
+  pageType="AboutPage"
+  headline="About this field manual"
+  dek="Road to Vostok Field Manual is the player strategy hub for Road to Vostok—the hardcore single-player survival FPS on a post-collapse Finland–Russia border."
+  dekFollow="What we publish, how we verify guides, and where to go for gameplay help versus site issues."
+>
+  <section class="legal-section section" aria-labelledby="about-scope">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="about-scope" class="section-heading">What we publish</h2>
+        <p class="legal-prose">
+          The manual is structured around problems players actually search for: weapons and reloading, survival and medical,
+          traders and tasks, map crossings, and the difference between the Steam demo and Early Access builds. The
+          <a class="text-link" href="/wiki">wiki hub</a>
+          holds grouped tables and dossier pages; the
+          <a class="text-link" href="/map">interactive world map</a>
+          overlays pins on published artwork; the
+          <a class="text-link" href="/start">Start</a>
+          page collects onboarding, PC requirements, and version expectations.
+        </p>
+        <p class="legal-prose">
+          We aim for systems-first explanations: what to check in the UI, how demo vs EA might diverge, and when a claim needs an
+          in-game screenshot or a link to official patch notes—not speculation dressed up as fact.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="about-who">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="about-who" class="section-heading">What we are (and aren't)</h2>
+        <p class="legal-prose">
+          We are not Road to Vostok Ltd., not employees of the developer, and not a licensed partner. Game names, logos, and
+          artwork belong to their respective owners. We reproduce small amounts of official material only where needed for
+          commentary and navigation—the same way a dedicated strategy guide would.
+        </p>
+        <ul class="legal-list">
+          <li>
+            <strong>Official sources</strong> for purchase, dates, and feature lists remain Steam and roadtovostok.com—we cite them
+            when stating hard facts, not as an endorsement.
+          </li>
+          <li>
+            <strong>If your installed build disagrees</strong> with a guide, trust the client first, then compare with the
+            <a class="text-link" href="/start">Start</a>
+            page and the relevant wiki topic.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="about-editorial">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="about-editorial" class="section-heading">Editorial policy &amp; verification</h2>
+        <p class="legal-prose">
+          Content is written and checked by the <strong>{EDITORIAL_BYLINE}</strong>—players documenting
+          <strong>Road to Vostok</strong> (Steam Early Access since <strong>April 7, 2026</strong>, Build 1
+          <em>Road</em>).
+        </p>
+        <ul class="legal-list">
+          <li>
+            <strong>Sources we trust first:</strong> your installed Steam build, in-game HUD and tooltips, Steam news /
+            patch notes, and devlogs on
+            <a class="text-link" href="https://www.roadtovostok.com/" target="_blank" rel="noopener noreferrer">roadtovostok.com</a>
+            and the
+            <a class="text-link" href="https://www.youtube.com/roadtovostok" target="_blank" rel="noopener noreferrer">official YouTube</a>.
+          </li>
+          <li>
+            <strong>How we label pages:</strong> wiki dossiers carry a last-verified stamp ({WIKI_VERIFIED_BUILD} ·
+            {WIKI_LAST_VERIFIED} at time of writing). Demo vs Early Access splits are explicit wherever loot or tasks
+            can diverge.
+          </li>
+          <li>
+            <strong>Method:</strong> {EDITORIAL_METHOD}
+          </li>
+          <li>
+            <strong>Corrections:</strong> email via
+            <a class="text-link" href="/legal/contact">Contact</a>
+            with the page URL, what you saw in-game, and your Steam build string—we treat player reports as primary QA.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section" aria-labelledby="about-quality">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="about-quality" class="section-heading">Accuracy and corrections</h2>
+        <p class="legal-prose">
+          Survival sandboxes change with every balance pass. When we state mechanics, loot, or map details, we try to label the
+          context (demo vs EA, approximate build, or in-game HUD checks). Pages that age badly should get updated or carry a clear
+          last-checked note when we touch them again.
+        </p>
+        <p class="legal-prose">
+          Found a factual mistake, broken link, or unclear step? See
+          <a class="text-link" href="/legal/contact">Contact</a>
+          and include the URL, what you expected, and your game build string from Steam.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="legal-section section section--tight" aria-labelledby="about-more">
+    <div class="container">
+      <div class="wrap wrap--wide">
+        <h2 id="about-more" class="section-heading">Related policies</h2>
+        <p class="legal-prose">
+          <a class="text-link" href="/legal/contact">Contact</a>
+          ·
+          <a class="text-link" href="/legal/privacy">Privacy</a>
+          ·
+          <a class="text-link" href="/legal/terms">Terms of use</a>
+          ·
+          <a class="text-link" href="/legal/copyright">Copyright</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</LegalPageShell>
