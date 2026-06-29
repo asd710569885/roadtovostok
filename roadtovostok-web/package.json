@@ -10,9 +10,9 @@
     "clean": "node scripts/clean.mjs",
     "dev": "astro dev",
     "dev:force": "astro dev --force",
-    "build": "astro build",
+    "build": "astro build && node scripts/normalize-sitemap.mjs",
     "preview": "astro preview",
-    "sitemap": "astro build",
+    "sitemap": "npm run build",
     "verify": "node scripts/verify.mjs",
     "reinstall": "npm run clean && npm install && npm run build"
   },

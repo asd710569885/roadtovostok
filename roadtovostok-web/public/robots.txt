@@ -9,4 +9,4 @@ Disallow: /about
 Disallow: /contact
 Disallow: /privacy
 
-Sitemap: https://roadtovostok.net/sitemap-index.xml
+Sitemap: https://roadtovostok.net/sitemap.xml
